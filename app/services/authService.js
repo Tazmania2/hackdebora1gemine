@@ -44,10 +44,16 @@ angular.module('funifierApp').factory('AuthService', function($http, $q, $window
         // Criar o token Basic com apiKey e appSecret
         var credentials = btoa(FUNIFIER_API_CONFIG.apiKey + ':' + FUNIFIER_API_CONFIG.appSecret);
 
-        $http.post('https://service2.funifier.com/v3/auth/basic', {}, {
+        $http({
+            method: 'POST',
+            url: 'https://service2.funifier.com/v3/auth/basic',
             headers: {
                 'Authorization': 'Basic ' + credentials,
                 'Content-Type': 'application/json'
+            },
+            data: {
+                api_key: FUNIFIER_API_CONFIG.apiKey,
+                app_secret: FUNIFIER_API_CONFIG.appSecret
             }
         }).then(function(result) {
             if (result.data && result.data.Authorization) {

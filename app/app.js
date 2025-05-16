@@ -8,7 +8,7 @@ var app = angular.module('funifierApp', ['ngRoute']);
 app.constant('FUNIFIER_API_CONFIG', {
     baseUrl: 'https://service2.funifier.com/v3', // URL base da API Funifier v3
     apiKey: '68252a212327f74f3a3d100d',
-    appSecret: 'YOUR_APP_SECRET_HERE', // Substitua pelo seu AppSecret do Funifier Studio
+    appSecret: '682605f62327f74f3a3d248e', // AppSecret do Funifier Studio
     passwordResetBaseUrl: 'https://service2.funifier.com/v3' // Para o endpoint de reset de senha
 });
 
