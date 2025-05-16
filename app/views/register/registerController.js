@@ -1,4 +1,4 @@
-angular.module('funifierApp').controller('RegisterController', function($scope, $http, $location, AuthService, FUNIFIER_API_CONFIG) {
+angular.module('funifierApp').controller('RegisterController', function($scope, $http, $location, $routeParams, AuthService, FUNIFIER_API_CONFIG) {
     var vm = this;
     vm.loading = false;
     vm.error = null;
@@ -8,6 +8,11 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
         password: '',
         confirmPassword: ''
     };
+
+    // Check for referral in URL
+    if ($routeParams.referral) {
+        vm.referralId = $routeParams.referral;
+    }
 
     vm.register = function() {
         if (vm.user.password !== vm.user.confirmPassword) {
@@ -33,7 +38,11 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
             extra: {
                 country: "Brasil",
                 company: "Funifier User",
-                sports: ["soccer"]
+                sports: ["soccer"],
+                phone: "",
+                cpf: "",
+                cep: "",
+                referredBy: vm.referralId || null
             }
         };
 

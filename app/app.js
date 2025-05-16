@@ -36,6 +36,18 @@ app.config(function($routeProvider, $locationProvider) {
                 }
             }
         })
+        .when('/profile', {
+            templateUrl: 'views/profile/profileView.html',
+            controller: 'ProfileController',
+            controllerAs: 'vm',
+            resolve: {
+                auth: function($location, AuthService) {
+                    if (!AuthService.isAuthenticated()) {
+                        $location.path('/login');
+                    }
+                }
+            }
+        })
         .when('/rewards', {
             templateUrl: 'views/rewards/rewardsView.html',
             controller: 'RewardsController',
