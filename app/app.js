@@ -75,8 +75,8 @@ app.config(function($routeProvider, $locationProvider) {
             redirectTo: '/login'
         });
 
-    // Enable HTML5 mode for cleaner URLs
-    $locationProvider.html5Mode(true);
+    // Disable HTML5 mode to use hash-based URLs
+    $locationProvider.html5Mode(false);
 });
 
 app.run(function($rootScope, $location, AuthService) {
