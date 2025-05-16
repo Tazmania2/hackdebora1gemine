@@ -4,9 +4,10 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
     service.getPlayerProfile = function() {
         return $http({
             method: 'GET',
-            url: FUNIFIER_API_CONFIG.baseUrl + '/v3/player/me',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player/me',
             headers: {
-                'Authorization': localStorage.getItem('token')
+                'Authorization': localStorage.getItem('token'),
+                'Content-Type': 'application/json'
             }
         }).then(function(response) {
             // Store the player data for later use
@@ -16,15 +17,12 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
     };
 
     service.getPlayerBalance = function() {
-        var player = service.getCurrentPlayer();
-        if (!player || !player._id) {
-            return $q.reject('Player ID not found');
-        }
         return $http({
             method: 'GET',
-            url: FUNIFIER_API_CONFIG.baseUrl + '/v3/player/' + player._id + '/status',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/status',
             headers: {
-                'Authorization': localStorage.getItem('token')
+                'Authorization': localStorage.getItem('token'),
+                'Content-Type': 'application/json'
             }
         });
     };
@@ -32,9 +30,10 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
     service.getPlayerActivities = function() {
         return $http({
             method: 'GET',
-            url: FUNIFIER_API_CONFIG.baseUrl + '/v3/player/me/activity',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/activity',
             headers: {
-                'Authorization': localStorage.getItem('token')
+                'Authorization': localStorage.getItem('token'),
+                'Content-Type': 'application/json'
             }
         });
     };
@@ -42,9 +41,10 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
     service.getPlayerRewards = function() {
         return $http({
             method: 'GET',
-            url: FUNIFIER_API_CONFIG.baseUrl + '/v3/player/me/rewards',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/rewards',
             headers: {
-                'Authorization': localStorage.getItem('token')
+                'Authorization': localStorage.getItem('token'),
+                'Content-Type': 'application/json'
             }
         });
     };
@@ -52,9 +52,10 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
     service.getPlayerEvents = function() {
         return $http({
             method: 'GET',
-            url: FUNIFIER_API_CONFIG.baseUrl + '/v3/player/me/events',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/events',
             headers: {
-                'Authorization': localStorage.getItem('token')
+                'Authorization': localStorage.getItem('token'),
+                'Content-Type': 'application/json'
             }
         });
     };
@@ -89,7 +90,8 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
             method: 'POST',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/purchase',
             headers: {
-                'Authorization': localStorage.getItem('token')
+                'Authorization': localStorage.getItem('token'),
+                'Content-Type': 'application/json'
             },
             data: purchaseData
         });
@@ -100,7 +102,8 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
             method: 'POST',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/share',
             headers: {
-                'Authorization': localStorage.getItem('token')
+                'Authorization': localStorage.getItem('token'),
+                'Content-Type': 'application/json'
             },
             data: {
                 platform: platform,
@@ -114,7 +117,8 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
             method: 'POST',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/survey/' + surveyId,
             headers: {
-                'Authorization': localStorage.getItem('token')
+                'Authorization': localStorage.getItem('token'),
+                'Content-Type': 'application/json'
             },
             data: answers
         });
