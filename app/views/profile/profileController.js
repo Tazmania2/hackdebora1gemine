@@ -1,10 +1,11 @@
-angular.module('funifierApp').controller('ProfileController', function($scope, $http, $location, AuthService, FUNIFIER_API_CONFIG) {
+angular.module('funifierApp').controller('ProfileController', function($scope, $http, $location, AuthService, FUNIFIER_API_CONFIG, PlayerService) {
     var vm = this;
     vm.loading = false;
     vm.error = null;
     vm.success = null;
     vm.profile = AuthService.getCurrentPlayer() || {};
     vm.referralUrl = '';
+    vm.currentToken = localStorage.getItem('token');
 
     // Initialize QR code
     function generateQRCode() {
@@ -56,6 +57,16 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
         document.execCommand('copy');
         document.body.removeChild(tempInput);
         vm.success = 'Link copiado com sucesso!';
+    };
+
+    vm.copyToken = function() {
+        navigator.clipboard.writeText(vm.currentToken).then(function() {
+            vm.success = 'Token copiado para a área de transferência!';
+            setTimeout(function() {
+                vm.success = null;
+                $scope.$apply();
+            }, 3000);
+        });
     };
 
     // Initialize referral URL and QR code

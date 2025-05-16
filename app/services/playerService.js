@@ -2,9 +2,11 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
     var service = {};
 
     service.getPlayerProfile = function() {
-        return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/player/me', {
+        return $http({
+            method: 'GET',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player/profile',
             headers: {
-                'Authorization': AuthService.getBasicAuthToken()
+                'Authorization': localStorage.getItem('token')
             }
         });
     };

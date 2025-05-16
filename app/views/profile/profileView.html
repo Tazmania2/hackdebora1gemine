@@ -65,6 +65,23 @@
                     </button>
                 </div>
             </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Debug Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Current Auth Token:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" ng-model="vm.currentToken" readonly>
+                            <button class="btn btn-outline-secondary" type="button" ng-click="vm.copyToken()">
+                                <i class="bi bi-clipboard"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div> 
