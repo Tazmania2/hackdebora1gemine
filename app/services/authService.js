@@ -45,6 +45,7 @@ angular.module('funifierApp').factory('AuthService', function($http, $q, $window
             method: 'POST',
             url: 'https://service2.funifier.com/v3/system/auth/token',
             headers: {
+                'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
                 'Content-Type': 'application/json'
             },
             data: {
