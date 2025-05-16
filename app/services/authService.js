@@ -52,7 +52,8 @@ angular.module('funifierApp').factory('AuthService', function($http, $q, $window
             var playerDataString = $window.localStorage.getItem(PLAYER_DATA_KEY);
             return playerDataString ? JSON.parse(playerDataString) : null;
         },
-        getBasicAuthToken: function() { return BASIC_AUTH_TOKEN; }
+        getBasicAuthToken: function() { return BASIC_AUTH_TOKEN; },
+        storePlayerData: storePlayerData
     };
 })
 .factory('AuthInterceptor', function ($rootScope, $q, $window, $location, FUNIFIER_API_CONFIG) {
