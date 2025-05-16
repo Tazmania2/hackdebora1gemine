@@ -5,8 +5,6 @@ angular.module('funifierApp').controller('DashboardController', function($scope,
     vm.balance = {};
     vm.activities = [];
     vm.events = [];
-    vm.referralCode = '';
-    vm.qrCodeUrl = '';
 
     function loadDashboardData() {
         // Load player profile
@@ -44,28 +42,7 @@ angular.module('funifierApp').controller('DashboardController', function($scope,
             .catch(function(error) {
                 console.error('Error loading events:', error);
             });
-
-        // Generate referral code if not exists
-        PlayerService.generateReferralCode()
-            .then(function(response) {
-                vm.referralCode = response.data.code;
-                vm.qrCodeUrl = response.data.qrCodeUrl;
-            })
-            .catch(function(error) {
-                console.error('Error generating referral code:', error);
-            });
     }
-
-    vm.copyReferralCode = function() {
-        var tempInput = document.createElement('input');
-        tempInput.value = vm.referralCode;
-        document.body.appendChild(tempInput);
-        tempInput.select();
-        document.execCommand('copy');
-        document.body.removeChild(tempInput);
-        // Show success message
-        alert('Código copiado com sucesso!');
-    };
 
     vm.registerForEvent = function(event) {
         // Implement event registration
