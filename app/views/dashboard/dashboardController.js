@@ -2,50 +2,49 @@ angular.module('funifierApp').controller('DashboardController', function($scope,
     var vm = this;
 
     vm.player = {};
-    vm.balance = {};
+    vm.status = {};
     vm.activities = [];
     vm.events = [];
     vm.currentToken = localStorage.getItem('token');
+    vm.loading = true;
+    vm.error = null;
 
     function loadDashboardData() {
-        // Load player profile
+        vm.loading = true;
+        vm.error = null;
+
+        // First get player profile
         PlayerService.getPlayerProfile()
             .then(function(response) {
                 vm.player = response.data;
                 console.log('Player profile loaded:', response.data);
+                
+                // Then get player status
+                return PlayerService.getPlayerBalance();
             })
-            .catch(function(error) {
-                console.error('Error loading player profile:', error);
-            });
-
-        // Load balance
-        PlayerService.getPlayerBalance()
             .then(function(response) {
-                vm.balance = response.data;
-                console.log('Balance loaded:', response.data);
+                vm.status = response.data;
+                console.log('Player status loaded:', response.data);
+                
+                // Then load activities
+                return PlayerService.getPlayerActivities();
             })
-            .catch(function(error) {
-                console.error('Error loading balance:', error);
-            });
-
-        // Load activities
-        PlayerService.getPlayerActivities()
             .then(function(response) {
                 vm.activities = response.data;
                 console.log('Activities loaded:', response.data);
+                
+                // Finally load events
+                return PlayerService.getPlayerEvents();
             })
-            .catch(function(error) {
-                console.error('Error loading activities:', error);
-            });
-
-        // Load events
-        PlayerService.getPlayerEvents()
             .then(function(response) {
                 vm.events = response.data;
                 console.log('Events loaded:', response.data);
+                vm.loading = false;
             })
             .catch(function(error) {
-                console.error('Error loading events:', error);
+                console.error('Error loading dashboard data:', error);
+                vm.error = 'Erro ao carregar dados do dashboard. Por favor, tente novamente.';
+                vm.loading = false;
             });
     }
 

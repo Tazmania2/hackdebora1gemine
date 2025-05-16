@@ -4,13 +4,13 @@
         <div class="balance-section">
             <div class="balance-card">
                 <h3>Pontos</h3>
-                <p class="balance-value">{{vm.balance.points}}</p>
-                <p class="expiration">Expira em: {{vm.balance.pointsExpiration | date:'dd/MM/yyyy'}}</p>
+                <p class="balance-value">{{vm.status.point_categories.point}}</p>
+                <p class="expiration">Nível {{vm.status.level.level}}</p>
             </div>
             <div class="balance-card">
-                <h3>Cashback</h3>
-                <p class="balance-value">R$ {{vm.balance.cashback}}</p>
-                <p class="expiration">Expira em: {{vm.balance.cashbackExpiration | date:'dd/MM/yyyy'}}</p>
+                <h3>Moedas</h3>
+                <p class="balance-value">{{vm.status.point_categories.coins}}</p>
+                <p class="expiration">XP: {{vm.status.level_progress.percent_completed}}%</p>
             </div>
         </div>
     </div>
