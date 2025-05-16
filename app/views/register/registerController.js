@@ -5,8 +5,13 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
     vm.user = {
         name: '',
         email: '',
+        phone: '',
+        birthdate: '',
+        cpf: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        referralCode: '',
+        acceptTerms: false
     };
 
     // Check for referral in URL
@@ -14,9 +19,28 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
         vm.referralId = $routeParams.referral;
     }
 
+    vm.showTerms = function(event) {
+        event.preventDefault();
+        $('#termsModal').modal('show');
+    };
+
+    vm.showRegulation = function(event) {
+        event.preventDefault();
+        $('#termsModal').modal('show');
+    };
+
+    vm.acceptTerms = function() {
+        vm.user.acceptTerms = true;
+    };
+
     vm.register = function() {
         if (vm.user.password !== vm.user.confirmPassword) {
             vm.error = 'As senhas não coincidem.';
+            return;
+        }
+
+        if (!vm.user.acceptTerms) {
+            vm.error = 'Você precisa aceitar os Termos de Uso e Regulamento para continuar.';
             return;
         }
 
@@ -28,7 +52,7 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
             _id: vm.user.email.split('@')[0], // Usando email como ID
             name: vm.user.name,
             email: vm.user.email,
-            password: vm.user.password, // Incluindo a senha no payload
+            password: vm.user.password,
             image: {
                 small: { url: "https://my.funifier.com/images/funny.png" },
                 medium: { url: "https://my.funifier.com/images/funny.png" },
@@ -40,10 +64,13 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
                 country: "Brasil",
                 company: "Funifier User",
                 sports: ["soccer"],
-                phone: "",
-                cpf: "",
+                phone: vm.user.phone,
+                cpf: vm.user.cpf,
+                birthdate: vm.user.birthdate,
                 cep: "",
-                referredBy: vm.referralId || null
+                referredBy: vm.user.referralCode || vm.referralId || null,
+                termsAccepted: true,
+                termsAcceptedDate: new Date().toISOString()
             }
         };
 
