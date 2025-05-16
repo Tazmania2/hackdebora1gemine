@@ -4,7 +4,7 @@ angular.module('funifierApp').factory('RewardsService', function($http, $q, FUNI
     service.getRewardsCatalog = function() {
         return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/rewards', {
             headers: {
-                'Authorization': AuthService.getBasicAuthToken()
+                'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ=='
             }
         });
     };
@@ -12,7 +12,7 @@ angular.module('funifierApp').factory('RewardsService', function($http, $q, FUNI
     service.getRewardDetails = function(rewardId) {
         return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/rewards/' + rewardId, {
             headers: {
-                'Authorization': AuthService.getBasicAuthToken()
+                'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ=='
             }
         });
     };
@@ -20,7 +20,7 @@ angular.module('funifierApp').factory('RewardsService', function($http, $q, FUNI
     service.redeemReward = function(rewardId) {
         return $http.post(FUNIFIER_API_CONFIG.baseUrl + '/rewards/' + rewardId + '/redeem', {}, {
             headers: {
-                'Authorization': AuthService.getBasicAuthToken()
+                'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ=='
             }
         });
     };
@@ -28,7 +28,7 @@ angular.module('funifierApp').factory('RewardsService', function($http, $q, FUNI
     service.getRedeemedRewards = function() {
         return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/rewards/redeemed', {
             headers: {
-                'Authorization': AuthService.getBasicAuthToken()
+                'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ=='
             }
         });
     };
@@ -36,7 +36,7 @@ angular.module('funifierApp').factory('RewardsService', function($http, $q, FUNI
     service.getRewardHistory = function() {
         return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/rewards/history', {
             headers: {
-                'Authorization': AuthService.getBasicAuthToken()
+                'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ=='
             }
         });
     };
