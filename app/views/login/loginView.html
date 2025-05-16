@@ -1,45 +1,37 @@
-<div class="login-container">
-    <h2>Login do Jogador</h2>
-    <form name="loginForm" ng-submit="vm.login()" novalidate>
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" ng-model="vm.credentials.email" required>
-            <span class="error-text" ng-show="loginForm.email.$touched && loginForm.email.$error.required">Email é obrigatório.</span>
-            <span class="error-text" ng-show="loginForm.email.$touched && loginForm.email.$error.email">Email inválido.</span>
-        </div>
-        <div class="form-group">
-            <label for="password">Senha:</label>
-            <input type="password" id="password" name="password" ng-model="vm.credentials.password" required>
-            <span class="error-text" ng-show="loginForm.password.$touched && loginForm.password.$error.required">Senha é obrigatória.</span>
-        </div>
-        <div class="form-group">
-            <button type="submit" ng-disabled="loginForm.$invalid || vm.isLoading">
-                {{ vm.isLoading ? 'Entrando...' : 'Entrar' }}
-            </button>
-        </div>
-    </form>
-    <div ng-if="vm.errorMessage" class="error-message">
-        {{ vm.errorMessage }}
-    </div>
-    <hr>
-    <div class="reset-password-section">
-        <p>Esqueceu sua senha?</p>
-        <form name="resetPasswordForm" ng-submit="vm.requestPasswordReset()" novalidate>
-            <div class="form-group">
-                <label for="resetEmail">Seu Email para Reset:</label>
-                <input type="email" id="resetEmail" name="resetEmail" ng-model="vm.resetEmail" required>
-                <span class="error-text" ng-show="resetPasswordForm.resetEmail.$touched && resetPasswordForm.resetEmail.$error.required">Email é obrigatório.</span>
-                <span class="error-text" ng-show="resetPasswordForm.resetEmail.$touched && resetPasswordForm.resetEmail.$error.email">Email inválido.</span>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card mt-5">
+                <div class="card-header">
+                    <h3 class="text-center">Login</h3>
+                </div>
+                <div class="card-body">
+                    <form name="loginForm" ng-submit="vm.login()">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" ng-model="vm.user.email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Senha</label>
+                            <input type="password" class="form-control" id="password" ng-model="vm.user.password" required>
+                        </div>
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary" ng-disabled="vm.loading">
+                                <span ng-if="!vm.loading">Entrar</span>
+                                <span ng-if="vm.loading">Entrando...</span>
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="alert alert-danger" ng-if="vm.error">
+                        {{ vm.error }}
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <p>Não tem uma conta? <a href="#!/register">Registre-se</a></p>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <button type="submit" ng-disabled="resetPasswordForm.$invalid || vm.isRequestingReset">
-                    {{ vm.isRequestingReset ? 'Enviando...' : 'Pedir Código de Reset' }}
-                </button>
-            </div>
-        </form>
-        <div ng-if="vm.resetMessage" ng-class="{'success-message': vm.resetSuccess, 'error-message': !vm.resetSuccess}">
-            {{ vm.resetMessage }}
         </div>
     </div>
-    <p class="register-link">Não tem uma conta? <a href="#!/register">Cadastre-se aqui</a></p>
 </div>

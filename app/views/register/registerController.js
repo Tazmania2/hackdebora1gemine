@@ -46,10 +46,10 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
             }
         };
 
-        // Fazer a requisição diretamente com o Basic auth token
+        // Fazer a requisição com Basic Auth
         $http({
             method: 'POST',
-            url: 'https://service2.funifier.com/v3/player',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player',
             headers: {
                 'Authorization': AuthService.getBasicAuthToken(),
                 'Content-Type': 'application/json'
