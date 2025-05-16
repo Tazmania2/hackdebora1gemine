@@ -1,96 +1,30 @@
 // app/services/authService.js
 angular.module('funifierApp').factory('AuthService', function($http, $q, $window, FUNIFIER_API_CONFIG) {
-    var LOCAL_TOKEN_KEY = 'funifierAuthToken';
     var PLAYER_DATA_KEY = 'funifierPlayerData';
     var isAuthenticatedState = false;
-    var authToken;
     var BASIC_AUTH_TOKEN = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
 
-    function loadAuthData() {
-        var token = $window.localStorage.getItem(LOCAL_TOKEN_KEY);
-        if (token) {
-            useCredentials(token);
-        }
-    }
-
-    function storeAuthData(token, playerData) {
-        $window.localStorage.setItem(LOCAL_TOKEN_KEY, token);
+    function storePlayerData(playerData) {
         if (playerData) {
             $window.localStorage.setItem(PLAYER_DATA_KEY, JSON.stringify(playerData));
+            isAuthenticatedState = true;
         }
-        useCredentials(token);
-    }
-
-    function useCredentials(token) {
-        isAuthenticatedState = true;
-        authToken = token;
-        $http.defaults.headers.common.Authorization = 'Bearer ' + token;
     }
 
     function destroyAuthData() {
-        authToken = undefined;
         isAuthenticatedState = false;
-        $http.defaults.headers.common.Authorization = undefined;
-        $window.localStorage.removeItem(LOCAL_TOKEN_KEY);
         $window.localStorage.removeItem(PLAYER_DATA_KEY);
     }
 
-    var getApiToken = function() {
-        var deferred = $q.defer();
-        if (authToken) {
-            deferred.resolve(authToken);
-            return deferred.promise;
-        }
-
-        $http({
-            method: 'POST',
-            url: 'https://service2.funifier.com/v3/system/auth/token',
-            headers: {
-                'Authorization': BASIC_AUTH_TOKEN,
-                'Content-Type': 'application/json'
-            },
-            data: {
-                api_key: FUNIFIER_API_CONFIG.apiKey,
-                app_secret: FUNIFIER_API_CONFIG.appSecret
-            }
-        }).then(function(result) {
-            console.log('Auth response:', result.data); // Debug log
-            if (result.data && result.data.token) {
-                storeAuthData(result.data.token);
-                deferred.resolve(result.data.token);
-            } else {
-                console.error('Unexpected response format:', result.data);
-                deferred.reject('Falha ao obter token: Formato de resposta inesperado.');
-            }
-        }, function(error) {
-            console.error('Auth error:', error); // Debug log
-            destroyAuthData();
-            var errorMsg = 'Falha ao obter token da API: ';
-            if (error.data && (error.data.error_description || error.data.message || error.data.error)) {
-                errorMsg += error.data.error_description || error.data.message || error.data.error;
-            } else if (error.statusText) {
-                errorMsg += error.statusText;
-            } else {
-                errorMsg += 'Erro desconhecido.';
-            }
-            deferred.reject(errorMsg);
-        });
-        return deferred.promise;
-    };
-
     var playerLogin = function(email, password) {
         var deferred = $q.defer();
-        getApiToken().then(function(apiToken) {
-            if (email && password) {
-                var mockPlayerData = { playerId: 'mockPlayer123', email: email, name: 'Jogador Teste' };
-                storeAuthData(apiToken, mockPlayerData);
-                deferred.resolve(mockPlayerData);
-            } else {
-                deferred.reject('Email ou senha inválidos.');
-            }
-        }, function(error) {
-            deferred.reject('Falha ao obter token da API antes do login do jogador: ' + error);
-        });
+        if (email && password) {
+            var mockPlayerData = { playerId: 'mockPlayer123', email: email, name: 'Jogador Teste' };
+            storePlayerData(mockPlayerData);
+            deferred.resolve(mockPlayerData);
+        } else {
+            deferred.reject('Email ou senha inválidos.');
+        }
         return deferred.promise;
     };
     
@@ -109,10 +43,7 @@ angular.module('funifierApp').factory('AuthService', function($http, $q, $window
         destroyAuthData();
     };
 
-    loadAuthData();
-
     return {
-        getApiToken: getApiToken,
         playerLogin: playerLogin,
         logout: logout,
         requestPasswordResetCode: requestPasswordResetCode,
@@ -121,7 +52,6 @@ angular.module('funifierApp').factory('AuthService', function($http, $q, $window
             var playerDataString = $window.localStorage.getItem(PLAYER_DATA_KEY);
             return playerDataString ? JSON.parse(playerDataString) : null;
         },
-        getToken: function() { return authToken; },
         getBasicAuthToken: function() { return BASIC_AUTH_TOKEN; }
     };
 })
@@ -129,24 +59,15 @@ angular.module('funifierApp').factory('AuthService', function($http, $q, $window
     return {
         request: function (config) {
             config.headers = config.headers || {};
-            var token = $window.localStorage.getItem('funifierAuthToken');
             
             // Se for uma requisição para a API Funifier
             if (config.url.indexOf('https://service2.funifier.com/v3') === 0) {
-                // Se for a rota de autenticação, usa Basic Auth
-                if (config.url.includes('/system/auth/token')) {
-                    config.headers.Authorization = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
-                }
-                // Para outras rotas, usa Bearer token se disponível
-                else if (token) {
-                    config.headers.Authorization = 'Bearer ' + token;
-                }
+                config.headers.Authorization = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
             }
             return config;
         },
         responseError: function (response) {
-            if (response.status === 401 && response.config.url.indexOf('https://service2.funifier.com/v3') === 0 && !response.config.url.includes('/system/auth/token')) {
-                $window.localStorage.removeItem('funifierAuthToken');
+            if (response.status === 401 && response.config.url.indexOf('https://service2.funifier.com/v3') === 0) {
                 $window.localStorage.removeItem('funifierPlayerData');
                 if ($location.path() !== '/login') {
                     $location.path('/login');

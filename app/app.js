@@ -60,18 +60,6 @@ app.config(function($routeProvider, $locationProvider) {
                 }
             }
         })
-        .when('/admin', {
-            templateUrl: 'views/admin/adminView.html',
-            controller: 'AdminController',
-            controllerAs: 'vm',
-            resolve: {
-                auth: function($location, AuthService) {
-                    if (!AuthService.isAuthenticated()) {
-                        $location.path('/login');
-                    }
-                }
-            }
-        })
         .otherwise({
             redirectTo: '/login'
         });
