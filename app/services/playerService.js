@@ -35,6 +35,12 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
                 'Authorization': localStorage.getItem('token'),
                 'Content-Type': 'application/json'
             }
+        }).then(function(response) {
+            // If no activities found, return empty array instead of error
+            if (response.data && response.data.errorCode === 404) {
+                return { data: [] };
+            }
+            return response;
         });
     };
 
@@ -57,6 +63,12 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
                 'Authorization': localStorage.getItem('token'),
                 'Content-Type': 'application/json'
             }
+        }).then(function(response) {
+            // If no events found, return empty array instead of error
+            if (response.data && response.data.errorCode === 404) {
+                return { data: [] };
+            }
+            return response;
         });
     };
 
