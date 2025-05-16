@@ -1,73 +1,45 @@
-angular.module('funifierApp').controller('RegisterController', function($location, $http, AuthService, PlayerService, FUNIFIER_API_CONFIG) {
+angular.module('funifierApp').controller('RegisterController', function($scope, $http, $location, AuthService, FUNIFIER_API_CONFIG) {
     var vm = this;
-
-    vm.user = {
-        email: '',
-        password: '',
-        confirmPassword: '',
-        name: ''
-    };
-    vm.errorMessage = '';
-    vm.isLoading = false;
+    vm.loading = false;
+    vm.error = null;
 
     vm.register = function() {
-        vm.errorMessage = '';
-        vm.isLoading = true;
-
-        if (vm.user.password !== vm.user.confirmPassword) {
-            vm.errorMessage = 'As senhas não coincidem.';
-            vm.isLoading = false;
+        if (vm.registerForm.$invalid) {
             return;
         }
 
-        // First get API token
-        AuthService.getApiToken()
-            .then(function(apiToken) {
-                // Then register the player using the correct endpoint and payload structure
-                return $http.post('https://service2.funifier.com/v3/player', {
-                    _id: vm.user.email,
-                    name: vm.user.name,
-                    email: vm.user.email,
-                    password: vm.user.password,
-                    image: {
-                        small: { url: '' },
-                        medium: { url: '' },
-                        original: { url: '' }
-                    },
-                    teams: [],
-                    friends: [],
-                    extra: {
-                        registeredAt: new Date().toISOString()
-                    }
-                }, {
-                    headers: {
-                        'Authorization': 'Bearer ' + apiToken,
-                        'Content-Type': 'application/json'
-                    }
-                });
-            })
-            .then(function(response) {
-                if (response.data && response.data._id) {
-                    // Registration successful, redirect to login
-                    $location.path('/login');
-                } else {
-                    throw new Error('Resposta inválida do servidor');
-                }
-            })
-            .catch(function(error) {
-                if (error.data && error.data.message) {
-                    vm.errorMessage = error.data.message;
-                } else if (error.data && error.data.error) {
-                    vm.errorMessage = error.data.error;
-                } else if (typeof error === 'string') {
-                    vm.errorMessage = error;
-                } else {
-                    vm.errorMessage = 'Erro ao registrar. Por favor, tente novamente.';
-                }
-                console.error('Registration error:', error);
-            })
-            .finally(function() {
-                vm.isLoading = false;
-            });
+        vm.loading = true;
+        vm.error = null;
+
+        // Criar o payload do jogador
+        var playerData = {
+            name: vm.name,
+            email: vm.email,
+            password: vm.password,
+            extra: {
+                register: true
+            }
+        };
+
+        // Fazer a requisição diretamente com o Basic auth token
+        $http({
+            method: 'POST',
+            url: 'https://service2.funifier.com/v3/player',
+            headers: {
+                'Authorization': AuthService.getBasicAuthToken(),
+                'Content-Type': 'application/json'
+            },
+            data: playerData
+        }).then(function(response) {
+            console.log('Registration successful:', response.data);
+            // Armazenar dados do jogador e redirecionar para o dashboard
+            AuthService.storePlayerData(response.data);
+            $location.path('/dashboard');
+        }).catch(function(error) {
+            console.error('Registration error:', error);
+            vm.error = error.data && error.data.message ? error.data.message : 'Erro ao registrar jogador.';
+        }).finally(function() {
+            vm.loading = false;
+        });
     };
 }); 
