@@ -41,15 +41,20 @@ angular.module('funifierApp').factory('AuthService', function($http, $q, $window
             return deferred.promise;
         }
 
-        $http.post('https://service2.funifier.com/v3/oauth/token', {
-            grant_type: 'client_credentials',
-            client_id: FUNIFIER_API_CONFIG.apiKey
+        // Criar o token Basic com apiKey e appSecret
+        var credentials = btoa(FUNIFIER_API_CONFIG.apiKey + ':' + FUNIFIER_API_CONFIG.appSecret);
+
+        $http.post('https://service2.funifier.com/v3/auth/basic', {}, {
+            headers: {
+                'Authorization': 'Basic ' + credentials,
+                'Content-Type': 'application/json'
+            }
         }).then(function(result) {
-            if (result.data && result.data.access_token) {
-                storeAuthData(result.data.access_token);
-                deferred.resolve(result.data.access_token);
+            if (result.data && result.data.Authorization) {
+                storeAuthData(result.data.Authorization);
+                deferred.resolve(result.data.Authorization);
             } else {
-                deferred.reject('Falha ao obter token: Nenhuma access_token recebido.');
+                deferred.reject('Falha ao obter token: Nenhuma Authorization recebida.');
             }
         }, function(error) {
             destroyAuthData();
@@ -110,13 +115,13 @@ angular.module('funifierApp').factory('AuthService', function($http, $q, $window
         request: function (config) {
             config.headers = config.headers || {};
             var token = $window.sessionStorage.getItem('funifierAuthToken');
-            if (token && config.url.indexOf('https://service2.funifier.com/v3') === 0 && !config.url.includes('/oauth/token')) {
+            if (token && config.url.indexOf('https://service2.funifier.com/v3') === 0 && !config.url.includes('/auth/basic')) {
                 config.headers.Authorization = 'Bearer ' + token;
             }
             return config;
         },
         responseError: function (response) {
-            if (response.status === 401 && response.config.url.indexOf('https://service2.funifier.com/v3') === 0 && !response.config.url.includes('/oauth/token')) {
+            if (response.status === 401 && response.config.url.indexOf('https://service2.funifier.com/v3') === 0 && !response.config.url.includes('/auth/basic')) {
                 $window.sessionStorage.removeItem('funifierAuthToken');
                 $window.sessionStorage.removeItem('funifierPlayerData');
                 if ($location.path() !== '/login') {

@@ -3,11 +3,12 @@ var app = angular.module('funifierApp', ['ngRoute']);
 
 // Constante para configuração da API
 // ATENÇÃO: O apiSecret NUNCA deve ser exposto no lado do cliente em produção.
-// Esta abordagem é apenas para prototipagem inicial e assume que a chamada /oauth/token
+// Esta abordagem é apenas para prototipagem inicial e assume que a chamada /auth/basic
 // será protegida por um proxy/backend em um ambiente real.
 app.constant('FUNIFIER_API_CONFIG', {
-    baseUrl: 'https://api.funifier.com/v3', // URL base da API Funifier v3
+    baseUrl: 'https://service2.funifier.com/v3', // URL base da API Funifier v3
     apiKey: '68252a212327f74f3a3d100d',
+    appSecret: 'YOUR_APP_SECRET_HERE', // Substitua pelo seu AppSecret do Funifier Studio
     passwordResetBaseUrl: 'https://service2.funifier.com/v3' // Para o endpoint de reset de senha
 });
 
