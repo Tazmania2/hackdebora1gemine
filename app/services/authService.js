@@ -21,15 +21,12 @@ angular.module('funifierApp')
             })
             .join('&');
 
-        // Create Basic auth token from API key and app secret
-        var basicAuth = btoa(FUNIFIER_API_CONFIG.apiKey + ':' + FUNIFIER_API_CONFIG.appSecret);
-
         return $http({
             method: 'POST',
             url: FUNIFIER_API_CONFIG.baseUrl + '/auth/token',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': 'Basic ' + basicAuth
+                'Authorization': 'Basic 68252a212327f74f3a3d100d:682605f62327f74f3a3d248e'
             },
             data: formData
         }).then(function(response) {
