@@ -1,21 +1,22 @@
 // app/services/authService.js
 angular.module('funifierApp').factory('AuthService', function($http, $q, $window, FUNIFIER_API_CONFIG) {
     var LOCAL_TOKEN_KEY = 'funifierAuthToken';
-    var PLAYER_DATA_KEY = 'funifierPlayerData'; // Para armazenar dados do jogador logado
+    var PLAYER_DATA_KEY = 'funifierPlayerData';
     var isAuthenticatedState = false;
     var authToken;
+    var BASIC_AUTH_TOKEN = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
 
     function loadAuthData() {
-        var token = $window.sessionStorage.getItem(LOCAL_TOKEN_KEY);
+        var token = $window.localStorage.getItem(LOCAL_TOKEN_KEY);
         if (token) {
             useCredentials(token);
         }
     }
 
     function storeAuthData(token, playerData) {
-        $window.sessionStorage.setItem(LOCAL_TOKEN_KEY, token);
+        $window.localStorage.setItem(LOCAL_TOKEN_KEY, token);
         if (playerData) {
-            $window.sessionStorage.setItem(PLAYER_DATA_KEY, JSON.stringify(playerData));
+            $window.localStorage.setItem(PLAYER_DATA_KEY, JSON.stringify(playerData));
         }
         useCredentials(token);
     }
@@ -30,8 +31,8 @@ angular.module('funifierApp').factory('AuthService', function($http, $q, $window
         authToken = undefined;
         isAuthenticatedState = false;
         $http.defaults.headers.common.Authorization = undefined;
-        $window.sessionStorage.removeItem(LOCAL_TOKEN_KEY);
-        $window.sessionStorage.removeItem(PLAYER_DATA_KEY);
+        $window.localStorage.removeItem(LOCAL_TOKEN_KEY);
+        $window.localStorage.removeItem(PLAYER_DATA_KEY);
     }
 
     var getApiToken = function() {
@@ -45,7 +46,7 @@ angular.module('funifierApp').factory('AuthService', function($http, $q, $window
             method: 'POST',
             url: 'https://service2.funifier.com/v3/system/auth/token',
             headers: {
-                'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
+                'Authorization': BASIC_AUTH_TOKEN,
                 'Content-Type': 'application/json'
             },
             data: {
@@ -94,7 +95,14 @@ angular.module('funifierApp').factory('AuthService', function($http, $q, $window
     };
     
     var requestPasswordResetCode = function(email) {
-        return $http.get(FUNIFIER_API_CONFIG.passwordResetBaseUrl + '/system/user/password/code?user=' + encodeURIComponent(email));
+        return $http({
+            method: 'GET',
+            url: FUNIFIER_API_CONFIG.passwordResetBaseUrl + '/system/user/password/code',
+            params: { user: email },
+            headers: {
+                'Authorization': BASIC_AUTH_TOKEN
+            }
+        });
     };
 
     var logout = function() {
@@ -110,26 +118,36 @@ angular.module('funifierApp').factory('AuthService', function($http, $q, $window
         requestPasswordResetCode: requestPasswordResetCode,
         isAuthenticated: function() { return isAuthenticatedState; },
         getCurrentPlayer: function() {
-            var playerDataString = $window.sessionStorage.getItem(PLAYER_DATA_KEY);
+            var playerDataString = $window.localStorage.getItem(PLAYER_DATA_KEY);
             return playerDataString ? JSON.parse(playerDataString) : null;
         },
-        getToken: function() { return authToken; }
+        getToken: function() { return authToken; },
+        getBasicAuthToken: function() { return BASIC_AUTH_TOKEN; }
     };
 })
 .factory('AuthInterceptor', function ($rootScope, $q, $window, $location, FUNIFIER_API_CONFIG) {
     return {
         request: function (config) {
             config.headers = config.headers || {};
-            var token = $window.sessionStorage.getItem('funifierAuthToken');
-            if (token && config.url.indexOf('https://service2.funifier.com/v3') === 0 && !config.url.includes('/auth/basic')) {
-                config.headers.Authorization = 'Bearer ' + token;
+            var token = $window.localStorage.getItem('funifierAuthToken');
+            
+            // Se for uma requisição para a API Funifier
+            if (config.url.indexOf('https://service2.funifier.com/v3') === 0) {
+                // Se for a rota de autenticação, usa Basic Auth
+                if (config.url.includes('/system/auth/token')) {
+                    config.headers.Authorization = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
+                }
+                // Para outras rotas, usa Bearer token se disponível
+                else if (token) {
+                    config.headers.Authorization = 'Bearer ' + token;
+                }
             }
             return config;
         },
         responseError: function (response) {
-            if (response.status === 401 && response.config.url.indexOf('https://service2.funifier.com/v3') === 0 && !response.config.url.includes('/auth/basic')) {
-                $window.sessionStorage.removeItem('funifierAuthToken');
-                $window.sessionStorage.removeItem('funifierPlayerData');
+            if (response.status === 401 && response.config.url.indexOf('https://service2.funifier.com/v3') === 0 && !response.config.url.includes('/system/auth/token')) {
+                $window.localStorage.removeItem('funifierAuthToken');
+                $window.localStorage.removeItem('funifierPlayerData');
                 if ($location.path() !== '/login') {
                     $location.path('/login');
                 }
