@@ -1,0 +1,59 @@
+/* Modal para player de vídeo YouTube */
+.courses-modal-bg {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.6);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.courses-modal {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  padding: 0;
+  max-width: 90vw;
+  max-height: 85vh;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.courses-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.5rem;
+  color: #444;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.courses-modal-iframe {
+  width: 65vw;
+  height: 40vw;
+  max-width: 800px;
+  max-height: 450px;
+  min-width: 320px;
+  min-height: 180px;
+  border: none;
+  border-radius: 10px;
+  background: #000;
+}
+@media (max-width: 600px) {
+  .courses-modal-iframe {
+    width: 96vw;
+    height: 55vw;
+    max-width: 98vw;
+    max-height: 60vw;
+  }
+}

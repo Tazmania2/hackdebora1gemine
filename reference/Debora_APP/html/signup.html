@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro - Camaleoa Esmalteria</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .signup-container {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px rgba(48,92,59,0.08);
+      padding: 36px 24px 24px 24px;
+      width: 95%;
+      max-width: 350px;
+      margin: 40px auto 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .nf-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .nf-logo-icon {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 8px;
+    }
+    .nf-title {
+      color: #305c3b;
+      font-size: 2.2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .nf-subtitle {
+      color: #305c3b;
+      font-size: 1.2rem;
+      font-weight: 400;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .signup-input {
+      width: 100%;
+      background: #f8f9f3;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 14px;
+      margin-bottom: 18px;
+      font-size: 1rem;
+      color: #305c3b;
+      font-weight: 500;
+      box-shadow: 0 1px 4px rgba(48,92,59,0.04);
+      outline: none;
+    }
+    .signup-button, .signup-action-button {
+      width: 100%;
+      background: #f7a12d;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+    .signup-button:hover, .signup-action-button:hover {
+      background: #e68c12;
+    }
+    .signup-link {
+      margin-top: 10px;
+      text-align: center;
+      color: #305c3b;
+      font-size: 1rem;
+    }
+    .signup-checkbox-label {
+      margin: 8px 0;
+      display: flex;
+      align-items: center;
+      font-size: 0.96rem;
+      color: #305c3b;
+    }
+    .signup-checkbox-label input[type="checkbox"] {
+      margin-right: 8px;
+    }
+  </style>
+
+  <div class="signup-container">
+    <div class="nf-logo">
+      <img class="nf-logo-icon" src="../img/logomarca.png" alt="LogoCamaleoa" />
+      <div class="nf-title">Camaleoa Esmalteria</div>
+    </div>
+    <div class="nf-subtitle">Cadastro</div>
+    <input type="text" class="signup-input" placeholder="Nome" ng-model="signup.nome" />
+    <input type="text" class="signup-input" placeholder="CPF" ng-model="signup.cpf" />
+    <input type="text" class="signup-input" placeholder="Telefone" ng-model="signup.telefone" />
+    <input type="email" class="signup-input" placeholder="E-mail" ng-model="signup.email" />
+    <input type="password" class="signup-input" placeholder="Senha" ng-model="signup.senha" />
+    <label class="signup-checkbox-label">
+      <input type="checkbox" ng-model="signup.aceitoTermos" />
+      Aceito os termos de uso
+    </label>
+    <button class="signup-action-button" ng-click="cadastrar()">Cadastrar</button>
+    <div class="signup-link">
+      Já tem uma conta?<br />
+      <button class="signup-button" ng-click="goToLogin()">Voltar ao Login</button>
+    </div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/signupController.js"></script>

@@ -1,0 +1,38 @@
+<div class="login-container" ng-controller="LoginController">
+  <div class="nf-logo">
+    <svg class="nf-logo-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="32" cy="32" r="30" stroke="#305c3b" stroke-width="4" fill="none"/>
+      <path d="M32 44V28M32 44C38 41 44 34 44 28C44 21 38 18 32 18C26 18 20 21 20 28C20 34 26 41 32 44Z" stroke="#305c3b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div class="nf-title">Natural Food<br>Retailers</div>
+  </div>
+  <div class="nf-subtitle">Login</div>
+  <input type="text" class="login-input" placeholder="Email Address" ng-model="auth.username" />
+  <input type="password" class="login-input" placeholder="Password" ng-model="auth.password" />
+  <button class="login-button" ng-click="login()">Log In</button>
+  <button class="signup-button" ng-click="openSignupModal()">Cadastrar Novo Usuário</button>
+
+  <link rel="stylesheet" href="../css/signup-modal.css">
+  <!-- Modal de Cadastro -->
+  <div class="modal-backdrop" ng-show="signupModalOpen" ng-click="closeSignupModal()"></div>
+  <div class="signup-modal" ng-show="signupModalOpen">
+    <div class="signup-container" ng-click="$event.stopPropagation()">
+      <div class="nf-subtitle">Cadastro</div>
+      <input type="text" class="signup-input" placeholder="Nome" ng-model="signup.nome" />
+      <input type="text" class="signup-input" placeholder="CPF" ng-model="signup.cpf" />
+      <input type="text" class="signup-input" placeholder="Telefone" ng-model="signup.telefone" />
+      <input type="email" class="signup-input" placeholder="E-mail" ng-model="signup.email" />
+      <input type="password" class="signup-input" placeholder="Senha" ng-model="signup.senha" />
+      <label class="signup-checkbox-label">
+        <input type="checkbox" ng-model="signup.aceitoTermos" />
+        Aceito os termos de uso
+      </label>
+      <button class="signup-action-button" ng-click="cadastrar()">Cadastrar</button>
+      <button class="signup-action-button" type="button" ng-click="closeSignupModal()">Cancelar</button>
+      <div class="signup-error" ng-show="signupError">{{signupError}}</div>
+      <div class="signup-success" ng-show="signupSuccess">{{signupSuccess}}</div>
+    </div>
+  </div>
+  <div class="forgot-link" ng-click="goToForgotPassword()">Forgot Password?</div>
+  <div class="login-error" ng-if="loginError">{{loginError}}</div>
+</div>

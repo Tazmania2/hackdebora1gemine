@@ -1,0 +1,49 @@
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Perfil do Jogador</title>
+<link rel="stylesheet" href="../css/style.css" />
+<link rel="stylesheet" href="../css/dashboard.css" />
+<link rel="stylesheet" href="../css/navbar.css" />
+
+<div class="dashboard-topbar">
+  <button class="dashboard-back" ng-click="goToHome()">&larr;</button>
+  <span class="dashboard-title">Perfil do Jogador</span>
+</div>
+<div class="dashboard-card">
+  <div class="dashboard-avatar-wrapper">
+    <img class="dashboard-avatar" ng-if="player.avatarUrl" ng-src="{{player.avatarUrl}}" alt="Avatar" />
+    <img class="dashboard-avatar" ng-if="!player.avatarUrl" src="../img/avatar-default.png" alt="Avatar" />
+  </div>
+  <div class="dashboard-player-name">{{player.nome}}</div>
+  <div class="dashboard-player-desc">{{player.titulo}}</div>
+  <div class="dashboard-progress-labels">
+    <span class="dashboard-level">Nível {{player.nivel}}</span>
+    <span class="dashboard-xp">{{player.xpAtual}} / {{player.xpMax}} XP</span>
+      <img class="dashboard-avatar" ng-if="player.avatarUrl" ng-src="{{player.avatarUrl}}" alt="Avatar" />
+      <img class="dashboard-avatar" ng-if="!player.avatarUrl" src="../img/avatar-default.png" alt="Avatar" />
+    </div>
+    <div class="dashboard-player-name">{{player.nome}}</div>
+    <div class="dashboard-player-desc">{{player.titulo}}</div>
+    <div class="dashboard-progress-labels">
+      <span class="dashboard-level">Nível {{player.nivel}}</span>
+      <span class="dashboard-xp">{{player.xpAtual}} / {{player.xpMax}} XP</span>
+    </div>
+    <div class="dashboard-progress-bg">
+      <div class="dashboard-progress-fg" ng-style="{'width': player.xpPercent + '%'}"></div>
+    </div>
+    <div class="dashboard-section-title">Conquistas</div>
+    <div class="dashboard-achievements">
+      <div class="achievement" ng-repeat="c in conquistas">
+        <img ng-src="{{c.icone}}" alt="{{c.nome}}" />
+        <div class="achievement-label">{{c.nome}}</div>
+      </div>
+    </div>
+    <div class="dashboard-section-title">Estatísticas Pessoais</div>
+    <div class="dashboard-stats">
+      <div class="stat-row" ng-repeat="s in estatisticas">
+        <img class="stat-icon" ng-src="{{s.icone}}" alt="{{s.label}}" />
+        <span class="stat-label">{{s.label}}</span>
+        <span class="stat-value">{{s.valor}}</span>
+      </div>
+    </div>
+  </div>

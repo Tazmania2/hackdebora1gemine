@@ -1,0 +1,150 @@
+body.rewards-page {
+  background: linear-gradient(160deg, #ff4f94 0%, #ff94e1 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Poppins', Arial, sans-serif;
+}
+.rewards-container {
+  width: 340px;
+  margin: 28px auto 0 auto;
+  padding-bottom: 28px;
+}
+.rewards-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 28px;
+  margin-top: 18px;
+}
+.rewards-back {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2.1rem;
+  margin-right: 18px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.rewards-title {
+  color: #fff;
+  font-size: 1.35rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-align: left;
+  flex: 1;
+}
+.rewards-balance-card {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background: #ff7ecb;
+  border-radius: 18px;
+  padding: 16px 24px;
+  margin: 18px 0 28px 0;
+  box-shadow: 0 4px 18px #ff94e1a0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+.rewards-balance-card .balance-value {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #fff;
+  margin-left: 8px;
+}
+.rewards-balance-card img {
+  width: 36px;
+  height: 36px;
+}
+.reward-list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.reward-card {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px #ff94e140;
+  padding: 20px 22px;
+  min-height: 120px;
+  position: relative;
+}
+.reward-icon {
+  width: 68px;
+  height: 68px;
+  object-fit: contain;
+  margin-right: 18px;
+}
+.reward-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+.reward-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #e052a0;
+  margin-bottom: 2px;
+}
+.reward-points {
+  font-size: 1rem;
+  color: #ff4f94;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.reward-desc {
+  font-size: 0.95rem;
+  color: #a35e8e;
+  margin-bottom: 0;
+}
+.reward-action {
+  margin-left: 20px;
+}
+.reward-buy-btn {
+  background: linear-gradient(90deg, #ff4f94 0%, #ff94e1 100%);
+  border: none;
+  border-radius: 16px;
+  color: #fff;
+  font-weight: bold;
+  padding: 10px 22px;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px #ff94e140;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.reward-buy-btn:hover {
+  background: linear-gradient(90deg, #ff94e1 0%, #ff4f94 100%);
+}
+.rewards-footer {
+  color: #fff;
+  font-size: 1.02rem;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 18px;
+  letter-spacing: 0.5px;
+}
+@media (max-width: 600px) {
+  .rewards-container {
+    width: 98vw;
+    min-width: 0;
+    padding: 0 2vw;
+  }
+  .reward-card {
+    padding: 10px 4px;
+  }
+  .reward-card .reward-icon {
+    width: 36px;
+    height: 36px;
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+  .rewards-balance-card img {
+    width: 24px;
+    height: 24px;
+  }
+}

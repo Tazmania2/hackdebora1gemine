@@ -1,0 +1,49 @@
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Leaderboard</title>
+<link rel="stylesheet" href="../css/style.css" />
+<link rel="stylesheet" href="../css/leaderboard.css" />
+<link rel="stylesheet" href="../css/navbar.css" />
+
+<div class="leaderboard-container homepage-container">
+  <div class="leaderboard-header homepage-logo">
+  <button class="leaderboard-back" onclick="window.history.back()">&#8592;</button>
+  <div class="leaderboard-title nf-title"> Ranking</div>
+  <button class="leaderboard-next" style="visibility:hidden">&#8594;</button>
+</div>
+<div class="leaderboard-actions" style="display:flex;gap:12px;justify-content:center;margin-bottom:24px;">
+  <button ng-click="showRanking('personal')" ng-class="{'active': currentRanking==='personal'}" class="ranking-btn ranking-personal">Ranking Pessoal</button>
+  <button ng-click="showRanking('team')" ng-class="{'active': currentRanking==='team'}" class="ranking-btn ranking-team">Ranking de Equipe</button>
+  <button ng-click="toggleSort()" class="sort-btn">Ordenar {{sortOrder === 'desc' ? '↓' : '↑'}}</button>
+</div>
+<div ng-if="loading" style="text-align:center;margin:18px;">Carregando...</div>
+<div ng-if="error" style="color:#e74c3c;text-align:center;margin:18px;">{{error}}</div>
+<ul class="leader-list" ng-if="!loading && leaderboard.length">
+  <li class="leader-card" ng-class="{'top-1': $index==0, 'top-2': $index==1, 'top-3': $index==2}" ng-repeat="player in leaderboard">
+  <span class="leader-position">
+    <span ng-if="$index==0">🥇</span>
+    <span ng-if="$index==1">🥈</span>
+    <span ng-if="$index==2">🥉</span>
+    {{$index+1}}
+  </span>
+    <span class="leader-position">{{$index+1}}</span>
+    <img ng-src="{{player.image}}" alt="{{player.name}}" class="leader-avatar" />
+    <div class="leader-info">
+      <div class="leader-name">{{player.name}}</div>
+    </div>
+    <span class="leader-score">{{player.total | number:0}} Pontos</span>
+  </li>
+</ul>
+<div ng-if="!loading && leaderboard.length===0 && !error" style="text-align:center;">Nenhum dado encontrado.</div>
+  <bottom-nav></bottom-nav>
+<script src="js/bottomNav.component.js"></script>
+<!-- AngularJS core and modules -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-sanitize.js"></script>
+<!-- App principal e componentes globais -->
+<script src="../js/app.js"></script>
+<script src="../js/navController.js"></script>
+<script src="../js/leaderboardController.js"></script>
+<!-- Outros scripts necessários -->
+<script src="https://www.youtube.com/iframe_api"></script>

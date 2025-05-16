@@ -1,0 +1,31 @@
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quiz - Pesquisas Abertas</title>
+<link rel="stylesheet" href="../css/style.css" />
+<link rel="stylesheet" href="../css/quiz.css" />
+<link rel="stylesheet" href="../css/navbar.css" />
+
+<div class="quiz-container">
+  <h1 class="quiz-title">Pesquisas Abertas</h1>
+  <div ng-if="loading" class="quiz-loading">Carregando...</div>
+  <div ng-if="!loading && quizzes.length === 0" class="quiz-empty">Nenhum quiz disponível.</div>
+  <div ng-if="!loading && quizzes.length > 0">
+    <div class="quiz-card" ng-repeat="quiz in quizzes">
+      <div class="quiz-question">{{quiz.question}}</div>
+      <div class="quiz-choices">
+        <label class="quiz-choice" ng-repeat="choice in quiz.choices">
+          <input type="radio" name="quiz_{{quiz._id}}" ng-model="$parent.selected[quiz._id]" ng-value="choice.answer">
+          {{choice.label}}
+        </label>
+        <div class="quiz-question">{{quiz.question}}</div>
+        <div class="quiz-choices">
+          <label class="quiz-choice" ng-repeat="choice in quiz.choices">
+            <input type="radio" name="quiz_{{quiz._id}}" ng-model="$parent.selected[quiz._id]" ng-value="choice.answer">
+            {{choice.label}}
+          </label>
+        </div>
+        <button class="quiz-submit" ng-click="submitAnswer(quiz, $parent.selected[quiz._id])" ng-disabled="!$parent.selected[quiz._id]">Responder</button>
+        <div class="quiz-feedback" ng-if="quiz.feedback">{{quiz.feedback}}</div>
+      </div>
+    </div>
+  </div>

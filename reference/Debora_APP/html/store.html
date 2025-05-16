@@ -1,0 +1,69 @@
+<div ng-controller="StoreController">
+  <link rel="stylesheet" href="../css/store.css" />
+  <link rel="stylesheet" href="../css/navbar.css" />
+  <div class="rewards-container">
+    <!-- <div class="rewards-header">
+      <button class="rewards-back" onclick="window.history.back()">&#8592;</button>
+      <div class="rewards-title">RECOMPENSsadasdasdAS</div>
+    </div> -->
+    <div class="rewards-balance-card">
+      <!-- <img src="https://img.icons8.com/?size=100&id=119049&format=png&color=000000" alt="Moedas" style="width:50px;height:50px;vertical-align:middle;margin-right:8px;" /> -->
+      <div>
+        <span class="balance-value"> {{ status.point_categories.coins }} </span>
+        <span>Moedas / </span>
+      </div>
+      <!-- <img src="../img/icon-xp.png" alt="XP" style="width:32px;height:32px;vertical-align:middle;margin-left:24px;margin-right:8px;" /> -->
+      <div>
+        <span class="xp-value">{{ status.point_categories.point }}</span>
+        <span>Pontos</span>
+      </div>
+    </div>
+    <div class="store-items">
+      <div ng-if="loading">Carregando itens da loja...</div>
+      <div ng-if="error" class="store-error">{{error}}</div>
+      <div ng-if="!loading && !error && items.length === 0">Nenhum item disponível no momento.</div>
+      <div class="store-item-card" ng-repeat="item in items"
+        ng-class="{'can-redeem': canRedeem(item, status), 'cannot-redeem': !canRedeem(item, status)}">
+        <div class="store-item-card-inner">
+          <img class="store-item-thumb" ng-if="item.image && item.image.small && item.image.small.url" ng-src="{{item.image.small.url}}" alt="{{item.name}}" />
+          <h3 class="store-item-title">{{item.name}}</h3>
+          <p class="store-item-description">{{item.description}}</p>
+          <div class="store-item-requirement">
+            <span ng-if="item.requires && item.requires.length > 0">
+              <span class="require-label">Requer:</span>
+              <span ng-repeat="req in item.requires">
+                <span class="require-value">{{req.total}} {{req.item === 'coins' ? 'Moedas' : 'XP'}}</span>
+                <span ng-if="!$last"> + </span>
+              </span>
+            </span>
+            <span ng-if="!item.requires || item.requires.length === 0">Sem requisitos</span>
+          </div>
+          <div class="store-item-available" ng-if="item.amount !== undefined && item.amount !== null">
+            Disponíveis na loja: {{item.amount}}
+          </div>
+          <div class="store-item-owned" ng-if="item.owned && item.owned > 0">Você já possui: {{item.owned}}</div>
+          <button class="store-item-btn" ng-disabled="!canRedeem(item, status) || rescueLoading === item._id"
+            ng-click="redeemItem(item)">
+            <span ng-if="rescueLoading === item._id">Resgatando...</span>
+            <span ng-if="rescueLoading !== item._id">Resgatar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="rewards-footer">Recompensas Resgatadas</div>
+    <!-- Histórico de compras pode ser adicionado aqui futuramente -->
+  </div>
+  <bottom-nav></bottom-nav>
+  <script src="js/bottomNav.component.js"></script>
+  <!-- AngularJS core and modules -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-sanitize.js"></script>
+  <!-- App principal e componentes globais -->
+  <script src="../js/app.js"></script>
+  <script src="../js/navController.js"></script>
+  <script src="../js/homepageController.js"></script>
+  <script src="../js/storeController.js"
+  <!-- Outros scripts necessários -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+</div>

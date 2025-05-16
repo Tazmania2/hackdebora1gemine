@@ -25,9 +25,10 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
 
         // Criar o payload do jogador no formato correto
         var playerData = {
-            _id: vm.user.email,
+            _id: vm.user.email.split('@')[0], // Usando email como ID
             name: vm.user.name,
             email: vm.user.email,
+            password: vm.user.password, // Incluindo a senha no payload
             image: {
                 small: { url: "https://my.funifier.com/images/funny.png" },
                 medium: { url: "https://my.funifier.com/images/funny.png" },
@@ -46,12 +47,12 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
             }
         };
 
-        // Fazer a requisição com Basic Auth
+        // Fazer a requisição com o token de autenticação
         $http({
             method: 'POST',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player',
             headers: {
-                'Authorization': AuthService.getBasicAuthToken(),
+                'Authorization': 'Basic ' + btoa(FUNIFIER_API_CONFIG.apiKey + ':' + FUNIFIER_API_CONFIG.appSecret),
                 'Content-Type': 'application/json'
             },
             data: playerData

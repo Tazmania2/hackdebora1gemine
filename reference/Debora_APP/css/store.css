@@ -1,0 +1,153 @@
+/* Loja de Recompensas - Cards Modernos */
+.store-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  justify-content: center;
+  margin: 32px 0;
+}
+
+.store-item-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 1.5px 6px rgba(0,0,0,0.03);
+  padding: 24px 20px 18px 20px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: box-shadow 0.2s;
+  border: 1.5px solid #e0e0e0;
+}
+.store-item-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.13), 0 2px 8px rgba(0,0,0,0.06);
+  border-color: #b8e994;
+}
+
+.store-item-card-inner {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.store-item-thumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  background: #f5f5f5;
+  display: block;
+}
+
+.store-item-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #1d643b;
+}
+.store-item-description {
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 12px;
+}
+.store-item-requirement {
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+.require-label {
+  font-weight: 500;
+  color: #1d643b;
+}
+.require-value {
+  color: #1d643b;
+  font-weight: 500;
+}
+.store-item-owned {
+  font-size: 0.95rem;
+  color: #2ecc71;
+  margin-bottom: 10px;
+}
+.store-item-btn {
+  background-color: #6fcf97; /* Verde padrão */
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background 0.2s, color 0.2s;
+}
+
+.store-item-btn[disabled], .store-item-btn:disabled, .cannot-redeem .store-item-btn {
+  background-color: #bdbdbd !important; /* Cinza para desabilitado */
+  color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.can-redeem .store-item-btn {
+  background-color: #27ae60 !important; /* Verde mais forte para habilitado */
+  color: #fff;
+  cursor: pointer;
+}
+
+/* --- Cores para resgate possível/impossível --- */
+.store-item-card.can-redeem {
+  background: linear-gradient(135deg, #e0ffe7 0%, #b8e994 100%);
+  border-color: #5edb8a;
+  box-shadow: 0 6px 24px rgba(94,219,138,0.14), 0 2px 8px rgba(94,219,138,0.08);
+  filter: none;
+}
+.store-item-card.cannot-redeem {
+  background: #f5f5f5;
+  border-color: #cccccc;
+  color: #aaa;
+  filter: grayscale(0.4) brightness(0.96);
+}
+.store-item-card.cannot-redeem .store-item-title,
+.store-item-card.cannot-redeem .store-item-description,
+.store-item-card.cannot-redeem .require-label,
+.store-item-card.cannot-redeem .require-value {
+  color: #aaa !important;
+}
+.store-item-card.can-redeem .store-item-title {
+  color: #1d643b;
+}
+
+/* Saldo de moedas e XP no topo */
+.rewards-balance-card {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  padding: 12px 24px;
+  margin: 18px auto 0 auto;
+  width: fit-content;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+.balance-value {
+  color: #f6b700;
+  font-size: 1.3em;
+  margin-right: 8px;
+}
+.xp-value {
+  color: #1e90ff;
+  font-size: 1.3em;
+  margin-left: 8px;
+}
+
+/* Responsivo */
+@media (max-width: 750px) {
+  .store-item-card {
+    width: 98vw;
+    min-width: 0;
+    padding: 18px 8px 14px 8px;
+  }
+  .store-items {
+    gap: 16px;
+  }
+}

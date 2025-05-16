@@ -1,0 +1,61 @@
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Desafios</title>
+<link rel="stylesheet" href="../css/style.css" />
+<link rel="stylesheet" href="../css/challenges.css" />
+<link rel="stylesheet" href="../css/navbar.css" />
+
+<div class="challenges-container">
+  <div class="challenges-header">
+    <button class="challenges-back" onclick="window.history.back()">&#8592;</button>
+    <div class="challenges-title">DESAFIOS</div>
+  </div>
+  <div class="challenges-grid">
+    <div ng-if="loading">Carregando desafios...</div>
+    <div ng-if="error" class="challenge-error">{{error}}</div>
+    <div ng-if="!loading && !error && challenges.length === 0">Nenhum desafio disponível no momento.</div>
+    <div class="challenge-card" ng-repeat="challenge in challenges" ng-class="{'challenge-completed': challenge.completed, 'challenge-uncompleted': !challenge.completed}">
+      <img class="challenge-icon" ng-src="{{ challenge.icon }}" alt="{{ challenge.name }}" />
+      <div class="challenge-title">{{ challenge.name }}</div>
+      <div class="challenge-desc">
+        <span ng-if="!challenge.expanded">
+          {{ challenge.description | limitTo:200 }}<span ng-if="challenge.description.length > 200">...</span>
+          <button class="expand-desc-btn" ng-if="challenge.description.length > 200" ng-click="challenge.expanded = true">&#9660;</button>
+        </span>
+        <span ng-if="challenge.expanded">
+          {{ challenge.description }}
+          <button class="expand-desc-btn" ng-click="challenge.expanded = false">&#9650;</button>
+        </span>
+      </div>
+      <div class="challenge-rewards" ng-if="challenge.reward && (challenge.reward.points || challenge.reward.coins || challenge.reward.xp)">
+        <span ng-if="challenge.reward.points">🏅 {{ challenge.reward.points }} pontos</span>
+        <span ng-if="challenge.reward.coins">🪙 {{ challenge.reward.coins }} moedas</span>
+        <span ng-if="challenge.reward.xp">⭐ {{ challenge.reward.xp }} XP</span>
+      </div>
+      <div class="challenge-points">{{ challenge.rewardPoints }} PONTOS</div>
+      <div class="challenge-completion">
+        <span ng-if="challenge.completed" class="challenge-check completed">&#10003;</span>
+        <span ng-if="!challenge.completed" class="challenge-check uncompleted">&#10003;</span>
+        <span class="challenge-completion-count">{{ challenge.completionCount }}x concluído</span>
+          <span ng-if="challenge.expanded">
+            {{ challenge.description }}
+            <button class="expand-desc-btn" ng-click="challenge.expanded = false">&#9650;</button>
+          </span>
+        </div>
+        <div class="challenge-rewards" ng-if="challenge.reward && (challenge.reward.points || challenge.reward.coins || challenge.reward.xp)">
+          <span ng-if="challenge.reward.points">🏅 {{ challenge.reward.points }} pontos</span>
+          <span ng-if="challenge.reward.coins">🪙 {{ challenge.reward.coins }} moedas</span>
+          <span ng-if="challenge.reward.xp">⭐ {{ challenge.reward.xp }} XP</span>
+        </div>
+        <div class="challenge-points">{{ challenge.rewardPoints }} PONTOS</div>
+        <div class="challenge-completion">
+          <span ng-if="challenge.completed" class="challenge-check completed">&#10003;</span>
+          <span ng-if="!challenge.completed" class="challenge-check uncompleted">&#10003;</span>
+          <span class="challenge-completion-count">{{ challenge.completionCount }}x concluído</span>
+        </div>
+      </div>
+    </div>
+    <!-- <button ng-click="logout()">Sair</button> -->
+  </div>
+
+  

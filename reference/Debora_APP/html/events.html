@@ -1,0 +1,41 @@
+<div id="navbar"></div>
+<bottom-nav></bottom-nav>
+<main>
+        <h1 class="page-title">Eventos</h1>
+        <div id="events-list" class="card-list">
+          <div ng-if="loading">Carregando...</div>
+          <div ng-if="!loading && events.length === 0">Nenhum evento encontrado.</div>
+          <div class="card event-card" ng-repeat="event in events">
+            <img ng-src="{{event.image}}" alt="Imagem do Evento" class="event-img" />
+            <div class="card-content">
+              <h2 class="event-title">{{event.name}}</h2>
+              <p class="event-date">{{formatDate(event.start_date)}} - {{formatDate(event.end_date)}}</p>
+              <button class="event-detail-btn" ng-click="logAndShowEventDetails(event)">Detalhes</button>
+            </div>
+          </div>
+        </div>
+    </main>
+    <!-- Modal de detalhes do evento -->
+    <div id="event-modal" class="modal" ng-show="modalOpen" ng-click="closeModal()" style="z-index:9999; background:rgba(0,0,0,0.7);">
+      <div class="modal-content" ng-click="$event.stopPropagation()">
+        <button id="close-modal" ng-click="closeModal()">&times;</button>
+        <div ng-if="modalLoading">Carregando...</div>
+        <div ng-if="!modalLoading && selectedEvent">
+          <img ng-src="{{selectedEvent.image}}" alt="Imagem do Evento" class="event-img" />
+          <h2>{{selectedEvent.name}}</h2>
+          <div class="event-detail-html" ng-bind-html="selectedEvent.detail"></div>
+          <p><b>Data:</b> {{formatDate(selectedEvent.start_date)}} - {{formatDate(selectedEvent.end_date)}}</p>
+          <p><b>Local:</b> 
+            <span ng-if="selectedEvent.address">
+              {{selectedEvent.address.name}}, {{selectedEvent.address.address}}, {{selectedEvent.address.address_num}}, {{selectedEvent.address.city}} - {{selectedEvent.address.state}}
+            </span>
+            <span ng-if="!selectedEvent.address">Não informado</span>
+          </p>
+          <p><b>Organizador:</b> 
+            <span ng-if="selectedEvent.host && selectedEvent.host.name">{{selectedEvent.host.name}}</span>
+            <span ng-if="!selectedEvent.host || !selectedEvent.host.name">Não informado</span>
+          </p>
+          <a ng-href="{{selectedEvent.url}}" target="_blank" class="event-link">Ver no Sympla</a>
+        </div>
+      </div>
+    </div>

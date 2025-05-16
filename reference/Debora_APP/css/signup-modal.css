@@ -1,0 +1,99 @@
+/* Estilos do modal de cadastro de usuário */
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 1000;
+  transition: background 0.3s;
+}
+.signup-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+.signup-container {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px 0 rgba(48,92,59,0.18), 0 1.5px 8px 0 rgba(48,92,59,0.10);
+  padding: 32px 28px 24px 28px;
+  min-width: 320px;
+  max-width: 30vw;
+  width: 90%;
+  max-height: 95vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: popupFadeIn 0.2s;
+}
+@keyframes popupFadeIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.signup-input {
+  width: 90%;
+  padding: 10px 14px;
+  margin: 7px 0;
+  border: 1.5px solid #eaeaea;
+  border-radius: 12px;
+  background: #f8faf7;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s;
+}
+.signup-input:focus {
+  border: 1.5px solid #305c3b;
+  background: #fff;
+}
+.signup-action-button {
+  width: 90%;
+  margin-top: 13px;
+  padding: 11px 0;
+  border: none;
+  border-radius: 12px;
+  background: #ffb347;
+  color: #305c3b;
+  font-weight: bold;
+  font-size: 1.08rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-shadow: 0 2px 8px 0 rgba(48,92,59,0.07);
+}
+.signup-action-button:hover {
+  background: #e68c12;
+  color: #fff;
+}
+.signup-checkbox-label {
+  margin: 10px 0 0 0;
+  display: flex;
+  align-items: center;
+  font-size: 0.98rem;
+  color: #305c3b;
+  width: 100%;
+  justify-content: flex-start;
+}
+.signup-checkbox-label input[type="checkbox"] {
+  margin-right: 8px;
+}
+.signup-error {
+  color: #c0392b;
+  margin-top: 8px;
+  font-size: 0.97rem;
+  text-align: center;
+}
+.signup-success {
+  color: #305c3b;
+  margin-top: 8px;
+  font-size: 0.97rem;
+  text-align: center;
+}
+.nf-subtitle {
+  font-size: 1.25rem;
+  color: #305c3b;
+  margin-bottom: 14px;
+  font-weight: bold;
+  text-align: center;
+}

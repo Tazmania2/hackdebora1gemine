@@ -1,0 +1,55 @@
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Natural Food - Início</title>
+<link rel="stylesheet" href="../css/style.css" />
+<link rel="stylesheet" href="../css/homepage.css" />
+<link rel="stylesheet" href="../css/navbar.css" />
+
+<div class="nf-logo"><img style="width: 150px; height: 50px; position: absolute; top: 10px; left: 10px;" src="../img/infraLogo.png" alt="Natural Food Retailers" /></div>
+<div class="homepage-container">
+  <div class="homepage-logo">
+    <img ng-if="player.image" ng-src="{{ player.image.original.url }}" alt="Foto do Jogador" class="homepage-avatar" style="width:150px;height:150px;border-radius:50%;object-fit:cover;margin-bottom:10px;box-shadow: 5px 5px 10px rgba(44, 43, 43, 0.1); " />
+    <div class="homepage-section-title">Menu rápido:</div>
+    <div class="homepage-missions">
+      <div class="mission-card" ng-click="goToEventos()">
+        <img src="https://img.icons8.com/?size=100&id=118943&format=png&color=000000" alt="Eventos" />
+        <div>Eventos disponíveis</div>
+      </div>
+      <div class="mission-card" ng-click="goToQuiz()">
+        <img src="https://img.icons8.com/?size=100&id=119005&format=png&color=000000" alt="Pesquisas" />
+        <div>Pesquisas abertas</div>
+      </div>
+      <div class="mission-card" ng-click="goToCourses()">
+        <img src="https://img.icons8.com/?size=100&id=121211&format=png&color=000000" alt="Cursos" />
+        <div>Cursos recomendados</div>
+      </div>
+      <div class="mission-card" ng-click="goToComunidade()">
+        <img src="https://img.icons8.com/?size=100&id=i8lxKmYKBHFT&format=png&color=000000" alt="Comunidade" />
+        <div>Ações na comunidade</div>
+      </div>
+    </div>
+    <div class="homepage-nivel"> Você está no Nível:   <span>{{status.level.level}}</span></div>
+    <div class="homepage-progress-bar-bg">
+      <div class="homepage-progress-bar-fg" ng-style="{'width': status.level_progress.percent_completed+ '%'}"></div>
+    </div>
+    <div class="homepage-xp">{{status.point_categories.point}} Pontos de XP  /  {{status.level_progress.percent_completed}} % </div>
+    <div class="homepage-coins"> Você tem: {{status.point_categories.coins}} Moedas no bolso </div>
+    
+    <button class="homepage-shop-btn" ng-click="goToStore()">
+      <img src="../img/carrinho.png" alt="Loja" />
+      Loja
+    </button>
+  </div>
+</div>
+<bottom-nav></bottom-nav>
+<script src="js/bottomNav.component.js"></script>
+<!-- AngularJS core and modules -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-sanitize.js"></script>
+<!-- App principal e componentes globais -->
+<script src="../js/app.js"></script>
+<script src="../js/navController.js"></script>
+<script src="../js/homepageController.js"></script>
+<!-- Outros scripts necessários -->
+<script src="https://www.youtube.com/iframe_api"></script>

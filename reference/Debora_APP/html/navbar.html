@@ -1,0 +1,42 @@
+<nav class="homepage-bottom-nav" ng-controller="NavController">
+  <button ng-click="goToEventos()" ng-class="{'active': isActive('/eventos')}">
+    <img src="https://img.icons8.com/?size=100&id=118943&format=png&color=000000" alt="Eventos" />
+    <span>Eventos</span>
+  </button>
+  <button ng-click="goToPesquisas()" ng-class="{'active': isActive('/pesquisas')}">
+    <img src="https://img.icons8.com/?size=100&id=119709&format=png&color=000000" alt="Pesquisas" />
+    <span>Pesquisas</span>
+  </button>
+  <button ng-click="goToHome()" ng-class="{'active': isActive('/home')}">
+    <img src="https://img.icons8.com/?size=100&id=118969&format=png&color=000000" alt="Início" />
+    <span>Início</span>
+  </button>
+  <button ng-click="goToCursos()" ng-class="{'active': isActive('/cursos')}">
+    <img src="https://img.icons8.com/?size=100&id=121211&format=png&color=000000" alt="Cursos" />
+    <span>Cursos</span>
+  </button>
+  <button ng-click="goToComunidade()" ng-class="{'active': isActive('/comunidade')}">
+    <img src="https://img.icons8.com/?size=100&id=i8lxKmYKBHFT&format=png&color=000000" alt="Comunidade" />
+    <span>Comunidade</span>
+  </button>
+  <button ng-click="goToDashboard()" ng-class="{'active': isActive('/dashboard')}">
+    <img src="https://img.icons8.com/?size=100&id=FiwH5zzc0ZrP&format=png&color=000000" alt="Dashboard" />
+    <span>Dashboard</span>
+  </button>
+  <button ng-click="goToDesafios()" ng-class="{'active': isActive('/challenges')}">
+    <img src="https://img.icons8.com/?size=100&id=119287&format=png&color=000000" alt="Desafios" />
+    <span>Desafios</span>
+  </button>
+  <button ng-click="goToStore()" ng-class="{'active': isActive('/store')}">
+    <img src="https://img.icons8.com/?size=100&id=119194&format=png&color=000000" alt="Loja" />
+    <span>Loja</span>
+  </button>
+  <button ng-click="goToLeaderboard()" ng-class="{'active': isActive('/leaderboard')}">
+    <img src="https://img.icons8.com/?size=100&id=vvkJN80xOlbP&format=png&color=000000" alt="Leaderboard" />
+    <span>Leaderboard</span>
+  </button>
+  <button ng-click="goToLogout()" ng-class="{'active': isActive('/logout')}">
+    <img src="https://img.icons8.com/?size=100&id=119068&format=png&color=000000" alt="Logout" />
+    <span>Sair</span>
+  </button>
+</nav>

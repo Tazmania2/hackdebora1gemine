@@ -1,0 +1,197 @@
+<meta charset="UTF-8">
+<title>YouTube + Funifier Integration</title>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+<script src="https://www.youtube.com/iframe_api"></script>
+<link rel="stylesheet" href="../css/navbar.css" />
+
+<h1>Vídeos da Playlist</h1>
+
+<div ng-repeat="video in videos">
+  <h3>{{ video.snippet.title }}</h3>
+  <iframe id="ytplayer{{$index}}"
+          width="560" height="315"
+          ng-src="{{ getVideoUrl(video.snippet.resourceId.videoId) }}"
+          frameborder="0"
+          allow="autoplay; encrypted-media"
+          allowfullscreen>
+  </iframe>
+</div>
+
+<nav class="homepage-bottom-nav" ng-controller="NavController">
+  <button ng-click="goToEventos()">
+    <img src="https://img.icons8.com/?size=100&id=118943&format=png&color=000000" alt="Eventos" />
+    <span>Eventos</span>
+  </button>
+  <button ng-click="goToPesquisas()">
+    <img src="https://img.icons8.com/?size=100&id=119709&format=png&color=000000" alt="Pesquisas" />
+    <span>Pesquisas</span>
+  </button>
+  <button ng-click="goToHome()">
+    <img src="https://img.icons8.com/?size=100&id=118969&format=png&color=000000" alt="Início" />
+    <span>Início</span>
+  </button>
+  <button ng-click="goToCursos()">
+    <img src="https://img.icons8.com/?size=100&id=121211&format=png&color=000000" alt="Cursos" />
+    <span>Cursos</span>
+  </button>
+  <button ng-click="goToComunidade()">
+    <img src="https://img.icons8.com/?size=100&id=i8lxKmYKBHFT&format=png&color=000000" alt="Comunidade" />
+    <span>Comunidade</span>
+  </button>
+  <button ng-click="goToDashboard()">
+    <img src="https://img.icons8.com/?size=100&id=FiwH5zzc0ZrP&format=png&color=000000" alt="Dashboard" />
+    <span>Dashboard</span>
+  </button>
+  <button ng-click="goToDesafios()">
+    <img src="https://img.icons8.com/?size=100&id=119287&format=png&color=000000" alt="Desafios" />
+    <span>Desafios</span>
+  </button>
+  <button ng-click="goToStore()">
+    <img src="https://img.icons8.com/?size=100&id=119194&format=png&color=000000" alt="Loja" />
+    <span>Loja</span>
+  </button>
+  <button ng-click="goToLogout()">
+    <img src="https://img.icons8.com/?size=100&id=119068&format=png&color=000000" alt="Logout" />
+    <span>Sair</span>
+  </button>
+</nav>
+
+<script>
+  const app = angular.module('youtubeApp', []);
+            width="560" height="315"
+            ng-src="{{ getVideoUrl(video.snippet.resourceId.videoId) }}"
+            frameborder="0"
+            allow="autoplay; encrypted-media"
+            allowfullscreen>
+    </iframe>
+  </div>
+
+  <nav class="homepage-bottom-nav" ng-controller="NavController">
+    <button ng-click="goToEventos()">
+      <img src="../img/icon-eventos.png" alt="Eventos" />
+      <span>Eventos</span>
+    </button>
+    <button ng-click="goToPesquisas()">
+      <img src="../img/icon-quiz.png" alt="Pesquisas" />
+      <span>Pesquisas</span>
+    </button>
+    <button ng-click="goToHome()">
+      <img src="../img/icon-home.png" alt="Início" />
+      <span>Início</span>
+    </button>
+    <button ng-click="goToCursos()">
+      <img src="../img/icon-cursos.png" alt="Cursos" />
+      <span>Cursos</span>
+    </button>
+    <button ng-click="goToComunidade()">
+      <img src="../img/icon-comunidade.png" alt="Comunidade" />
+      <span>Comunidade</span>
+    </button>
+    <button ng-click="goToDashboard()">
+      <img src="../img/icon-dashboard.png" alt="Dashboard" />
+      <span>Dashboard</span>
+    </button>
+    <button ng-click="goToDesafios()">
+      <img src="../img/icon-desafios.png" alt="Desafios" />
+      <span>Desafios</span>
+    </button>
+    <button ng-click="goToStore()">
+      <img src="../img/carrinho.png" alt="Loja" />
+      <span>Loja</span>
+    </button>
+    <button ng-click="goToLogout()">
+      <img src="../img/icon-logout.png" alt="Logout" />
+      <span>Sair</span>
+    </button>
+  </nav>
+
+  <script>
+    const app = angular.module('youtubeApp', []);
+
+    app.controller('YouTubeController', function($scope, $sce, $http) {
+      const API_KEY = 'AIzaSyArgueRehIu45zglswjY3ZaEbPkniX41Ug';
+      const PLAYLIST_ID = 'PLUH4LhxBUL_HpChFbZWg8p6wZrd35GMFd';
+      const MAX_RESULTS = 5;
+
+      $scope.videos = [];
+
+      $scope.getVideoUrl = function(videoId) {
+        return $sce.trustAsResourceUrl('https://www.youtube.com/embed/' + videoId + '?enablejsapi=1');
+      };
+
+      $http.get('https://www.googleapis.com/youtube/v3/playlistItems', {
+        params: {
+          part: 'snippet',
+          maxResults: MAX_RESULTS,
+          playlistId: PLAYLIST_ID,
+          key: API_KEY
+        }
+      }).then(function(response) {
+        $scope.videos = response.data.items;
+      });
+    });
+
+    // Armazena os players
+    const players = [];
+
+    // Chamada automática pela API do YouTube
+    window.onYouTubeIframeAPIReady = function () {
+      const interval = setInterval(() => {
+        const iframes = document.querySelectorAll("iframe[id^='ytplayer']");
+        if (iframes.length > 0) {
+          clearInterval(interval);
+          iframes.forEach((iframe, index) => {
+            players[index] = new YT.Player(iframe.id, {
+              events: {
+                'onStateChange': function (event) {
+                  if (event.data === YT.PlayerState.ENDED) {
+                    const videoId = players[index].getVideoData().video_id;
+                    logVideoWatched(videoId);
+                  }
+                }
+              }
+            });
+          });
+        }
+      }, 1000);
+    };
+
+    function logVideoWatched(videoId) {
+      console.log("Vídeo assistido:", videoId);
+      sendFunifierEvent("video_assistido", videoId);
+    }
+
+    function sendFunifierEvent(action, videoId) {
+      const FUNIFIER_URL = 'https://api.funifier.com/v1/track';
+      const TOKEN = 'SEU_TOKEN_JOGADOR';
+      const PLAYER_ID = 'ID_DO_JOGADOR';
+
+      const payload = {
+        playerId: PLAYER_ID,
+        action: action,
+        properties: {
+          videoId: videoId
+        }
+      };
+
+      fetch(FUNIFIER_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${TOKEN}`
+        },
+        body: JSON.stringify(payload)
+      }).then(response => {
+        if (response.ok) {
+          console.log("Evento enviado para a Funifier.");
+        } else {
+          console.error("Erro ao enviar evento para a Funifier.");
+        }
+      }).catch(error => {
+        console.error("Erro de rede:", error);
+      });
+    }
+  </script>
+  <script src="../js/navController.js"></script>
+
+

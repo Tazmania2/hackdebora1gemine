@@ -3,38 +3,24 @@ angular.module('funifierApp')
 .service('AuthService', function($http, $q, FUNIFIER_API_CONFIG) {
     var service = {};
     var currentPlayer = null;
-    var API_KEY = '68252a212327f74f3a3d100d';
-
-    // Get Basic auth token for server-side operations
-    service.getBasicAuthToken = function() {
-        return 'Basic ' + btoa(API_KEY + ':' + FUNIFIER_API_CONFIG.appSecret);
-    };
 
     // Login with password authentication
     service.login = function(email, password) {
-        var data = {
-            apiKey: API_KEY,
-            username: email,
-            password: password,
-            grant_type: 'password'
-        };
-
-        // Convert data to URL-encoded format
-        var formData = Object.keys(data)
-            .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
-            .join('&');
-
         return $http({
             method: 'POST',
             url: FUNIFIER_API_CONFIG.baseUrl + '/auth/token',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-API-Key': API_KEY
+                'Content-Type': 'application/json'
             },
-            data: formData
+            data: {
+                apiKey: FUNIFIER_API_CONFIG.apiKey,
+                grant_type: 'password',
+                username: email,
+                password: password
+            }
         }).then(function(response) {
-            if (response.data && response.data.token) {
-                localStorage.setItem('token', response.data.token);
+            if (response.data && response.data.access_token) {
+                localStorage.setItem('token', 'Bearer ' + response.data.access_token);
                 return service.getPlayerInfo(email);
             }
             return $q.reject('Token não encontrado na resposta');
@@ -47,8 +33,7 @@ angular.module('funifierApp')
             method: 'GET',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player/' + email,
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('token'),
-                'X-API-Key': API_KEY
+                'Authorization': localStorage.getItem('token')
             }
         }).then(function(response) {
             service.storePlayerData(response.data);
@@ -88,26 +73,16 @@ angular.module('funifierApp')
     return service;
 })
 .factory('AuthInterceptor', function ($rootScope, $q, $window, $location, FUNIFIER_API_CONFIG) {
-    var API_KEY = '68252a212327f74f3a3d100d';
-    
     return {
         request: function (config) {
             config.headers = config.headers || {};
             
-            // Add API key to all Funifier API requests
-            if (config.url.indexOf(FUNIFIER_API_CONFIG.baseUrl) === 0) {
-                config.headers['X-API-Key'] = API_KEY;
-                
-                // Use Basic Auth for server-side operations
-                if (config.url.includes('/player') && !config.url.includes('/auth/token')) {
-                    // If we have a token, use Bearer auth for player-specific operations
-                    var token = localStorage.getItem('token');
-                    if (token) {
-                        config.headers.Authorization = 'Bearer ' + token;
-                    } else {
-                        // Use Basic Auth for registration and public info
-                        config.headers.Authorization = 'Basic ' + btoa(API_KEY + ':' + FUNIFIER_API_CONFIG.appSecret);
-                    }
+            // Add token to all Funifier API requests except auth/token
+            if (config.url.indexOf(FUNIFIER_API_CONFIG.baseUrl) === 0 && 
+                !config.url.includes('/auth/token')) {
+                var token = localStorage.getItem('token');
+                if (token) {
+                    config.headers.Authorization = token;
                 }
             }
             return config;

@@ -1,0 +1,54 @@
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cursos - Playlist</title>
+<link rel="stylesheet" href="../css/style.css" />
+<link rel="stylesheet" href="../css/courses.css" />
+<link rel="stylesheet" href="../css/navbar.css" />
+<link rel="stylesheet" href="../css/courses-modal.css" />
+
+<div class="courses-container">
+  <h1 class="courses-title">{{playlistTitle}}</h1>
+  <div class="courses-list">
+    <div class="course-card" ng-repeat="video in videos" style="border-radius: 10px; border: 1px solid #ddd; margin-bottom: 24px;">
+      <img class="course-thumb" ng-src="{{video.thumbnail}}" alt="{{video.title}}" />
+      <div class="course-info">
+        <div class="course-name"><b>{{video.title}}</b></div>
+        <div class="course-desc">
+          <button class="desc-toggle" ng-click="toggleDescription(video)">
+            <span ng-if="!video.expanded">&#9654;</span>
+            <span ng-if="video.expanded">&#9660;</span>
+          </button>
+          <span ng-if="video.expanded">{{video.description}}</span>
+          <div class="course-name"><b>{{video.title}}</b></div>
+          <div class="course-desc">
+            <button class="desc-toggle" ng-click="toggleDescription(video)">
+              <span ng-if="!video.expanded">&#9654;</span>
+              <span ng-if="video.expanded">&#9660;</span>
+            </button>
+            <span ng-if="video.expanded">{{video.description}}</span>
+          </div>
+          <button class="course-watch" ng-click="openModal(video)">Assistir</button>
+        </div>
+      </div>
+    </div>
+    <!-- Modal do player -->
+    <div class="courses-modal-bg" ng-if="modalOpen" ng-click="closeModal($event)">
+      <div class="courses-modal" ng-click="$event.stopPropagation()">
+        <button class="courses-modal-close" ng-click="closeModal($event)">&times;</button>
+        <iframe class="courses-modal-iframe" id="modal-ytplayer" ng-src="{{getVideoUrl(currentVideo.videoId)}}" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+  <bottom-nav></bottom-nav>
+<script src="js/bottomNav.component.js"></script>
+<!-- AngularJS core and modules -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-sanitize.js"></script>
+<!-- App principal e componentes globais -->
+<script src="../js/app.js"></script>
+<script src="../js/navController.js"></script>
+<script src="../js/homepageController.js"></script>
+<!-- Outros scripts necessários -->
+<script src="https://www.youtube.com/iframe_api"></script>
