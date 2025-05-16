@@ -1,0 +1,35 @@
+<div class="register-container">
+    <h2>Cadastro de Jogador</h2>
+    <form name="registerForm" ng-submit="vm.register()" novalidate>
+        <div class="form-group">
+            <label for="name">Nome:</label>
+            <input type="text" id="name" name="name" ng-model="vm.user.name" required>
+            <span class="error-text" ng-show="registerForm.name.$touched && registerForm.name.$error.required">Nome é obrigatório.</span>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" ng-model="vm.user.email" required>
+            <span class="error-text" ng-show="registerForm.email.$touched && registerForm.email.$error.required">Email é obrigatório.</span>
+            <span class="error-text" ng-show="registerForm.email.$touched && registerForm.email.$error.email">Email inválido.</span>
+        </div>
+        <div class="form-group">
+            <label for="password">Senha:</label>
+            <input type="password" id="password" name="password" ng-model="vm.user.password" required>
+            <span class="error-text" ng-show="registerForm.password.$touched && registerForm.password.$error.required">Senha é obrigatória.</span>
+        </div>
+        <div class="form-group">
+            <label for="confirmPassword">Confirmar Senha:</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" ng-model="vm.user.confirmPassword" required>
+            <span class="error-text" ng-show="registerForm.confirmPassword.$touched && registerForm.confirmPassword.$error.required">Confirmação de senha é obrigatória.</span>
+        </div>
+        <div class="form-group">
+            <button type="submit" ng-disabled="registerForm.$invalid || vm.isLoading">
+                {{ vm.isLoading ? 'Cadastrando...' : 'Cadastrar' }}
+            </button>
+        </div>
+    </form>
+    <div ng-if="vm.errorMessage" class="error-message">
+        {{ vm.errorMessage }}
+    </div>
+    <p class="login-link">Já tem uma conta? <a href="#!/login">Faça login aqui</a></p>
+</div> 
