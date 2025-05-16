@@ -25,10 +25,20 @@ angular.module('funifierApp').controller('RegisterController', function($locatio
             .then(function(apiToken) {
                 // Then register the player using the correct endpoint and payload structure
                 return $http.post('https://service2.funifier.com/v3/player', {
-                    _id: vm.user.email, // Using email as the unique identifier
+                    _id: vm.user.email,
                     name: vm.user.name,
                     email: vm.user.email,
-                    password: vm.user.password
+                    password: vm.user.password,
+                    image: {
+                        small: { url: '' },
+                        medium: { url: '' },
+                        original: { url: '' }
+                    },
+                    teams: [],
+                    friends: [],
+                    extra: {
+                        registeredAt: new Date().toISOString()
+                    }
                 }, {
                     headers: {
                         'Authorization': 'Bearer ' + apiToken,

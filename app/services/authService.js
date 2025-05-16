@@ -41,7 +41,7 @@ angular.module('funifierApp').factory('AuthService', function($http, $q, $window
             return deferred.promise;
         }
 
-        $http.post(FUNIFIER_API_CONFIG.baseUrl + '/oauth/token', {
+        $http.post('https://service2.funifier.com/v3/oauth/token', {
             grant_type: 'client_credentials',
             client_id: FUNIFIER_API_CONFIG.apiKey
         }).then(function(result) {
@@ -110,13 +110,13 @@ angular.module('funifierApp').factory('AuthService', function($http, $q, $window
         request: function (config) {
             config.headers = config.headers || {};
             var token = $window.sessionStorage.getItem('funifierAuthToken');
-            if (token && config.url.indexOf(FUNIFIER_API_CONFIG.baseUrl) === 0 && !config.url.includes('/oauth/token')) {
+            if (token && config.url.indexOf('https://service2.funifier.com/v3') === 0 && !config.url.includes('/oauth/token')) {
                 config.headers.Authorization = 'Bearer ' + token;
             }
             return config;
         },
         responseError: function (response) {
-            if (response.status === 401 && response.config.url.indexOf(FUNIFIER_API_CONFIG.baseUrl) === 0 && !response.config.url.includes('/oauth/token')) {
+            if (response.status === 401 && response.config.url.indexOf('https://service2.funifier.com/v3') === 0 && !response.config.url.includes('/oauth/token')) {
                 $window.sessionStorage.removeItem('funifierAuthToken');
                 $window.sessionStorage.removeItem('funifierPlayerData');
                 if ($location.path() !== '/login') {
