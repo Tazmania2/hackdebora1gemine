@@ -52,11 +52,17 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
     };
 
     service.generateReferralCode = function() {
+        var token = localStorage.getItem('token');
+        if (!token) {
+            return $q.reject('User not authenticated');
+        }
+
         return $http({
             method: 'POST',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/referral',
             headers: {
-                'Authorization': localStorage.getItem('token')
+                'Authorization': token,
+                'Content-Type': 'application/json'
             },
             data: {}
         });
