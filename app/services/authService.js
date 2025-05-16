@@ -6,18 +6,28 @@ angular.module('funifierApp')
 
     // Login with password authentication
     service.login = function(email, password) {
+        // Convert data to URL encoded format
+        var data = {
+            apiKey: FUNIFIER_API_CONFIG.apiKey,
+            grant_type: 'password',
+            username: email,
+            password: password
+        };
+        
+        // Convert to URL encoded string
+        var formData = Object.keys(data)
+            .map(function(key) {
+                return encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
+            })
+            .join('&');
+
         return $http({
             method: 'POST',
             url: FUNIFIER_API_CONFIG.baseUrl + '/v3/auth/token',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
-            data: {
-                apiKey: FUNIFIER_API_CONFIG.apiKey,
-                grant_type: 'password',
-                username: email,
-                password: password
-            }
+            data: formData
         }).then(function(response) {
             if (response.data && response.data.access_token) {
                 localStorage.setItem('token', 'Bearer ' + response.data.access_token);
