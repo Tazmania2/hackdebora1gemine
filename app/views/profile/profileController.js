@@ -31,7 +31,7 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
             method: 'PUT',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player/' + vm.profile._id + '/status',
             headers: {
-                'Authorization': AuthService.getBasicAuthToken(),
+                'Authorization': localStorage.getItem('token'),
                 'Content-Type': 'application/json'
             },
             data: {

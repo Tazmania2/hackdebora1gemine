@@ -12,69 +12,89 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
     };
 
     service.getPlayerBalance = function() {
-        return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/player/me/balance', {
+        return $http({
+            method: 'GET',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/balance',
             headers: {
-                'Authorization': AuthService.getBasicAuthToken()
+                'Authorization': localStorage.getItem('token')
             }
         });
     };
 
     service.getPlayerActivities = function() {
-        return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/player/me/activity', {
+        return $http({
+            method: 'GET',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/activity',
             headers: {
-                'Authorization': AuthService.getBasicAuthToken()
+                'Authorization': localStorage.getItem('token')
             }
         });
     };
 
     service.getPlayerRewards = function() {
-        return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/player/me/rewards', {
+        return $http({
+            method: 'GET',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/rewards',
             headers: {
-                'Authorization': AuthService.getBasicAuthToken()
+                'Authorization': localStorage.getItem('token')
             }
         });
     };
 
     service.getPlayerEvents = function() {
-        return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/player/me/events', {
+        return $http({
+            method: 'GET',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/events',
             headers: {
-                'Authorization': AuthService.getBasicAuthToken()
+                'Authorization': localStorage.getItem('token')
             }
         });
     };
 
     service.generateReferralCode = function() {
-        return $http.post(FUNIFIER_API_CONFIG.baseUrl + '/player/me/referral', {}, {
+        return $http({
+            method: 'POST',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/referral',
             headers: {
-                'Authorization': AuthService.getBasicAuthToken()
-            }
+                'Authorization': localStorage.getItem('token')
+            },
+            data: {}
         });
     };
 
     service.registerPurchase = function(purchaseData) {
-        return $http.post(FUNIFIER_API_CONFIG.baseUrl + '/player/me/purchase', purchaseData, {
+        return $http({
+            method: 'POST',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/purchase',
             headers: {
-                'Authorization': AuthService.getBasicAuthToken()
-            }
+                'Authorization': localStorage.getItem('token')
+            },
+            data: purchaseData
         });
     };
 
     service.shareOnSocial = function(platform, proof) {
-        return $http.post(FUNIFIER_API_CONFIG.baseUrl + '/player/me/share', {
-            platform: platform,
-            proof: proof
-        }, {
+        return $http({
+            method: 'POST',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/share',
             headers: {
-                'Authorization': AuthService.getBasicAuthToken()
+                'Authorization': localStorage.getItem('token')
+            },
+            data: {
+                platform: platform,
+                proof: proof
             }
         });
     };
 
     service.answerSurvey = function(surveyId, answers) {
-        return $http.post(FUNIFIER_API_CONFIG.baseUrl + '/player/me/survey/' + surveyId, answers, {
+        return $http({
+            method: 'POST',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/survey/' + surveyId,
             headers: {
-                'Authorization': AuthService.getBasicAuthToken()
-            }
+                'Authorization': localStorage.getItem('token')
+            },
+            data: answers
         });
     };
 
