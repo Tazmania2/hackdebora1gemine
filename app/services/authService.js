@@ -4,30 +4,53 @@ angular.module('funifierApp')
     var service = {};
     var currentPlayer = null;
 
-    // Login with password authentication
-    service.login = function(email, password) {
-        // Convert data to URL encoded format
-        var data = {
-            apiKey: FUNIFIER_API_CONFIG.apiKey,
-            grant_type: 'password',
-            username: email,
-            password: password
-        };
-        
-        // Convert to URL encoded string
-        var formData = Object.keys(data)
-            .map(function(key) {
-                return encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
-            })
-            .join('&');
-
+    // Get Basic auth token first
+    function getBasicAuthToken() {
         return $http({
             method: 'POST',
-            url: FUNIFIER_API_CONFIG.baseUrl + '/auth/token',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/auth/basic',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            data: formData
+            data: {
+                apiKey: FUNIFIER_API_CONFIG.apiKey,
+                appSecret: FUNIFIER_API_CONFIG.appSecret
+            }
+        }).then(function(response) {
+            if (response.data && response.data.Authorization) {
+                return response.data.Authorization;
+            }
+            return $q.reject('Basic auth token not found in response');
+        });
+    }
+
+    // Login with password authentication
+    service.login = function(email, password) {
+        return getBasicAuthToken().then(function(basicToken) {
+            // Convert data to URL encoded format
+            var data = {
+                apiKey: FUNIFIER_API_CONFIG.apiKey,
+                grant_type: 'password',
+                username: email,
+                password: password
+            };
+            
+            // Convert to URL encoded string
+            var formData = Object.keys(data)
+                .map(function(key) {
+                    return encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
+                })
+                .join('&');
+
+            return $http({
+                method: 'POST',
+                url: FUNIFIER_API_CONFIG.baseUrl + '/auth/token',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Basic ' + basicToken
+                },
+                data: formData
+            });
         }).then(function(response) {
             if (response.data && response.data.access_token) {
                 localStorage.setItem('token', 'Bearer ' + response.data.access_token);
@@ -87,9 +110,10 @@ angular.module('funifierApp')
         request: function (config) {
             config.headers = config.headers || {};
             
-            // Add token to all Funifier API requests except auth/token
+            // Add token to all Funifier API requests except auth/token and auth/basic
             if (config.url.indexOf(FUNIFIER_API_CONFIG.baseUrl) === 0 && 
-                !config.url.includes('/auth/token')) {
+                !config.url.includes('/auth/token') &&
+                !config.url.includes('/auth/basic')) {
                 var token = localStorage.getItem('token');
                 if (token) {
                     config.headers.Authorization = token;
