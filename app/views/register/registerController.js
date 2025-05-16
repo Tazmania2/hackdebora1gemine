@@ -2,6 +2,8 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
     var vm = this;
     vm.loading = false;
     vm.error = null;
+    vm.showingTerms = false;
+    vm.showingRegulation = false;
     vm.user = {
         name: '',
         email: '',
@@ -21,11 +23,15 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
 
     vm.showTerms = function(event) {
         event.preventDefault();
+        vm.showingTerms = true;
+        vm.showingRegulation = false;
         $('#termsModal').modal('show');
     };
 
     vm.showRegulation = function(event) {
         event.preventDefault();
+        vm.showingTerms = false;
+        vm.showingRegulation = true;
         $('#termsModal').modal('show');
     };
 

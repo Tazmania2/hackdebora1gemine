@@ -69,7 +69,7 @@
 </div>
 
 <!-- Terms Modal -->
-<div class="modal fade" id="termsModal" tabindex="-1" role="dialog" aria-labelledby="termsModalLabel" aria-hidden="true">
+<div class="modal fade" id="termsModal" tabindex="-1" role="dialog" aria-labelledby="termsModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -79,38 +79,42 @@
                 </button>
             </div>
             <div class="modal-body">
-                <h4>Termos de Uso</h4>
-                <p>1. Aceitação dos Termos</p>
-                <p>Ao acessar e utilizar este aplicativo, você concorda em cumprir e ficar vinculado aos seguintes termos e condições de uso.</p>
+                <div ng-show="vm.showingTerms">
+                    <h4>Termos de Uso</h4>
+                    <p>1. Aceitação dos Termos</p>
+                    <p>Ao acessar e utilizar este aplicativo, você concorda em cumprir e ficar vinculado aos seguintes termos e condições de uso.</p>
 
-                <p>2. Cadastro e Conta</p>
-                <p>2.1. Para utilizar os serviços, é necessário realizar um cadastro completo e fornecer informações verdadeiras e precisas.</p>
-                <p>2.2. Você é responsável por manter a confidencialidade de sua senha e por todas as atividades que ocorrerem em sua conta.</p>
+                    <p>2. Cadastro e Conta</p>
+                    <p>2.1. Para utilizar os serviços, é necessário realizar um cadastro completo e fornecer informações verdadeiras e precisas.</p>
+                    <p>2.2. Você é responsável por manter a confidencialidade de sua senha e por todas as atividades que ocorrerem em sua conta.</p>
 
-                <p>3. Uso do Aplicativo</p>
-                <p>3.1. O aplicativo deve ser utilizado apenas para fins lícitos e de acordo com estes termos.</p>
-                <p>3.2. Não é permitido o uso de programas automatizados ou bots para interagir com o aplicativo.</p>
+                    <p>3. Uso do Aplicativo</p>
+                    <p>3.1. O aplicativo deve ser utilizado apenas para fins lícitos e de acordo com estes termos.</p>
+                    <p>3.2. Não é permitido o uso de programas automatizados ou bots para interagir com o aplicativo.</p>
 
-                <p>4. Privacidade</p>
-                <p>4.1. Suas informações pessoais serão tratadas de acordo com nossa Política de Privacidade.</p>
-                <p>4.2. Ao se cadastrar, você concorda com a coleta e processamento de seus dados pessoais.</p>
+                    <p>4. Privacidade</p>
+                    <p>4.1. Suas informações pessoais serão tratadas de acordo com nossa Política de Privacidade.</p>
+                    <p>4.2. Ao se cadastrar, você concorda com a coleta e processamento de seus dados pessoais.</p>
+                </div>
 
-                <h4>Regulamento do Programa de Fidelidade</h4>
-                <p>1. Participação</p>
-                <p>1.1. O programa de fidelidade está disponível para todos os usuários cadastrados.</p>
-                <p>1.2. A participação é gratuita e não há custos de adesão.</p>
+                <div ng-show="vm.showingRegulation">
+                    <h4>Regulamento do Programa de Fidelidade</h4>
+                    <p>1. Participação</p>
+                    <p>1.1. O programa de fidelidade está disponível para todos os usuários cadastrados.</p>
+                    <p>1.2. A participação é gratuita e não há custos de adesão.</p>
 
-                <p>2. Pontuação</p>
-                <p>2.1. Os pontos são acumulados através de compras e participação em atividades promocionais.</p>
-                <p>2.2. Os pontos têm validade de 12 meses a partir da data de sua aquisição.</p>
+                    <p>2. Pontuação</p>
+                    <p>2.1. Os pontos são acumulados através de compras e participação em atividades promocionais.</p>
+                    <p>2.2. Os pontos têm validade de 12 meses a partir da data de sua aquisição.</p>
 
-                <p>3. Resgate</p>
-                <p>3.1. Os pontos podem ser resgatados por recompensas disponíveis no catálogo.</p>
-                <p>3.2. O resgate está sujeito à disponibilidade de estoque.</p>
+                    <p>3. Resgate</p>
+                    <p>3.1. Os pontos podem ser resgatados por recompensas disponíveis no catálogo.</p>
+                    <p>3.2. O resgate está sujeito à disponibilidade de estoque.</p>
 
-                <p>4. Indicações</p>
-                <p>4.1. Ao indicar novos usuários, você receberá pontos de bônus conforme regulamento específico.</p>
-                <p>4.2. As indicações devem ser feitas através do código de indicação pessoal.</p>
+                    <p>4. Indicações</p>
+                    <p>4.1. Ao indicar novos usuários, você receberá pontos de bônus conforme regulamento específico.</p>
+                    <p>4.2. As indicações devem ser feitas através do código de indicação pessoal.</p>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
