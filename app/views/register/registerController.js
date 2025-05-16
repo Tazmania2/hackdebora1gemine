@@ -58,7 +58,7 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
             _id: vm.user.email.split('@')[0], // Usando email como ID
             name: vm.user.name,
             email: vm.user.email,
-            password: vm.user.password,
+            password: vm.user.password, // Password will be hashed by Funifier's trigger
             image: {
                 small: { url: "https://my.funifier.com/images/funny.png" },
                 medium: { url: "https://my.funifier.com/images/funny.png" },
@@ -76,7 +76,8 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
                 cep: "",
                 referredBy: vm.user.referralCode || vm.referralId || null,
                 termsAccepted: true,
-                termsAcceptedDate: new Date().toISOString()
+                termsAcceptedDate: new Date().toISOString(),
+                register: true // This will trigger the password hashing
             }
         };
 
