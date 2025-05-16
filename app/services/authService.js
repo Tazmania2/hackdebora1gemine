@@ -8,7 +8,7 @@ angular.module('funifierApp')
     service.login = function(email, password) {
         return $http({
             method: 'POST',
-            url: FUNIFIER_API_CONFIG.baseUrl + '/auth/token',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/v3/auth/token',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -21,17 +21,17 @@ angular.module('funifierApp')
         }).then(function(response) {
             if (response.data && response.data.access_token) {
                 localStorage.setItem('token', 'Bearer ' + response.data.access_token);
-                return service.getPlayerInfo(email);
+                return service.getPlayerInfo();
             }
             return $q.reject('Token não encontrado na resposta');
         });
     };
 
     // Get player information
-    service.getPlayerInfo = function(email) {
+    service.getPlayerInfo = function() {
         return $http({
             method: 'GET',
-            url: FUNIFIER_API_CONFIG.baseUrl + '/player/' + email,
+            url: FUNIFIER_API_CONFIG.baseUrl + '/v3/player/me',
             headers: {
                 'Authorization': localStorage.getItem('token')
             }
