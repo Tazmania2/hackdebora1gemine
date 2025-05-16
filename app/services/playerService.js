@@ -1,10 +1,10 @@
-angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIFIER_API_CONFIG) {
+angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIFIER_API_CONFIG, AuthService) {
     var service = {};
 
     service.getPlayerProfile = function() {
         return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/player/me', {
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('funifierAuthToken')
+                'Authorization': AuthService.getBasicAuthToken()
             }
         });
     };
@@ -12,7 +12,7 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
     service.getPlayerBalance = function() {
         return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/player/me/balance', {
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('funifierAuthToken')
+                'Authorization': AuthService.getBasicAuthToken()
             }
         });
     };
@@ -20,7 +20,7 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
     service.getPlayerActivities = function() {
         return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/player/me/activity', {
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('funifierAuthToken')
+                'Authorization': AuthService.getBasicAuthToken()
             }
         });
     };
@@ -28,7 +28,7 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
     service.getPlayerRewards = function() {
         return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/player/me/rewards', {
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('funifierAuthToken')
+                'Authorization': AuthService.getBasicAuthToken()
             }
         });
     };
@@ -36,7 +36,7 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
     service.getPlayerEvents = function() {
         return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/player/me/events', {
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('funifierAuthToken')
+                'Authorization': AuthService.getBasicAuthToken()
             }
         });
     };
@@ -44,7 +44,7 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
     service.generateReferralCode = function() {
         return $http.post(FUNIFIER_API_CONFIG.baseUrl + '/player/me/referral', {}, {
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('funifierAuthToken')
+                'Authorization': AuthService.getBasicAuthToken()
             }
         });
     };
@@ -52,7 +52,7 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
     service.registerPurchase = function(purchaseData) {
         return $http.post(FUNIFIER_API_CONFIG.baseUrl + '/player/me/purchase', purchaseData, {
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('funifierAuthToken')
+                'Authorization': AuthService.getBasicAuthToken()
             }
         });
     };
@@ -63,7 +63,7 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
             proof: proof
         }, {
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('funifierAuthToken')
+                'Authorization': AuthService.getBasicAuthToken()
             }
         });
     };
@@ -71,7 +71,7 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
     service.answerSurvey = function(surveyId, answers) {
         return $http.post(FUNIFIER_API_CONFIG.baseUrl + '/player/me/survey/' + surveyId, answers, {
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('funifierAuthToken')
+                'Authorization': AuthService.getBasicAuthToken()
             }
         });
     };

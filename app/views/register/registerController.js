@@ -2,22 +2,38 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
     var vm = this;
     vm.loading = false;
     vm.error = null;
+    vm.user = {
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+    };
 
     vm.register = function() {
-        if (vm.registerForm.$invalid) {
+        if (vm.user.password !== vm.user.confirmPassword) {
+            vm.error = 'As senhas não coincidem.';
             return;
         }
 
         vm.loading = true;
         vm.error = null;
 
-        // Criar o payload do jogador
+        // Criar o payload do jogador no formato correto
         var playerData = {
-            name: vm.name,
-            email: vm.email,
-            password: vm.password,
+            _id: vm.user.email,
+            name: vm.user.name,
+            email: vm.user.email,
+            image: {
+                small: { url: "https://my.funifier.com/images/funny.png" },
+                medium: { url: "https://my.funifier.com/images/funny.png" },
+                original: { url: "https://my.funifier.com/images/funny.png" }
+            },
+            teams: [],
+            friends: [],
             extra: {
-                register: true
+                country: "Brasil",
+                company: "Funifier User",
+                sports: ["soccer"]
             }
         };
 

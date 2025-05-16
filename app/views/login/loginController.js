@@ -1,5 +1,5 @@
 // app/views/login/loginController.js
-angular.module('funifierApp').controller('LoginController', function($location, AuthService) {
+angular.module('funifierApp').controller('LoginController', function($location, $http, AuthService, FUNIFIER_API_CONFIG) {
     var vm = this; // vm (ViewModel) é uma prática comum para 'this' em controladores
 
     vm.credentials = {
@@ -18,25 +18,39 @@ angular.module('funifierApp').controller('LoginController', function($location, 
     vm.login = function() {
         vm.errorMessage = '';
         vm.isLoading = true;
+
         if (vm.credentials.email && vm.credentials.password) {
-            AuthService.playerLogin(vm.credentials.email, vm.credentials.password)
-                .then(function(playerData) {
+            $http({
+                method: 'POST',
+                url: FUNIFIER_API_CONFIG.baseUrl + '/player/login',
+                headers: {
+                    'Authorization': AuthService.getBasicAuthToken(),
+                    'Content-Type': 'application/json'
+                },
+                data: {
+                    email: vm.credentials.email,
+                    password: vm.credentials.password
+                }
+            }).then(function(response) {
+                if (response.data) {
+                    AuthService.storePlayerData(response.data);
                     $location.path('/dashboard');
-                })
-                .catch(function(error) {
-                    if (typeof error === 'string') {
-                        vm.errorMessage = error;
-                    } else if (error && error.data && (error.data.message || error.data.error)) {
-                        vm.errorMessage = error.data.message || error.data.error;
-                    } else if (error && error.statusText) {
-                        vm.errorMessage = error.statusText;
-                    } else {
-                        vm.errorMessage = 'Falha no login. Verifique suas credenciais ou tente novamente.';
-                    }
-                })
-                .finally(function() {
-                    vm.isLoading = false;
-                });
+                } else {
+                    vm.errorMessage = 'Resposta inválida do servidor.';
+                }
+            }).catch(function(error) {
+                if (error.data && error.data.message) {
+                    vm.errorMessage = error.data.message;
+                } else if (error.data && error.data.error) {
+                    vm.errorMessage = error.data.error;
+                } else if (typeof error === 'string') {
+                    vm.errorMessage = error;
+                } else {
+                    vm.errorMessage = 'Falha no login. Verifique suas credenciais ou tente novamente.';
+                }
+            }).finally(function() {
+                vm.isLoading = false;
+            });
         } else {
             vm.errorMessage = 'Por favor, preencha email e senha.';
             vm.isLoading = false;
