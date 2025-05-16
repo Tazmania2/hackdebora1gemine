@@ -1,0 +1,68 @@
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h2>Bem-vindo, {{vm.player.name}}</h2>
+        <div class="balance-section">
+            <div class="balance-card">
+                <h3>Pontos</h3>
+                <p class="balance-value">{{vm.balance.points}}</p>
+                <p class="expiration">Expira em: {{vm.balance.pointsExpiration | date:'dd/MM/yyyy'}}</p>
+            </div>
+            <div class="balance-card">
+                <h3>Cashback</h3>
+                <p class="balance-value">R$ {{vm.balance.cashback}}</p>
+                <p class="expiration">Expira em: {{vm.balance.cashbackExpiration | date:'dd/MM/yyyy'}}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-content">
+        <div class="activity-section">
+            <h3>Atividades Recentes</h3>
+            <div class="activity-list">
+                <div ng-repeat="activity in vm.activities" class="activity-item">
+                    <div class="activity-icon" ng-class="activity.type"></div>
+                    <div class="activity-details">
+                        <p class="activity-description">{{activity.description}}</p>
+                        <p class="activity-date">{{activity.date | date:'dd/MM/yyyy HH:mm'}}</p>
+                    </div>
+                    <div class="activity-points" ng-if="activity.points">
+                        <span ng-class="{'positive': activity.points > 0, 'negative': activity.points < 0}">
+                            {{activity.points > 0 ? '+' : ''}}{{activity.points}} pts
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="events-section">
+            <h3>Próximos Eventos</h3>
+            <div class="events-list">
+                <div ng-repeat="event in vm.events" class="event-card">
+                    <h4>{{event.title}}</h4>
+                    <p class="event-date">{{event.date | date:'dd/MM/yyyy HH:mm'}}</p>
+                    <p class="event-description">{{event.description}}</p>
+                    <button ng-if="event.canRegister" ng-click="vm.registerForEvent(event)">Participar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="referral-section">
+            <h3>Convide Amigos</h3>
+            <div class="referral-code">
+                <p>Seu código de indicação:</p>
+                <div class="code-display">{{vm.referralCode}}</div>
+                <button ng-click="vm.copyReferralCode()">Copiar Código</button>
+            </div>
+            <div class="qr-code">
+                <img ng-src="{{vm.qrCodeUrl}}" alt="QR Code para cadastro">
+                <p>Escaneie para cadastrar</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="quick-actions">
+        <button ng-click="vm.goToRewards()">Loja de Recompensas</button>
+        <button ng-click="vm.registerPurchase()">Registrar Compra</button>
+        <button ng-click="vm.shareOnSocial()">Compartilhar</button>
+    </div>
+</div> 

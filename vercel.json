@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "app/**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "https://api.funifier.com/v3/$1"
+    },
+    {
+      "src": "^/assets/(.*)",
+      "dest": "/app/assets/$1"
+    },
+    {
+      "src": "^/css/(.*)",
+      "dest": "/app/css/$1"
+    },
+    {
+      "src": "^/services/(.*)",
+      "dest": "/app/services/$1"
+    },
+    {
+      "src": "^/views/(.*)",
+      "dest": "/app/views/$1"
+    },
+    {
+      "src": "^/app.js",
+      "dest": "/app/app.js"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/app/index.html"
+    }
+  ],
+  "env": {
+    "FUNIFIER_API_KEY": "68252a212327f74f3a3d100d",
+    "FUNIFIER_API_SECRET": "682605f62327f74f3a3d248e"
+  }
+}
