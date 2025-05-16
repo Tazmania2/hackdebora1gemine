@@ -41,26 +41,21 @@ angular.module('funifierApp').factory('AuthService', function($http, $q, $window
             return deferred.promise;
         }
 
-        // Criar o token Basic com apiKey e appSecret
-        var credentials = btoa(FUNIFIER_API_CONFIG.apiKey + ':' + FUNIFIER_API_CONFIG.appSecret);
-
         $http({
             method: 'POST',
-            url: 'https://service2.funifier.com/v3/oauth/token',
+            url: 'https://service2.funifier.com/v3/system/auth/token',
             headers: {
-                'Authorization': 'Basic ' + credentials,
                 'Content-Type': 'application/json'
             },
             data: {
-                grant_type: 'client_credentials',
                 api_key: FUNIFIER_API_CONFIG.apiKey,
                 app_secret: FUNIFIER_API_CONFIG.appSecret
             }
         }).then(function(result) {
             console.log('Auth response:', result.data); // Debug log
-            if (result.data && result.data.access_token) {
-                storeAuthData(result.data.access_token);
-                deferred.resolve(result.data.access_token);
+            if (result.data && result.data.token) {
+                storeAuthData(result.data.token);
+                deferred.resolve(result.data.token);
             } else {
                 console.error('Unexpected response format:', result.data);
                 deferred.reject('Falha ao obter token: Formato de resposta inesperado.');
