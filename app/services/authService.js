@@ -56,13 +56,22 @@ angular.module('funifierApp').factory('AuthService', function($http, $q, $window
                 app_secret: FUNIFIER_API_CONFIG.appSecret
             }
         }).then(function(result) {
-            if (result.data && result.data.Authorization) {
+            console.log('Auth response:', result.data); // Debug log
+            if (result.data && result.data.token) {
+                storeAuthData(result.data.token);
+                deferred.resolve(result.data.token);
+            } else if (result.data && result.data.Authorization) {
                 storeAuthData(result.data.Authorization);
                 deferred.resolve(result.data.Authorization);
+            } else if (result.data && result.data.access_token) {
+                storeAuthData(result.data.access_token);
+                deferred.resolve(result.data.access_token);
             } else {
-                deferred.reject('Falha ao obter token: Nenhuma Authorization recebida.');
+                console.error('Unexpected response format:', result.data);
+                deferred.reject('Falha ao obter token: Formato de resposta inesperado.');
             }
         }, function(error) {
+            console.error('Auth error:', error); // Debug log
             destroyAuthData();
             var errorMsg = 'Falha ao obter token da API: ';
             if (error.data && (error.data.error_description || error.data.message || error.data.error)) {
