@@ -23,7 +23,7 @@ angular.module('funifierApp')
 
         return $http({
             method: 'POST',
-            url: FUNIFIER_API_CONFIG.baseUrl + '/v3/auth/token',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/auth/token',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -41,7 +41,7 @@ angular.module('funifierApp')
     service.getPlayerInfo = function() {
         return $http({
             method: 'GET',
-            url: FUNIFIER_API_CONFIG.baseUrl + '/v3/player/me',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player/me',
             headers: {
                 'Authorization': localStorage.getItem('token')
             }
