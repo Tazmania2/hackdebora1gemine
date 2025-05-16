@@ -17,9 +17,37 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
 
     // Generate referral URL
     function updateReferralUrl() {
+        if (!vm.profile || !vm.profile._id) {
+            vm.error = 'Perfil não encontrado. Por favor, faça login novamente.';
+            return;
+        }
+
         var baseUrl = window.location.origin + window.location.pathname;
         vm.referralUrl = baseUrl + '#!/register?referral=' + vm.profile._id;
         generateQRCode();
+    }
+
+    // Generate referral code
+    function generateReferralCode() {
+        if (!vm.profile || !vm.profile._id) {
+            vm.error = 'Perfil não encontrado. Por favor, faça login novamente.';
+            return;
+        }
+
+        vm.loading = true;
+        PlayerService.generateReferralCode()
+            .then(function(response) {
+                console.log('Referral code generated:', response.data);
+                vm.success = 'Código de indicação gerado com sucesso!';
+                updateReferralUrl();
+            })
+            .catch(function(error) {
+                console.error('Error generating referral code:', error);
+                vm.error = error.data && error.data.message ? error.data.message : 'Erro ao gerar código de indicação.';
+            })
+            .finally(function() {
+                vm.loading = false;
+            });
     }
 
     vm.updateProfile = function() {
@@ -41,6 +69,7 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
         }).then(function(response) {
             vm.success = 'Perfil atualizado com sucesso!';
             AuthService.storePlayerData(response.data);
+            generateReferralCode(); // Generate referral code after profile update
         }).catch(function(error) {
             console.error('Profile update error:', error);
             vm.error = error.data && error.data.message ? error.data.message : 'Erro ao atualizar perfil.';
@@ -69,6 +98,10 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
         });
     };
 
-    // Initialize referral URL and QR code
-    updateReferralUrl();
+    // Initialize referral URL and QR code if profile exists
+    if (vm.profile && vm.profile._id) {
+        generateReferralCode();
+    } else {
+        vm.error = 'Perfil não encontrado. Por favor, faça login novamente.';
+    }
 }); 
