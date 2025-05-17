@@ -74,6 +74,7 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
         // Prepare form data
         var formData = new FormData();
         formData.append('file', vm.newImageFile);
+        formData.append('extra', '{}'); // Required by Funifier API
         $http({
             method: 'POST',
             url: FUNIFIER_API_CONFIG.baseUrl + '/upload/image',
