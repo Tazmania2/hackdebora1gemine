@@ -82,7 +82,7 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
             method: 'POST',
             url: FUNIFIER_API_CONFIG.baseUrl + '/upload/image',
             headers: {
-                'Authorization': localStorage.getItem('token'),
+                'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
                 'Content-Type': undefined // Let browser set multipart/form-data
             },
             data: formData,
@@ -92,6 +92,16 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
                 var imageUrl = response.data.uploads[0].url;
                 // Update the profile with the new image URL using recreatePlayer
                 var playerData = angular.copy(vm.editedProfile);
+                
+                // Ensure required fields exist
+                playerData.teams = playerData.teams || [];
+                playerData.friends = playerData.friends || [];
+                playerData.business = playerData.business || false;
+                playerData.developer = playerData.developer || false;
+                if (!playerData.created) {
+                    playerData.created = Date.now();
+                }
+                
                 // Set image at root level with all required sizes
                 playerData.image = {
                     small: {
@@ -116,10 +126,12 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
                         depth: 0
                     }
                 };
+                
                 // Remove the image from extra if it exists
                 if (playerData.extra && playerData.extra.image) {
                     delete playerData.extra.image;
                 }
+                
                 return PlayerService.recreatePlayer(playerData);
             } else {
                 throw new Error('Erro ao obter URL da imagem enviada.');
