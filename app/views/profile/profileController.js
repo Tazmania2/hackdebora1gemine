@@ -33,7 +33,7 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
         });
     }
 
-    // Update profile
+    // Update profile (recreate player)
     vm.updateProfile = function() {
         vm.loading = true;
         vm.error = null;
@@ -43,12 +43,14 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
             var d = vm.editedProfile.extra.birthdate;
             vm.editedProfile.extra.birthdate = d.toISOString().substring(0, 10);
         }
-        // Create update data object
-        var updateData = {
+        // Build playerData with all required fields
+        var playerData = {
+            _id: vm.editedProfile._id,
             name: vm.editedProfile.name,
+            email: vm.editedProfile.email,
             extra: vm.editedProfile.extra
         };
-        PlayerService.updatePlayerProfile(updateData).then(function(response) {
+        PlayerService.recreatePlayer(playerData).then(function(response) {
             vm.success = 'Perfil atualizado com sucesso!';
             // Update the local player data
             AuthService.storePlayerData(response.data);

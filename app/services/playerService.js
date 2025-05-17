@@ -163,5 +163,18 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
         });
     };
 
+    service.recreatePlayer = function(playerData) {
+        // playerData must include _id, name, email, and all required fields
+        return $http({
+            method: 'POST',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player',
+            headers: {
+                'Authorization': localStorage.getItem('token'),
+                'Content-Type': 'application/json'
+            },
+            data: playerData
+        });
+    };
+
     return service;
 }); 
