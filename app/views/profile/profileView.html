@@ -1,29 +1,10 @@
 <!-- app/views/profile/profileView.html -->
-<div class="profile-container">
-    <div class="profile-header">
-        <button class="btn btn-back" ng-click="vm.goBack()">
-            <i class="bi bi-arrow-left"></i> Voltar
-        </button>
-        <h2>Editar Perfil</h2>
-    </div>
-
-    <div class="profile-content" ng-if="!vm.loading">
-        <div class="alert alert-success" ng-if="vm.success">
-            {{ vm.success }}
+<div class="login-container" style="background: var(--background-dark); min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+    <div class="card" style="max-width: 370px; width: 100%; padding: 32px 24px; border-radius: 24px; box-shadow: var(--shadow); background: var(--background-card);">
+        <div class="text-center mb-2">
+            <img ng-src="{{vm.editedProfile.image && vm.editedProfile.image.medium.url || vm.editedProfile.extra && vm.editedProfile.extra.image}}" alt="Foto de Perfil" style="width: 90px; height: 90px; border-radius: 50%; border: 4px solid var(--primary-color); background: #fff; margin-bottom: 12px; object-fit: cover;">
+            <h2 style="color: var(--primary-color); font-weight: bold; margin-bottom: 8px;">Seu Perfil</h2>
         </div>
-        <div class="alert alert-danger" ng-if="vm.error">
-            {{ vm.error }}
-        </div>
-
-        <!-- Profile Image Section -->
-        <div class="form-group" style="text-align:center; margin-bottom: 20px;">
-            <img ng-src="{{vm.editedProfile.image && vm.editedProfile.image.medium.url || vm.editedProfile.extra && vm.editedProfile.extra.image}}" alt="Foto de Perfil" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:2px solid #ccc;">
-            <div style="margin-top:10px;">
-                <input type="file" class="form-control" accept="image/*" file-model="vm.newImageFile">
-                <button class="btn btn-info" style="margin-top:5px;" ng-click="vm.uploadProfileImage()">Salvar Imagem</button>
-            </div>
-        </div>
-
         <form ng-submit="vm.updateProfile()">
             <div class="form-group">
                 <label for="name">Nome Completo</label>
@@ -45,16 +26,25 @@
                 <label for="cep">CEP</label>
                 <input type="text" class="form-control" id="cep" ng-model="vm.editedProfile.extra.cep">
             </div>
-            <div class="form-actions">
-                <button type="button" class="btn btn-secondary" ng-click="vm.goBack()">Cancelar</button>
-                <button type="submit" class="btn btn-primary" ng-disabled="vm.loading">Salvar Alterações</button>
+            <div class="form-group" style="text-align:center; margin-bottom: 20px;">
+                <input type="file" class="form-control" accept="image/*" file-model="vm.newImageFile">
+                <button class="btn btn-primary" style="margin-top:10px; width:100%;" ng-click="vm.uploadProfileImage()">Salvar Imagem</button>
+            </div>
+            <div class="form-actions" style="display: flex; gap: 12px;">
+                <button type="button" class="btn btn-secondary" ng-click="vm.goBack()" style="flex:1;">Cancelar</button>
+                <button type="submit" class="btn btn-primary" ng-disabled="vm.loading" style="flex:1;">Salvar Alterações</button>
+            </div>
+            <div class="alert alert-success" ng-if="vm.success" style="margin-top: 12px;">
+                {{ vm.success }}
+            </div>
+            <div class="alert alert-danger" ng-if="vm.error" style="margin-top: 12px;">
+                {{ vm.error }}
             </div>
         </form>
-    </div>
-
-    <div class="loading-spinner" ng-if="vm.loading">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Carregando...</span>
+        <div class="loading-spinner" ng-if="vm.loading">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
         </div>
     </div>
 </div> 
