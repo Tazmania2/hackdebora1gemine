@@ -79,6 +79,8 @@ angular.module('funifierApp')
     return {
         request: function (config) {
             config.headers = config.headers || {};
+            // Debug log for Authorization header
+            console.log('[AuthInterceptor] Before:', config.url, 'Authorization:', config.headers.Authorization);
             // Only set Authorization if it is not already set
             if (config.url.indexOf(FUNIFIER_API_CONFIG.baseUrl) === 0 && 
                 !config.url.includes('/auth/token')) {
@@ -89,6 +91,8 @@ angular.module('funifierApp')
                     }
                 }
             }
+            // Debug log after possible modification
+            console.log('[AuthInterceptor] After:', config.url, 'Authorization:', config.headers.Authorization);
             return config;
         },
         responseError: function (response) {
