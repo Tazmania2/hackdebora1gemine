@@ -16,6 +16,26 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
         });
     };
 
+    service.updatePlayerProfile = function(updateData) {
+        return $http({
+            method: 'PUT',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/status',
+            headers: {
+                'Authorization': localStorage.getItem('token'),
+                'Content-Type': 'application/json'
+            },
+            data: updateData
+        }).then(function(response) {
+            // Update stored player data
+            var currentPlayer = service.getCurrentPlayer();
+            var updatedPlayer = angular.copy(currentPlayer);
+            updatedPlayer.name = updateData.name;
+            updatedPlayer.extra = updateData.extra;
+            localStorage.setItem('currentPlayer', JSON.stringify(updatedPlayer));
+            return { data: updatedPlayer };
+        });
+    };
+
     service.getPlayerBalance = function() {
         return $http({
             method: 'GET',

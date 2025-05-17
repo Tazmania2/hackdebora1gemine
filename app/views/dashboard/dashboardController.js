@@ -8,6 +8,8 @@ angular.module('funifierApp').controller('DashboardController', function($scope,
     vm.currentToken = localStorage.getItem('token');
     vm.loading = true;
     vm.error = null;
+    vm.updating = false;
+    vm.editedProfile = {};
 
     function loadDashboardData() {
         vm.loading = true;
@@ -47,6 +49,43 @@ angular.module('funifierApp').controller('DashboardController', function($scope,
                 vm.loading = false;
             });
     }
+
+    vm.openProfileModal = function() {
+        // Create a deep copy of the player data to avoid direct modifications
+        vm.editedProfile = angular.copy(vm.player);
+        if (!vm.editedProfile.extra) {
+            vm.editedProfile.extra = {};
+        }
+        $('#profileModal').modal('show');
+    };
+
+    vm.updateProfile = function() {
+        vm.updating = true;
+        vm.error = null;
+
+        // Ensure we don't modify critical fields
+        var updateData = {
+            name: vm.editedProfile.name,
+            extra: vm.editedProfile.extra
+        };
+
+        PlayerService.updatePlayerProfile(updateData)
+            .then(function(response) {
+                // Update the local player data
+                vm.player = response.data;
+                // Close the modal
+                $('#profileModal').modal('hide');
+                // Show success message
+                alert('Perfil atualizado com sucesso!');
+            })
+            .catch(function(error) {
+                console.error('Error updating profile:', error);
+                vm.error = 'Erro ao atualizar perfil. Por favor, tente novamente.';
+            })
+            .finally(function() {
+                vm.updating = false;
+            });
+    };
 
     vm.copyToken = function() {
         navigator.clipboard.writeText(vm.currentToken).then(function() {

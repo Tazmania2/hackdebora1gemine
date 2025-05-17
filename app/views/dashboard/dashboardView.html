@@ -1,6 +1,9 @@
 <div class="dashboard-container">
     <div class="dashboard-header">
         <h2>Bem-vindo, {{vm.player.name}}</h2>
+        <button class="btn btn-primary" ng-click="vm.openProfileModal()">
+            <i class="bi bi-person-circle"></i> Editar Perfil
+        </button>
         <div class="balance-section">
             <div class="balance-card">
                 <h3>Pontos</h3>
@@ -11,6 +14,62 @@
                 <h3>Moedas</h3>
                 <p class="balance-value">{{vm.status.point_categories.coins}}</p>
                 <p class="expiration">XP: {{vm.status.level_progress.percent_completed}}%</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Edit Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1" role="dialog" aria-labelledby="profileModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="profileModalLabel">Editar Perfil</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form ng-submit="vm.updateProfile()">
+                        <div class="form-group">
+                            <label for="name">Nome Completo</label>
+                            <input type="text" class="form-control" id="name" ng-model="vm.editedProfile.name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Telefone</label>
+                            <input type="tel" class="form-control" id="phone" ng-model="vm.editedProfile.extra.phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="cpf">CPF</label>
+                            <input type="text" class="form-control" id="cpf" ng-model="vm.editedProfile.extra.cpf">
+                        </div>
+                        <div class="form-group">
+                            <label for="birthdate">Data de Nascimento</label>
+                            <input type="date" class="form-control" id="birthdate" ng-model="vm.editedProfile.extra.birthdate">
+                        </div>
+                        <div class="form-group">
+                            <label for="cep">CEP</label>
+                            <input type="text" class="form-control" id="cep" ng-model="vm.editedProfile.extra.cep">
+                        </div>
+                        <div class="form-group">
+                            <label for="company">Empresa</label>
+                            <input type="text" class="form-control" id="company" ng-model="vm.editedProfile.extra.company">
+                        </div>
+                        <div class="form-group">
+                            <label for="sports">Esportes</label>
+                            <select class="form-control" id="sports" ng-model="vm.editedProfile.extra.sports" multiple>
+                                <option value="soccer">Futebol</option>
+                                <option value="basketball">Basquete</option>
+                                <option value="tennis">Tênis</option>
+                                <option value="swimming">Natação</option>
+                                <option value="running">Corrida</option>
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary" ng-disabled="vm.updating">Salvar Alterações</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
