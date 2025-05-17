@@ -73,7 +73,7 @@ app.config(function($routeProvider, $locationProvider) {
             }
         })
         .when('/welcome', {
-            templateUrl: 'views/welcome/welcomeView.html',
+            templateUrl: 'views/welcome/WelcomeView.html',
             controller: 'WelcomeController',
             controllerAs: 'vm'
         })
