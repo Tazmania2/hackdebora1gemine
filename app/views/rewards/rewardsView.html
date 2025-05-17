@@ -1,0 +1,47 @@
+<!-- Rewards View - Figma Style -->
+<div class="login-container" style="background: var(--background-dark); min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding-top: 32px;">
+    <div style="width: 100%; max-width: 400px;">
+        <div style="background: var(--primary-color); color: #fff; border-radius: 24px 24px 0 0; padding: 20px 0 16px 0; text-align: center; margin-bottom: 0;">
+            <span style="font-size: 1.3rem; font-weight: bold;">Recompensas</span>
+        </div>
+        <div style="background: var(--background-card); border-radius: 0 0 24px 24px; padding: 20px 0 16px 0; text-align: center; margin-bottom: 24px;">
+            <span style="color: var(--primary-color); font-size: 1.1rem; font-weight: bold;">Troque seus pontos por prêmios!</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 18px;">
+            <div class="card" ng-repeat="reward in vm.rewards" style="background: var(--background-card); border-radius: 16px; box-shadow: var(--shadow); padding: 18px 10px; text-align: center;">
+                <div style="height: 90px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+                    <img ng-src="{{reward.imageUrl}}" alt="{{reward.name}}" style="max-width: 70px; max-height: 70px; border-radius: 12px; background: #fff;">
+                </div>
+                <div style="color: #fff; font-size: 1.05rem; font-weight: 500; margin-bottom: 4px;">{{reward.name}}</div>
+                <div style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 8px; min-height: 32px;">{{reward.description}}</div>
+                <div style="color: var(--primary-color); font-size: 1.1rem; font-weight: bold; margin-bottom: 8px;">
+                    <i class="bi bi-star-fill"></i> {{reward.points}} pontos
+                </div>
+                <button class="btn btn-primary" style="width: 100%; font-size: 1rem;" ng-click="vm.redeemReward(reward._id)" ng-disabled="vm.isLoading">Resgatar</button>
+            </div>
+        </div>
+        <div class="alert alert-danger" ng-if="vm.errorMessage" style="margin-top: 18px;">
+            {{vm.errorMessage}}
+        </div>
+        <div class="loading-state" ng-if="vm.isLoading" style="margin-top: 32px;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+        </div>
+        <!-- Redeemed Rewards -->
+        <div class="purchase-history" ng-if="vm.redeemedRewards.length > 0" style="margin-top: 32px;">
+            <h2 style="color: var(--primary-color); font-size: 1.1rem; font-weight: bold; margin-bottom: 12px;">Histórico de Resgates</h2>
+            <div class="history-list" style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="history-item" ng-repeat="reward in vm.redeemedRewards" style="background: var(--background-card); border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between;">
+                    <div class="history-info">
+                        <div style="color: #fff; font-size: 1rem; font-weight: 500;">{{reward.name}}</div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Resgatado em: {{reward.redeemedAt | date:'dd/MM/yyyy HH:mm'}}</div>
+                    </div>
+                    <div class="history-price" style="color: var(--primary-color); font-weight: bold; font-size: 1rem; display: flex; align-items: center; gap: 4px;">
+                        <i class="bi bi-star-fill"></i> {{reward.points}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
