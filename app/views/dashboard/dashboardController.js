@@ -1,64 +1,117 @@
-angular.module('funifierApp').controller('DashboardController', function($scope, $location, PlayerService, AuthService) {
-    var vm = this;
-    vm.playerStatus = {};
-    vm.activities = [];
-    vm.events = [];
-    vm.loading = true;
-    vm.error = null;
+(function() {
+    'use strict';
 
-    function loadDashboardData() {
+    angular
+        .module('app')
+        .controller('DashboardController', DashboardController);
+
+    DashboardController.$inject = ['$scope', '$location', 'AuthService', 'PlayerService', 'EventService', 'ActivityService'];
+
+    function DashboardController($scope, $location, AuthService, PlayerService, EventService, ActivityService) {
+        var vm = this;
+
+        // Properties
+        vm.playerStatus = {};
+        vm.activities = [];
+        vm.events = [];
         vm.loading = true;
         vm.error = null;
 
-        // Get player status (points and coins)
-        PlayerService.getPlayerBalance()
-            .then(function(response) {
-                vm.playerStatus = response.data;
-                console.log('Player status loaded:', response.data);
-                
-                // Load activities
-                return PlayerService.getPlayerActivities();
-            })
-            .then(function(response) {
-                vm.activities = response.data;
-                console.log('Activities loaded:', response.data);
-                
-                // Load events
-                return PlayerService.getPlayerEvents();
-            })
-            .then(function(response) {
-                vm.events = response.data;
-                console.log('Events loaded:', response.data);
-                vm.loading = false;
-            })
-            .catch(function(error) {
-                console.error('Error loading dashboard data:', error);
-                vm.error = 'Erro ao carregar dados do dashboard. Por favor, tente novamente.';
-                vm.loading = false;
-            });
+        // Methods
+        vm.goToProfile = goToProfile;
+        vm.goToRewards = goToRewards;
+        vm.goToPurchases = goToPurchases;
+        vm.shareOnSocial = shareOnSocial;
+        vm.registerForEvent = registerForEvent;
+
+        // Initialize
+        activate();
+
+        function activate() {
+            loadPlayerStatus();
+            loadActivities();
+            loadEvents();
+        }
+
+        function loadPlayerStatus() {
+            PlayerService.getStatus()
+                .then(function(response) {
+                    vm.playerStatus = response.data;
+                })
+                .catch(function(error) {
+                    vm.error = 'Erro ao carregar status do jogador';
+                    console.error('Error loading player status:', error);
+                })
+                .finally(function() {
+                    vm.loading = false;
+                });
+        }
+
+        function loadActivities() {
+            ActivityService.getRecent()
+                .then(function(response) {
+                    vm.activities = response.data;
+                })
+                .catch(function(error) {
+                    console.error('Error loading activities:', error);
+                });
+        }
+
+        function loadEvents() {
+            EventService.getUpcoming()
+                .then(function(response) {
+                    vm.events = response.data;
+                })
+                .catch(function(error) {
+                    console.error('Error loading events:', error);
+                });
+        }
+
+        function goToProfile() {
+            $location.path('/profile');
+        }
+
+        function goToRewards() {
+            $location.path('/rewards');
+        }
+
+        function goToPurchases() {
+            $location.path('/purchases');
+        }
+
+        function shareOnSocial() {
+            // Implement social sharing functionality
+            const shareData = {
+                title: 'Jogue comigo!',
+                text: 'Venha jogar comigo e ganhe pontos!',
+                url: window.location.origin
+            };
+
+            if (navigator.share) {
+                navigator.share(shareData)
+                    .catch(function(error) {
+                        console.error('Error sharing:', error);
+                    });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.text)}&url=${encodeURIComponent(shareData.url)}`;
+                window.open(shareUrl, '_blank');
+            }
+        }
+
+        function registerForEvent(eventId) {
+            EventService.register(eventId)
+                .then(function(response) {
+                    // Update the event in the list
+                    const eventIndex = vm.events.findIndex(e => e._id === eventId);
+                    if (eventIndex !== -1) {
+                        vm.events[eventIndex].registered = true;
+                    }
+                })
+                .catch(function(error) {
+                    vm.error = 'Erro ao se inscrever no evento';
+                    console.error('Error registering for event:', error);
+                });
+        }
     }
-
-    // Navigate to profile page
-    vm.goToProfile = function() {
-        $location.path('/profile');
-    };
-
-    vm.registerForEvent = function(eventId) {
-        // Implementation for event registration
-    };
-
-    vm.goToRewards = function() {
-        $location.path('/rewards');
-    };
-
-    vm.goToPurchases = function() {
-        $location.path('/purchases');
-    };
-
-    vm.shareOnSocial = function() {
-        // Implementation for social sharing
-    };
-
-    // Load dashboard data when controller initializes
-    loadDashboardData();
-}); 
+})(); 

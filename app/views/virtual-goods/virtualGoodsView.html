@@ -1,0 +1,101 @@
+<div class="virtual-goods-container">
+    <div class="container">
+        <!-- Header -->
+        <div class="virtual-goods-header">
+            <h1>Loja de Itens Virtuais</h1>
+            <p>Compre itens especiais com suas moedas</p>
+        </div>
+
+        <!-- Balance Display -->
+        <div class="balance-display">
+            <div class="balance-item">
+                <i class="bi bi-coin"></i>
+                <span>{{vm.playerBalance.misscoins || 0}} moedas</span>
+            </div>
+        </div>
+
+        <!-- Virtual Goods Grid -->
+        <div class="virtual-goods-grid" ng-if="!vm.loading">
+            <div class="virtual-good-card" ng-repeat="good in vm.virtualGoods">
+                <div class="good-image">
+                    <img ng-src="{{good.imageUrl}}" alt="{{good.name}}">
+                </div>
+                <div class="good-info">
+                    <h3>{{good.name}}</h3>
+                    <p>{{good.description}}</p>
+                    <div class="good-price">
+                        <i class="bi bi-coin"></i>
+                        <span>{{good.price}} moedas</span>
+                    </div>
+                </div>
+                <div class="good-actions">
+                    <button class="btn btn-primary" 
+                            ng-click="vm.purchaseGood(good)"
+                            ng-disabled="vm.playerBalance.misscoins < good.price">
+                        Comprar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading-state" ng-if="vm.loading">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="alert alert-danger" ng-if="vm.error">
+            {{vm.error}}
+        </div>
+
+        <!-- Success Message -->
+        <div class="alert alert-success" ng-if="vm.successMessage">
+            {{vm.successMessage}}
+        </div>
+
+        <!-- Purchase History -->
+        <div class="purchase-history" ng-if="vm.purchaseHistory.length > 0">
+            <h2>Histórico de Compras</h2>
+            <div class="history-list">
+                <div class="history-item" ng-repeat="purchase in vm.purchaseHistory">
+                    <div class="history-info">
+                        <h4>{{purchase.goodName}}</h4>
+                        <p>Comprado em: {{purchase.purchaseDate | date:'dd/MM/yyyy HH:mm'}}</p>
+                    </div>
+                    <div class="history-price">
+                        <i class="bi bi-coin"></i>
+                        <span>{{purchase.price}} moedas</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Purchase Confirmation Modal -->
+<div class="modal fade" id="purchaseModal" tabindex="-1" role="dialog" aria-labelledby="purchaseModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="purchaseModalLabel">Confirmar Compra</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja comprar <strong>{{vm.selectedGood.name}}</strong>?</p>
+                <p>Custo: <i class="bi bi-coin"></i> {{vm.selectedGood.price}} moedas</p>
+                <p>Seu saldo após a compra: <i class="bi bi-coin"></i> {{vm.playerBalance.misscoins - vm.selectedGood.price}} moedas</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" ng-click="vm.confirmPurchase()" ng-disabled="vm.processing">
+                    <span ng-if="!vm.processing">Confirmar</span>
+                    <span ng-if="vm.processing" class="spinner-border spinner-border-sm" role="status"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div> 

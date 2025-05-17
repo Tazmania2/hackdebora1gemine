@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR" ng-app="app">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funifier</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/images/favicon.png">
+
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/angular-loading-bar@0.9.0/build/loading-bar.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="app/css/style.css">
+</head>
+<body>
+    <!-- Main Content -->
+    <div class="main-container">
+        <div ng-view></div>
+    </div>
+
+    <!-- JavaScript Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/angular@1.8.3/angular.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/angular-route@1.8.3/angular-route.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/angular-animate@1.8.3/angular-animate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/angular-sanitize@1.8.3/angular-sanitize.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/angular-messages@1.8.3/angular-messages.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/angular-ui-bootstrap@2.5.6/dist/ui-bootstrap-tpls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/angular-loading-bar@0.9.0/build/loading-bar.min.js"></script>
+
+    <!-- App Configuration -->
+    <script src="app/config/api.config.js"></script>
+
+    <!-- App Module -->
+    <script src="app/app.js"></script>
+
+    <!-- Services -->
+    <script src="app/services/authService.js"></script>
+    <script src="app/services/playerService.js"></script>
+    <script src="app/services/activityService.js"></script>
+    <script src="app/services/eventService.js"></script>
+    <script src="app/services/virtualGoodsService.js"></script>
+
+    <!-- Interceptors -->
+    <script src="app/interceptors/authInterceptor.js"></script>
+
+    <!-- Controllers -->
+    <script src="app/views/login/loginController.js"></script>
+    <script src="app/views/register/registerController.js"></script>
+    <script src="app/views/dashboard/dashboardController.js"></script>
+    <script src="app/views/profile/profileController.js"></script>
+    <script src="app/views/rewards/rewardsController.js"></script>
+    <script src="app/views/purchases/purchasesController.js"></script>
+    <script src="app/views/virtual-goods/virtualGoodsController.js"></script>
+</body>
+</html> 

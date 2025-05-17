@@ -2,119 +2,108 @@
     <!-- Dashboard Header -->
     <div class="dashboard-header">
         <div class="welcome-section">
-            <h1>Bem-vindo!</h1>
-            <p>Gerencie seus pontos e atividades</p>
+            <h1>Olá, {{vm.playerStatus.name || 'Jogador'}}!</h1>
+            <p>Bem-vindo ao seu painel</p>
         </div>
         <div class="header-actions">
-            <button class="btn btn-primary" ng-click="vm.goToProfile()">
-                <i class="bi bi-person"></i> Editar Perfil
+            <button class="btn btn-icon" ng-click="vm.goToProfile()">
+                <i class="bi bi-person"></i>
             </button>
         </div>
     </div>
 
     <!-- Balance Cards -->
-    <div class="row">
-        <div class="col-md-6">
-            <div class="balance-card">
-                <div class="balance-icon">
-                    <i class="bi bi-star-fill"></i>
-                </div>
-                <div class="balance-info">
-                    <h3>Pontos</h3>
-                    <p class="balance-value">{{vm.playerStatus.point_categories.pontos || 0}}</p>
-                </div>
+    <div class="balance-cards">
+        <div class="balance-card">
+            <div class="balance-icon">
+                <i class="bi bi-star-fill"></i>
+            </div>
+            <div class="balance-info">
+                <h3>Pontos</h3>
+                <p class="balance-value">{{vm.playerStatus.point_categories.pontos || 0}}</p>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="balance-card">
-                <div class="balance-icon">
-                    <i class="bi bi-coin"></i>
-                </div>
-                <div class="balance-info">
-                    <h3>Moedas</h3>
-                    <p class="balance-value">{{vm.playerStatus.point_categories.misscoins || 0}}</p>
-                </div>
+        <div class="balance-card">
+            <div class="balance-icon">
+                <i class="bi bi-coin"></i>
             </div>
-        </div>
-    </div>
-
-    <!-- Recent Activities -->
-    <div class="dashboard-section">
-        <h2>Atividades Recentes</h2>
-        <div class="activity-list">
-            <div class="activity-item" ng-repeat="activity in vm.activities">
-                <div class="activity-icon">
-                    <i class="bi" ng-class="{
-                        'bi-star': activity.type === 'points',
-                        'bi-coin': activity.type === 'coins',
-                        'bi-ticket': activity.type === 'reward'
-                    }"></i>
-                </div>
-                <div class="activity-info">
-                    <h4>{{activity.description}}</h4>
-                    <p class="activity-date">{{activity.date | date:'dd/MM/yyyy HH:mm'}} </p>
-                </div>
-                <div class="activity-value" ng-class="{
-                    'text-success': activity.value > 0,
-                    'text-danger': activity.value < 0
-                }">
-                    {{activity.value > 0 ? '+' : ''}}{{activity.value}}
-                </div>
-            </div>
-            <div class="no-activities" ng-if="!vm.activities.length">
-                <p>Nenhuma atividade recente</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Upcoming Events -->
-    <div class="dashboard-section">
-        <h2>Próximos Eventos</h2>
-        <div class="event-list">
-            <div class="event-card" ng-repeat="event in vm.events">
-                <div class="event-date">
-                    <span class="day">{{event.date | date:'dd'}}</span>
-                    <span class="month">{{event.date | date:'MMM'}}</span>
-                </div>
-                <div class="event-info">
-                    <h4>{{event.name}}</h4>
-                    <p>{{event.description}}</p>
-                    <div class="event-meta">
-                        <span><i class="bi bi-geo-alt"></i> {{event.location}}</span>
-                        <span><i class="bi bi-clock"></i> {{event.date | date:'HH:mm'}}</span>
-                    </div>
-                </div>
-                <div class="event-actions">
-                    <button class="btn btn-primary" ng-click="vm.registerForEvent(event.id)" ng-if="!event.registered">
-                        Participar
-                    </button>
-                    <button class="btn btn-success" disabled ng-if="event.registered">
-                        Inscrito
-                    </button>
-                </div>
-            </div>
-            <div class="no-events" ng-if="!vm.events.length">
-                <p>Nenhum evento próximo</p>
+            <div class="balance-info">
+                <h3>Moedas</h3>
+                <p class="balance-value">{{vm.playerStatus.point_categories.misscoins || 0}}</p>
             </div>
         </div>
     </div>
 
     <!-- Quick Actions -->
-    <div class="dashboard-section">
+    <div class="quick-actions">
         <h2>Ações Rápidas</h2>
-        <div class="quick-actions">
+        <div class="action-buttons">
             <button class="btn btn-action" ng-click="vm.goToRewards()">
                 <i class="bi bi-gift"></i>
-                Resgatar Recompensas
+                <span>Recompensas</span>
             </button>
             <button class="btn btn-action" ng-click="vm.goToPurchases()">
                 <i class="bi bi-cart"></i>
-                Registrar Compra
+                <span>Compras</span>
             </button>
             <button class="btn btn-action" ng-click="vm.shareOnSocial()">
                 <i class="bi bi-share"></i>
-                Compartilhar
+                <span>Compartilhar</span>
             </button>
+        </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="recent-activities">
+        <h2>Atividades Recentes</h2>
+        <div class="activity-list" ng-if="vm.activities.length > 0">
+            <div class="activity-item" ng-repeat="activity in vm.activities">
+                <div class="activity-icon">
+                    <i class="bi" ng-class="{
+                        'bi-star': activity.type === 'points',
+                        'bi-coin': activity.type === 'coins',
+                        'bi-gift': activity.type === 'reward'
+                    }"></i>
+                </div>
+                <div class="activity-info">
+                    <h4>{{activity.title}}</h4>
+                    <p>{{activity.description}}</p>
+                    <span class="activity-date">{{activity.date | date:'dd/MM/yyyy HH:mm'}}</span>
+                </div>
+                <div class="activity-value" ng-class="{'positive': activity.value > 0, 'negative': activity.value < 0}">
+                    {{activity.value > 0 ? '+' : ''}}{{activity.value}}
+                </div>
+            </div>
+        </div>
+        <div class="no-activities" ng-if="vm.activities.length === 0">
+            <p>Nenhuma atividade recente</p>
+        </div>
+    </div>
+
+    <!-- Upcoming Events -->
+    <div class="upcoming-events">
+        <h2>Próximos Eventos</h2>
+        <div class="event-list" ng-if="vm.events.length > 0">
+            <div class="event-item" ng-repeat="event in vm.events">
+                <div class="event-date">
+                    <span class="day">{{event.date | date:'dd'}}</span>
+                    <span class="month">{{event.date | date:'MMM'}}</span>
+                </div>
+                <div class="event-info">
+                    <h4>{{event.title}}</h4>
+                    <p>{{event.description}}</p>
+                    <span class="event-time">{{event.date | date:'HH:mm'}}</span>
+                </div>
+                <button class="btn btn-sm" 
+                        ng-class="{'btn-primary': !event.registered, 'btn-secondary': event.registered}"
+                        ng-click="vm.registerForEvent(event._id)"
+                        ng-disabled="event.registered">
+                    {{event.registered ? 'Inscrito' : 'Inscrever-se'}}
+                </button>
+            </div>
+        </div>
+        <div class="no-events" ng-if="vm.events.length === 0">
+            <p>Nenhum evento próximo</p>
         </div>
     </div>
 </div> 

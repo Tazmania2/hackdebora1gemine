@@ -8,53 +8,108 @@
                     <h3 class="text-center">Cadastro de Jogador</h3>
                 </div>
                 <div class="card-body">
-                    <form name="registerForm" ng-submit="vm.register()">
+                    <form name="registerForm" ng-submit="vm.register()" class="register-form">
                         <div class="form-group">
                             <label for="name">Nome Completo*</label>
-                            <input type="text" class="form-control" id="name" ng-model="vm.user.name" required>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="name" 
+                                   ng-model="vm.user.name" 
+                                   placeholder="Digite seu nome completo"
+                                   required>
                         </div>
+
                         <div class="form-group">
                             <label for="email">Email*</label>
-                            <input type="email" class="form-control" id="email" ng-model="vm.user.email" required>
+                            <input type="email" 
+                                   class="form-control" 
+                                   id="email" 
+                                   ng-model="vm.user.email" 
+                                   placeholder="Digite seu email"
+                                   required>
                         </div>
+
                         <div class="form-group">
                             <label for="phone">Telefone*</label>
-                            <input type="tel" class="form-control" id="phone" ng-model="vm.user.phone" required>
+                            <input type="tel" 
+                                   class="form-control" 
+                                   id="phone" 
+                                   ng-model="vm.user.phone" 
+                                   placeholder="Digite seu telefone"
+                                   required>
                         </div>
+
                         <div class="form-group">
                             <label for="birthdate">Data de Nascimento*</label>
-                            <input type="date" class="form-control" id="birthdate" ng-model="vm.user.birthdate" required>
+                            <input type="date" 
+                                   class="form-control" 
+                                   id="birthdate" 
+                                   ng-model="vm.user.birthdate" 
+                                   required>
                         </div>
+
                         <div class="form-group">
                             <label for="cpf">CPF*</label>
-                            <input type="text" class="form-control" id="cpf" ng-model="vm.user.cpf" required>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="cpf" 
+                                   ng-model="vm.user.cpf" 
+                                   placeholder="Digite seu CPF"
+                                   required>
                         </div>
+
                         <div class="form-group">
                             <label for="password">Senha*</label>
-                            <input type="password" class="form-control" id="password" ng-model="vm.user.password" required>
+                            <input type="password" 
+                                   class="form-control" 
+                                   id="password" 
+                                   ng-model="vm.user.password" 
+                                   placeholder="Digite sua senha"
+                                   required>
                         </div>
+
                         <div class="form-group">
                             <label for="confirmPassword">Confirmar Senha*</label>
-                            <input type="password" class="form-control" id="confirmPassword" ng-model="vm.user.confirmPassword" required>
+                            <input type="password" 
+                                   class="form-control" 
+                                   id="confirmPassword" 
+                                   ng-model="vm.user.confirmPassword" 
+                                   placeholder="Confirme sua senha"
+                                   required>
                         </div>
+
                         <div class="form-group">
                             <label for="referralCode">Código de Indicação</label>
-                            <input type="text" class="form-control" id="referralCode" ng-model="vm.user.referralCode">
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="referralCode" 
+                                   ng-model="vm.user.referralCode" 
+                                   placeholder="Digite o código de indicação (opcional)">
                         </div>
-                        <div class="form-group">
+
+                        <div class="form-group terms-group">
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="termsAccept" ng-model="vm.user.acceptTerms" required>
+                                <input type="checkbox" 
+                                       class="form-check-input" 
+                                       id="termsAccept" 
+                                       ng-model="vm.user.acceptTerms" 
+                                       required>
                                 <label class="form-check-label" for="termsAccept">
-                                    Li e aceito os <a href="#" ng-click="vm.showTerms($event)">Termos de Uso</a> e <a href="#" ng-click="vm.showRegulation($event)">Regulamento</a>*
+                                    Li e aceito os <a href="#" ng-click="vm.showTerms($event)">Termos de Uso</a> e 
+                                    <a href="#" ng-click="vm.showRegulation($event)">Regulamento</a>*
                                 </label>
                             </div>
                         </div>
-                        <div class="form-group text-center">
-                            <button type="submit" class="btn btn-primary" ng-disabled="vm.loading || !vm.user.acceptTerms">
+
+                        <div class="form-group">
+                            <button type="submit" 
+                                    class="btn btn-primary btn-block" 
+                                    ng-disabled="vm.loading || !vm.user.acceptTerms">
                                 <span ng-if="!vm.loading">Cadastrar</span>
-                                <span ng-if="vm.loading">Cadastrando...</span>
+                                <span ng-if="vm.loading" class="loading-spinner-small"></span>
                             </button>
                         </div>
+
                         <div class="alert alert-danger" ng-if="vm.error">
                             {{ vm.error }}
                         </div>
@@ -87,38 +142,17 @@
                     <p>2. Cadastro e Conta</p>
                     <p>2.1. Para utilizar os serviços, é necessário realizar um cadastro completo e fornecer informações verdadeiras e precisas.</p>
                     <p>2.2. Você é responsável por manter a confidencialidade de sua senha e por todas as atividades que ocorrerem em sua conta.</p>
-
-                    <p>3. Uso do Aplicativo</p>
-                    <p>3.1. O aplicativo deve ser utilizado apenas para fins lícitos e de acordo com estes termos.</p>
-                    <p>3.2. Não é permitido o uso de programas automatizados ou bots para interagir com o aplicativo.</p>
-
-                    <p>4. Privacidade</p>
-                    <p>4.1. Suas informações pessoais serão tratadas de acordo com nossa Política de Privacidade.</p>
-                    <p>4.2. Ao se cadastrar, você concorda com a coleta e processamento de seus dados pessoais.</p>
                 </div>
-
                 <div ng-show="vm.showingRegulation">
-                    <h4>Regulamento do Programa de Fidelidade</h4>
-                    <p>1. Participação</p>
-                    <p>1.1. O programa de fidelidade está disponível para todos os usuários cadastrados.</p>
-                    <p>1.2. A participação é gratuita e não há custos de adesão.</p>
-
-                    <p>2. Pontuação</p>
-                    <p>2.1. Os pontos são acumulados através de compras e participação em atividades promocionais.</p>
-                    <p>2.2. Os pontos têm validade de 12 meses a partir da data de sua aquisição.</p>
-
-                    <p>3. Resgate</p>
-                    <p>3.1. Os pontos podem ser resgatados por recompensas disponíveis no catálogo.</p>
-                    <p>3.2. O resgate está sujeito à disponibilidade de estoque.</p>
-
-                    <p>4. Indicações</p>
-                    <p>4.1. Ao indicar novos usuários, você receberá pontos de bônus conforme regulamento específico.</p>
-                    <p>4.2. As indicações devem ser feitas através do código de indicação pessoal.</p>
+                    <h4>Regulamento</h4>
+                    <p>1. Regras Gerais</p>
+                    <p>1.1. O aplicativo é destinado a maiores de 18 anos.</p>
+                    <p>1.2. É proibido o uso de informações falsas ou enganosas.</p>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-primary" ng-click="vm.acceptTerms()" data-dismiss="modal">Aceitar Termos</button>
+                <button type="button" class="btn btn-primary" ng-click="vm.acceptTerms()" data-dismiss="modal">Aceitar</button>
             </div>
         </div>
     </div>

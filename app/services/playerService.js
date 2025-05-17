@@ -189,5 +189,29 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
         });
     };
 
+    service.getStatus = function() {
+        return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/player/status');
+    };
+
+    service.getProfile = function() {
+        return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/player/profile');
+    };
+
+    service.updateProfile = function(profileData) {
+        return $http.put(FUNIFIER_API_CONFIG.baseUrl + '/player/profile', profileData);
+    };
+
+    service.getBalance = function() {
+        return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/player/balance');
+    };
+
+    service.getActivities = function() {
+        return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/player/activities');
+    };
+
+    service.getEvents = function() {
+        return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/player/events');
+    };
+
     return service;
 }); 

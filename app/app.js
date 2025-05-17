@@ -1,94 +1,111 @@
 // app/app.js
-var app = angular.module('funifierApp', ['ngRoute']);
+(function() {
+    'use strict';
 
-// Constante para configuração da API
-// ATENÇÃO: O apiSecret NUNCA deve ser exposto no lado do cliente em produção.
-// Esta abordagem é apenas para prototipagem inicial e assume que a chamada /auth/basic
-// será protegida por um proxy/backend em um ambiente real.
-app.constant('FUNIFIER_API_CONFIG', {
-    baseUrl: 'https://service2.funifier.com/v3', // URL base da API Funifier v3
-    apiKey: '68252a212327f74f3a3d100d',
-    appSecret: '682605f62327f74f3a3d248e', // AppSecret do Funifier Studio
-    passwordResetBaseUrl: 'https://service2.funifier.com/v3' // Para o endpoint de reset de senha
-});
+    angular
+        .module('app', [
+            'ngRoute',
+            'ngAnimate',
+            'ngSanitize',
+            'ngMessages',
+            'ui.bootstrap',
+            'angular-loading-bar'
+        ])
+        .config(config)
+        .run(run);
 
-app.config(function($routeProvider, $locationProvider) {
-    $routeProvider
-        .when('/login', {
-            templateUrl: 'views/login/loginView.html',
-            controller: 'LoginController',
-            controllerAs: 'vm'
-        })
-        .when('/register', {
-            templateUrl: 'views/register/registerView.html',
-            controller: 'RegisterController',
-            controllerAs: 'vm'
-        })
-        .when('/dashboard', {
-            templateUrl: 'views/dashboard/dashboardView.html',
-            controller: 'DashboardController',
-            controllerAs: 'vm',
-            resolve: {
-                auth: function($location, AuthService) {
-                    if (!AuthService.isAuthenticated()) {
-                        $location.path('/login');
-                    }
-                }
-            }
-        })
-        .when('/profile', {
-            templateUrl: 'views/profile/profileView.html',
-            controller: 'ProfileController',
-            controllerAs: 'vm',
-            resolve: {
-                auth: function($location, AuthService) {
-                    if (!AuthService.isAuthenticated()) {
-                        $location.path('/login');
-                    }
-                }
-            }
-        })
-        .when('/rewards', {
-            templateUrl: 'views/rewards/rewardsView.html',
-            controller: 'RewardsController',
-            controllerAs: 'vm',
-            resolve: {
-                auth: function($location, AuthService) {
-                    if (!AuthService.isAuthenticated()) {
-                        $location.path('/login');
-                    }
-                }
-            }
-        })
-        .when('/purchase', {
-            templateUrl: 'views/purchase/purchaseView.html',
-            controller: 'PurchaseController',
-            controllerAs: 'vm',
-            resolve: {
-                auth: function($location, AuthService) {
-                    if (!AuthService.isAuthenticated()) {
-                        $location.path('/login');
-                    }
-                }
-            }
-        })
-        .otherwise({
-            redirectTo: '/login'
-        });
+    config.$inject = ['$routeProvider', '$locationProvider', '$httpProvider', 'cfpLoadingBarProvider'];
 
-    // Disable HTML5 mode to use hash-based URLs
-    $locationProvider.html5Mode(false);
-});
+    function config($routeProvider, $locationProvider, $httpProvider, cfpLoadingBarProvider) {
+        $routeProvider
+            .when('/', {
+                templateUrl: 'views/dashboard/dashboardView.html',
+                controller: 'DashboardController',
+                controllerAs: 'vm',
+                resolve: {
+                    auth: ['AuthService', function(AuthService) {
+                        return AuthService.isAuthenticated();
+                    }]
+                }
+            })
+            .when('/login', {
+                templateUrl: 'views/login/loginView.html',
+                controller: 'LoginController',
+                controllerAs: 'vm'
+            })
+            .when('/register', {
+                templateUrl: 'views/register/registerView.html',
+                controller: 'RegisterController',
+                controllerAs: 'vm'
+            })
+            .when('/profile', {
+                templateUrl: 'views/profile/profileView.html',
+                controller: 'ProfileController',
+                controllerAs: 'vm',
+                resolve: {
+                    auth: ['AuthService', function(AuthService) {
+                        return AuthService.isAuthenticated();
+                    }]
+                }
+            })
+            .when('/rewards', {
+                templateUrl: 'views/rewards/rewardsView.html',
+                controller: 'RewardsController',
+                controllerAs: 'vm',
+                resolve: {
+                    auth: ['AuthService', function(AuthService) {
+                        return AuthService.isAuthenticated();
+                    }]
+                }
+            })
+            .when('/purchases', {
+                templateUrl: 'views/purchases/purchasesView.html',
+                controller: 'PurchasesController',
+                controllerAs: 'vm',
+                resolve: {
+                    auth: ['AuthService', function(AuthService) {
+                        return AuthService.isAuthenticated();
+                    }]
+                }
+            })
+            .when('/virtual-goods', {
+                templateUrl: 'views/virtual-goods/virtualGoodsView.html',
+                controller: 'VirtualGoodsController',
+                controllerAs: 'vm',
+                resolve: {
+                    auth: ['AuthService', function(AuthService) {
+                        return AuthService.isAuthenticated();
+                    }]
+                }
+            })
+            .otherwise({
+                redirectTo: '/'
+            });
 
-app.run(function($rootScope, $location, AuthService) {
-    $rootScope.$on('$routeChangeStart', function(event, next, current) {
-        if (next && next.originalPath && 
-            next.originalPath !== '/login' && 
-            next.originalPath !== '/register') {
-            if (!AuthService.isAuthenticated()) {
-                event.preventDefault();
+        $locationProvider.html5Mode(true);
+
+        // Configure loading bar
+        cfpLoadingBarProvider.includeSpinner = false;
+        cfpLoadingBarProvider.latencyThreshold = 100;
+
+        // Add auth interceptor
+        $httpProvider.interceptors.push('AuthInterceptor');
+    }
+
+    run.$inject = ['$rootScope', '$location', 'AuthService'];
+
+    function run($rootScope, $location, AuthService) {
+        // Handle route change errors
+        $rootScope.$on('$routeChangeError', function(event, current, previous, rejection) {
+            if (rejection === 'not_authenticated') {
                 $location.path('/login');
             }
-        }
-    });
-});
+        });
+
+        // Handle 401 responses
+        $rootScope.$on('unauthorized', function() {
+            AuthService.logout();
+            $location.path('/login');
+        });
+    }
+})();
