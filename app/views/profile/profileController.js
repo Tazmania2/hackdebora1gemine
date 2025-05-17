@@ -92,10 +92,30 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
                 var imageUrl = response.data.uploads[0].url;
                 // Update the profile with the new image URL using recreatePlayer
                 var playerData = angular.copy(vm.editedProfile);
-                if (!playerData.extra) {
-                    playerData.extra = {};
-                }
-                playerData.extra.image = imageUrl;
+                // Set image at root level with all required sizes
+                playerData.image = {
+                    small: {
+                        url: imageUrl,
+                        size: 0,
+                        width: 0,
+                        height: 0,
+                        depth: 0
+                    },
+                    medium: {
+                        url: imageUrl,
+                        size: 0,
+                        width: 0,
+                        height: 0,
+                        depth: 0
+                    },
+                    original: {
+                        url: imageUrl,
+                        size: 0,
+                        width: 0,
+                        height: 0,
+                        depth: 0
+                    }
+                };
                 return PlayerService.recreatePlayer(playerData);
             } else {
                 throw new Error('Erro ao obter URL da imagem enviada.');
