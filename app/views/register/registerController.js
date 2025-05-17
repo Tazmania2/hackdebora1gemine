@@ -55,9 +55,9 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
 
         // Criar o payload do jogador no formato correto
         var playerData = {
-            _id: vm.user.email, // Using full email as ID
+            _id: vm.user.email.toLowerCase().trim(), // Using full email as ID, ensuring lowercase and no spaces
             name: vm.user.name,
-            email: vm.user.email,
+            email: vm.user.email.toLowerCase().trim(), // Also ensuring email is lowercase and trimmed
             password: vm.user.password, // Password will be hashed by Funifier's trigger
             image: {
                 small: { url: "https://my.funifier.com/images/funny.png" },
