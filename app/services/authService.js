@@ -6,6 +6,7 @@ angular.module('funifierApp')
 
     // Login with password authentication
     service.login = function(email, password) {
+        console.log('Attempting login for:', email);
         var req = {
             method: 'POST',
             url: FUNIFIER_API_CONFIG.baseUrl + '/auth/token',
@@ -22,25 +23,34 @@ angular.module('funifierApp')
         };
 
         return $http(req).then(function(response) {
+            console.log('Login response:', response.data);
             if (response.data && response.data.access_token) {
                 localStorage.setItem('token', 'Bearer ' + response.data.access_token);
                 return service.getPlayerInfo();
             }
             return $q.reject('Token não encontrado na resposta');
+        }).catch(function(error) {
+            console.error('Login error:', error);
+            return $q.reject(error);
         });
     };
 
     // Get player information
     service.getPlayerInfo = function() {
+        console.log('Getting player info...');
         return $http({
             method: 'GET',
-            url: FUNIFIER_API_CONFIG.baseUrl + '/v3/player/me',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player/me',
             headers: {
                 'Authorization': localStorage.getItem('token')
             }
         }).then(function(response) {
+            console.log('Player info received:', response.data);
             service.storePlayerData(response.data);
             return response.data;
+        }).catch(function(error) {
+            console.error('Error getting player info:', error);
+            return $q.reject(error);
         });
     };
 
