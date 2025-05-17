@@ -21,6 +21,10 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
         if (!currentPlayer || !currentPlayer._id) {
             return $q.reject('Player ID not found');
         }
+        // Only send the fields to update (name and extra)
+        var payload = {};
+        if (updateData.name) payload.name = updateData.name;
+        if (updateData.extra) payload.extra = updateData.extra;
         return $http({
             method: 'PUT',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player/' + currentPlayer._id + '/status',
@@ -28,12 +32,12 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
                 'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
                 'Content-Type': 'application/json'
             },
-            data: updateData
+            data: payload
         }).then(function(response) {
             // Update stored player data
             var updatedPlayer = angular.copy(currentPlayer);
-            updatedPlayer.name = updateData.name;
-            updatedPlayer.extra = updateData.extra;
+            if (payload.name) updatedPlayer.name = payload.name;
+            if (payload.extra) updatedPlayer.extra = payload.extra;
             localStorage.setItem('currentPlayer', JSON.stringify(updatedPlayer));
             return { data: updatedPlayer };
         });
