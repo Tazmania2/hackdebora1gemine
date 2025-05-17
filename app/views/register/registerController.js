@@ -92,9 +92,8 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
             data: playerData
         }).then(function(response) {
             console.log('Registration successful:', response.data);
-            // Armazenar dados do jogador e redirecionar para o dashboard
             AuthService.storePlayerData(response.data);
-            $location.path('/dashboard');
+            $location.path('/welcome');
         }).catch(function(error) {
             console.error('Registration error:', error);
             vm.error = error.data && error.data.message ? error.data.message : 'Erro ao registrar jogador.';

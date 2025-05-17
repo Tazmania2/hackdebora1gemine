@@ -72,6 +72,11 @@ app.config(function($routeProvider, $locationProvider) {
                 }
             }
         })
+        .when('/welcome', {
+            templateUrl: 'views/welcome/welcomeView.html',
+            controller: 'WelcomeController',
+            controllerAs: 'vm'
+        })
         .otherwise({
             redirectTo: '/login'
         });
