@@ -17,7 +17,7 @@
 
         <!-- Profile Image Section -->
         <div class="form-group" style="text-align:center; margin-bottom: 20px;">
-            <img ng-src="{{vm.editedProfile.image && vm.editedProfile.image.medium.url}}" alt="Foto de Perfil" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:2px solid #ccc;">
+            <img ng-src="{{vm.editedProfile.image && vm.editedProfile.image.medium.url || vm.editedProfile.extra && vm.editedProfile.extra.image}}" alt="Foto de Perfil" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:2px solid #ccc;">
             <div style="margin-top:10px;">
                 <input type="file" class="form-control" accept="image/*" file-model="vm.newImageFile">
                 <button class="btn btn-info" style="margin-top:5px;" ng-click="vm.uploadProfileImage()">Salvar Imagem</button>
