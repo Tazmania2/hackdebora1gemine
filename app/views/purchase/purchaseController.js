@@ -1,4 +1,4 @@
-angular.module('funifierApp').controller('PurchaseController', function($scope, $location, PlayerService) {
+angular.module('app').controller('PurchaseController', function($scope, $location, PlayerService) {
     var vm = this;
 
     vm.purchase = {

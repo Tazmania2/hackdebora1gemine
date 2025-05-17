@@ -126,7 +126,7 @@ angular.module('app').controller('ProfileController', function($scope, $http, $l
 });
 
 // fileModel directive for file input binding
-angular.module('funifierApp').directive('fileModel', ['$parse', function ($parse) {
+angular.module('app').directive('fileModel', ['$parse', function ($parse) {
     return {
         restrict: 'A',
         link: function(scope, element, attrs) {
