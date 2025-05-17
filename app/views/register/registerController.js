@@ -1,4 +1,4 @@
-angular.module('funifierApp').controller('RegisterController', function($scope, $http, $location, $routeParams, AuthService, FUNIFIER_API_CONFIG) {
+angular.module('funifierApp').controller('RegisterController', function($scope, $http, $location, $routeParams, $rootScope, AuthService, FUNIFIER_API_CONFIG) {
     var vm = this;
     vm.loading = false;
     vm.error = null;
@@ -92,8 +92,24 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
             data: playerData
         }).then(function(response) {
             console.log('Registration successful:', response.data);
-            AuthService.storePlayerData(response.data);
-            $location.path('/welcome');
+            // Store credentials for welcome screen login
+            $rootScope.newPlayerEmail = playerData.email;
+            $rootScope.newPlayerPassword = playerData.password;
+            // Assign the 'Player' role in the principal collection
+            $http({
+                method: 'PUT',
+                url: FUNIFIER_API_CONFIG.baseUrl + '/database/principal',
+                headers: {
+                    'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
+                    'Content-Type': 'application/json'
+                },
+                data: {
+                    _id: playerData._id,
+                    roles: ['Player']
+                }
+            }).finally(function() {
+                $location.path('/welcome');
+            });
         }).catch(function(error) {
             console.error('Registration error:', error);
             vm.error = error.data && error.data.message ? error.data.message : 'Erro ao registrar jogador.';
