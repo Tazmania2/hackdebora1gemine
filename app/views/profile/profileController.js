@@ -4,50 +4,6 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
     vm.error = null;
     vm.success = null;
     vm.editedProfile = {};
-    vm.referralUrl = '';
-    vm.currentToken = localStorage.getItem('token');
-
-    // Initialize QR code
-    function generateQRCode() {
-        var qr = qrcode(0, 'M');
-        qr.addData(vm.referralUrl);
-        qr.make();
-        document.getElementById('qrcode').innerHTML = qr.createImgTag(5);
-    }
-
-    // Generate referral URL
-    function updateReferralUrl() {
-        if (!vm.editedProfile || !vm.editedProfile._id) {
-            return;
-        }
-
-        var baseUrl = window.location.origin + window.location.pathname;
-        vm.referralUrl = baseUrl + '#!/register?referral=' + vm.editedProfile._id;
-        generateQRCode();
-    }
-
-    // Generate referral code
-    function generateReferralCode() {
-        if (!vm.editedProfile || !vm.editedProfile._id) {
-            vm.error = 'Perfil não encontrado. Por favor, faça login novamente.';
-            return;
-        }
-
-        vm.loading = true;
-        PlayerService.generateReferralCode()
-            .then(function(response) {
-                console.log('Referral code generated:', response.data);
-                vm.success = 'Código de indicação gerado com sucesso!';
-                updateReferralUrl();
-            })
-            .catch(function(error) {
-                console.error('Error generating referral code:', error);
-                vm.error = error.data && error.data.message ? error.data.message : 'Erro ao gerar código de indicação.';
-            })
-            .finally(function() {
-                vm.loading = false;
-            });
-    }
 
     // Load player data
     function loadProfile() {
@@ -57,19 +13,18 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
         PlayerService.getPlayerProfile().then(function(response) {
             // Create a deep copy of the profile data
             vm.editedProfile = angular.copy(response.data);
-            
             // Ensure extra object exists
             if (!vm.editedProfile.extra) {
                 vm.editedProfile.extra = {};
             }
-            
+            // Fix date format for input type="date"
+            if (vm.editedProfile.extra.birthdate) {
+                vm.editedProfile.extra.birthdate = vm.editedProfile.extra.birthdate.substring(0, 10);
+            }
             // Initialize empty arrays/objects if they don't exist
             if (!vm.editedProfile.extra.sports) {
                 vm.editedProfile.extra.sports = [];
             }
-            
-            // Generate referral URL after profile is loaded
-            updateReferralUrl();
         }).catch(function(error) {
             console.error('Error loading profile:', error);
             vm.error = 'Erro ao carregar perfil. Por favor, tente novamente.';
@@ -83,44 +38,20 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
         vm.loading = true;
         vm.error = null;
         vm.success = null;
-        
         // Create update data object
         var updateData = {
             name: vm.editedProfile.name,
             extra: vm.editedProfile.extra
         };
-
         PlayerService.updatePlayerProfile(updateData).then(function(response) {
             vm.success = 'Perfil atualizado com sucesso!';
             // Update the local player data
             AuthService.storePlayerData(response.data);
-            // Update referral URL after successful update
-            updateReferralUrl();
         }).catch(function(error) {
             console.error('Error updating profile:', error);
             vm.error = 'Erro ao atualizar perfil. Por favor, tente novamente.';
         }).finally(function() {
             vm.loading = false;
-        });
-    };
-
-    vm.copyReferralLink = function() {
-        var tempInput = document.createElement('input');
-        tempInput.value = vm.referralUrl;
-        document.body.appendChild(tempInput);
-        tempInput.select();
-        document.execCommand('copy');
-        document.body.removeChild(tempInput);
-        vm.success = 'Link copiado com sucesso!';
-    };
-
-    vm.copyToken = function() {
-        navigator.clipboard.writeText(vm.currentToken).then(function() {
-            vm.success = 'Token copiado para a área de transferência!';
-            setTimeout(function() {
-                vm.success = null;
-                $scope.$apply();
-            }, 3000);
         });
     };
 

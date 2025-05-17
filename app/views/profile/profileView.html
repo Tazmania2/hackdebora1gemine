@@ -62,18 +62,4 @@
             <span class="visually-hidden">Carregando...</span>
         </div>
     </div>
-
-    <!-- QR Code Section -->
-    <div class="card mt-4" ng-if="vm.referralUrl">
-        <div class="card-header">
-            <h4 class="text-center">Meu Código de Indicação</h4>
-        </div>
-        <div class="card-body text-center">
-            <div id="qrcode" class="mb-3"></div>
-            <p class="referral-link">{{ vm.referralUrl }}</p>
-            <button class="btn btn-secondary" ng-click="vm.copyReferralLink()">
-                Copiar Link
-            </button>
-        </div>
-    </div>
 </div> 
