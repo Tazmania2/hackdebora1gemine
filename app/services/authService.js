@@ -79,13 +79,14 @@ angular.module('funifierApp')
     return {
         request: function (config) {
             config.headers = config.headers || {};
-            
-            // Add token to all Funifier API requests except auth/token
+            // Only set Authorization if it is not already set
             if (config.url.indexOf(FUNIFIER_API_CONFIG.baseUrl) === 0 && 
                 !config.url.includes('/auth/token')) {
-                var token = localStorage.getItem('token');
-                if (token) {
-                    config.headers.Authorization = token;
+                if (!config.headers.Authorization) {
+                    var token = localStorage.getItem('token');
+                    if (token) {
+                        config.headers.Authorization = token;
+                    }
                 }
             }
             return config;
