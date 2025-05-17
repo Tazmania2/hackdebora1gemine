@@ -92,9 +92,6 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
             data: playerData
         }).then(function(response) {
             console.log('Registration successful:', response.data);
-            // Store credentials for welcome screen login
-            $rootScope.newPlayerEmail = playerData.email;
-            $rootScope.newPlayerPassword = playerData.password;
             // Assign the 'Player' role in the principal collection
             $http({
                 method: 'PUT',
@@ -115,10 +112,18 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
                 }
             }).then(function(response) {
                 console.log('Role assignment successful:', response.data);
+                // Automatic login after registration and role assignment
+                AuthService.login(playerData.email, playerData.password)
+                    .then(function() {
+                        $location.path('/dashboard');
+                    })
+                    .catch(function(error) {
+                        console.error('Automatic login failed:', error);
+                        vm.error = 'Erro ao fazer login automático. Por favor, faça login manualmente.';
+                    });
             }).catch(function(error) {
                 console.error('Role assignment error:', error);
-            }).finally(function() {
-                $location.path('/welcome');
+                vm.error = 'Erro ao atribuir papel ao jogador.';
             });
         }).catch(function(error) {
             console.error('Registration error:', error);

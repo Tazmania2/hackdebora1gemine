@@ -72,11 +72,6 @@ app.config(function($routeProvider, $locationProvider) {
                 }
             }
         })
-        .when('/welcome', {
-            templateUrl: 'views/welcome/WelcomeView.html',
-            controller: 'WelcomeController',
-            controllerAs: 'vm'
-        })
         .otherwise({
             redirectTo: '/login'
         });
@@ -89,8 +84,7 @@ app.run(function($rootScope, $location, AuthService) {
     $rootScope.$on('$routeChangeStart', function(event, next, current) {
         if (next && next.originalPath && 
             next.originalPath !== '/login' && 
-            next.originalPath !== '/register' &&
-            next.originalPath !== '/welcome') {
+            next.originalPath !== '/register') {
             if (!AuthService.isAuthenticated()) {
                 event.preventDefault();
                 $location.path('/login');
