@@ -89,7 +89,8 @@ app.run(function($rootScope, $location, AuthService) {
     $rootScope.$on('$routeChangeStart', function(event, next, current) {
         if (next && next.originalPath && 
             next.originalPath !== '/login' && 
-            next.originalPath !== '/register') {
+            next.originalPath !== '/register' &&
+            next.originalPath !== '/welcome') {
             if (!AuthService.isAuthenticated()) {
                 event.preventDefault();
                 $location.path('/login');
