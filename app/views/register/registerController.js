@@ -68,8 +68,6 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
             friends: [],
             extra: {
                 country: "Brasil",
-                company: "Funifier User",
-                sports: ["soccer"],
                 phone: vm.user.phone,
                 cpf: vm.user.cpf,
                 birthdate: vm.user.birthdate,

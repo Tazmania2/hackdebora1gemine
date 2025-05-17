@@ -62,6 +62,55 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
         });
     };
 
+    // Upload and update profile image
+    vm.uploadProfileImage = function() {
+        if (!vm.newImageFile) {
+            vm.error = 'Por favor, selecione uma imagem.';
+            return;
+        }
+        vm.loading = true;
+        vm.error = null;
+        vm.success = null;
+        // Prepare form data
+        var formData = new FormData();
+        formData.append('file', vm.newImageFile);
+        $http({
+            method: 'POST',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/upload/image',
+            headers: {
+                'Authorization': localStorage.getItem('token'),
+                'Content-Type': undefined // Let browser set multipart/form-data
+            },
+            data: formData,
+            transformRequest: angular.identity
+        }).then(function(response) {
+            if (response.data && response.data.uploads && response.data.uploads[0] && response.data.uploads[0].url) {
+                var imageUrl = response.data.uploads[0].url;
+                // Now update the profile image with this URL
+                return $http({
+                    method: 'POST',
+                    url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/image',
+                    headers: {
+                        'Authorization': localStorage.getItem('token'),
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    data: $.param({ url: imageUrl })
+                });
+            } else {
+                throw new Error('Erro ao obter URL da imagem enviada.');
+            }
+        }).then(function() {
+            vm.success = 'Imagem de perfil atualizada com sucesso!';
+            loadProfile();
+            vm.newImageFile = null;
+        }).catch(function(error) {
+            console.error('Erro ao atualizar imagem de perfil:', error);
+            vm.error = 'Erro ao atualizar imagem de perfil. Por favor, tente novamente.';
+        }).finally(function() {
+            vm.loading = false;
+        });
+    };
+
     // Navigate back
     vm.goBack = function() {
         $location.path('/dashboard');
@@ -69,4 +118,20 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
 
     // Load profile data when controller initializes
     loadProfile();
-}); 
+});
+
+// fileModel directive for file input binding
+angular.module('funifierApp').directive('fileModel', ['$parse', function ($parse) {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            var model = $parse(attrs.fileModel);
+            var modelSetter = model.assign;
+            element.bind('change', function(){
+                scope.$apply(function(){
+                    modelSetter(scope, element[0].files[0]);
+                });
+            });
+        }
+    };
+}]); 
