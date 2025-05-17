@@ -3,7 +3,7 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
     vm.loading = false;
     vm.error = null;
     vm.success = null;
-    vm.profile = AuthService.getCurrentPlayer() || {};
+    vm.editedProfile = {};
     vm.referralUrl = '';
     vm.currentToken = localStorage.getItem('token');
 
@@ -17,19 +17,19 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
 
     // Generate referral URL
     function updateReferralUrl() {
-        if (!vm.profile || !vm.profile._id) {
+        if (!vm.editedProfile || !vm.editedProfile._id) {
             vm.error = 'Perfil não encontrado. Por favor, faça login novamente.';
             return;
         }
 
         var baseUrl = window.location.origin + window.location.pathname;
-        vm.referralUrl = baseUrl + '#!/register?referral=' + vm.profile._id;
+        vm.referralUrl = baseUrl + '#!/register?referral=' + vm.editedProfile._id;
         generateQRCode();
     }
 
     // Generate referral code
     function generateReferralCode() {
-        if (!vm.profile || !vm.profile._id) {
+        if (!vm.editedProfile || !vm.editedProfile._id) {
             vm.error = 'Perfil não encontrado. Por favor, faça login novamente.';
             return;
         }
@@ -50,29 +50,42 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
             });
     }
 
+    // Load player data
+    function loadProfile() {
+        vm.loading = true;
+        PlayerService.getPlayerProfile().then(function(response) {
+            vm.editedProfile = angular.copy(response.data);
+            if (!vm.editedProfile.extra) {
+                vm.editedProfile.extra = {};
+            }
+        }).catch(function(error) {
+            console.error('Error loading profile:', error);
+            vm.error = 'Erro ao carregar perfil. Por favor, tente novamente.';
+        }).finally(function() {
+            vm.loading = false;
+        });
+    }
+
+    // Update profile
     vm.updateProfile = function() {
         vm.loading = true;
         vm.error = null;
         vm.success = null;
+        
+        // Create update data object
+        var updateData = {
+            name: vm.editedProfile.name,
+            extra: vm.editedProfile.extra
+        };
 
-        $http({
-            method: 'PUT',
-            url: FUNIFIER_API_CONFIG.baseUrl + '/player/' + vm.profile._id + '/status',
-            headers: {
-                'Authorization': localStorage.getItem('token'),
-                'Content-Type': 'application/json'
-            },
-            data: {
-                name: vm.profile.name,
-                extra: vm.profile.extra
-            }
-        }).then(function(response) {
+        PlayerService.updatePlayerProfile(updateData).then(function(response) {
             vm.success = 'Perfil atualizado com sucesso!';
+            // Update the local player data
             AuthService.storePlayerData(response.data);
             generateReferralCode(); // Generate referral code after profile update
         }).catch(function(error) {
-            console.error('Profile update error:', error);
-            vm.error = error.data && error.data.message ? error.data.message : 'Erro ao atualizar perfil.';
+            console.error('Error updating profile:', error);
+            vm.error = 'Erro ao atualizar perfil. Por favor, tente novamente.';
         }).finally(function() {
             vm.loading = false;
         });
@@ -98,10 +111,11 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
         });
     };
 
-    // Initialize referral URL and QR code if profile exists
-    if (vm.profile && vm.profile._id) {
-        generateReferralCode();
-    } else {
-        vm.error = 'Perfil não encontrado. Por favor, faça login novamente.';
-    }
+    // Navigate back
+    vm.goBack = function() {
+        $location.path('/dashboard');
+    };
+
+    // Load profile data when controller initializes
+    loadProfile();
 }); 

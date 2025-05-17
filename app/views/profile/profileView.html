@@ -1,86 +1,82 @@
 <!-- app/views/profile/profileView.html -->
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card mt-5">
-                <div class="card-header">
-                    <h3 class="text-center">Meu Perfil</h3>
-                </div>
-                <div class="card-body">
-                    <form name="profileForm" ng-submit="vm.updateProfile()">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="name">Nome</label>
-                                    <input type="text" class="form-control" id="name" ng-model="vm.profile.name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="email">Email</label>
-                                    <input type="email" class="form-control" id="email" ng-model="vm.profile.email" required disabled>
-                                </div>
-                                <div class="form-group">
-                                    <label for="phone">Telefone</label>
-                                    <input type="tel" class="form-control" id="phone" ng-model="vm.profile.extra.phone" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="cpf">CPF</label>
-                                    <input type="text" class="form-control" id="cpf" ng-model="vm.profile.extra.cpf" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="cep">CEP</label>
-                                    <input type="text" class="form-control" id="cep" ng-model="vm.profile.extra.cep" required>
-                                </div>
-                            </div>
-                        </div>
+<div class="profile-container">
+    <div class="profile-header">
+        <button class="btn btn-back" ng-click="vm.goBack()">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </button>
+        <h2>Editar Perfil</h2>
+    </div>
 
-                        <div class="form-group text-center mt-4">
-                            <button type="submit" class="btn btn-primary" ng-disabled="vm.loading">
-                                <span ng-if="!vm.loading">Atualizar Perfil</span>
-                                <span ng-if="vm.loading">Atualizando...</span>
-                            </button>
-                        </div>
-                    </form>
-
-                    <div class="alert alert-danger" ng-if="vm.error">
-                        {{ vm.error }}
-                    </div>
-                    <div class="alert alert-success" ng-if="vm.success">
-                        {{ vm.success }}
-                    </div>
-                </div>
+    <div class="profile-content">
+        <form ng-submit="vm.updateProfile()">
+            <div class="form-group">
+                <label for="name">Nome Completo</label>
+                <input type="text" class="form-control" id="name" ng-model="vm.editedProfile.name" required>
             </div>
-
-            <!-- QR Code Section -->
-            <div class="card mt-4">
-                <div class="card-header">
-                    <h4 class="text-center">Meu Código de Indicação</h4>
-                </div>
-                <div class="card-body text-center">
-                    <div id="qrcode" class="mb-3"></div>
-                    <p class="referral-link">{{ vm.referralUrl }}</p>
-                    <button class="btn btn-secondary" ng-click="vm.copyReferralLink()">
-                        Copiar Link
-                    </button>
-                </div>
+            <div class="form-group">
+                <label for="phone">Telefone</label>
+                <input type="tel" class="form-control" id="phone" ng-model="vm.editedProfile.extra.phone">
             </div>
+            <div class="form-group">
+                <label for="cpf">CPF</label>
+                <input type="text" class="form-control" id="cpf" ng-model="vm.editedProfile.extra.cpf">
+            </div>
+            <div class="form-group">
+                <label for="birthdate">Data de Nascimento</label>
+                <input type="date" class="form-control" id="birthdate" ng-model="vm.editedProfile.extra.birthdate">
+            </div>
+            <div class="form-group">
+                <label for="cep">CEP</label>
+                <input type="text" class="form-control" id="cep" ng-model="vm.editedProfile.extra.cep">
+            </div>
+            <div class="form-group">
+                <label for="company">Empresa</label>
+                <input type="text" class="form-control" id="company" ng-model="vm.editedProfile.extra.company">
+            </div>
+            <div class="form-group">
+                <label for="sports">Esportes</label>
+                <select class="form-control" id="sports" ng-model="vm.editedProfile.extra.sports" multiple>
+                    <option value="soccer">Futebol</option>
+                    <option value="basketball">Basquete</option>
+                    <option value="tennis">Tênis</option>
+                    <option value="swimming">Natação</option>
+                    <option value="running">Corrida</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" ng-click="vm.goBack()">Cancelar</button>
+                <button type="submit" class="btn btn-primary" ng-disabled="vm.updating">Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+</div>
 
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">Debug Information</h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label">Current Auth Token:</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" ng-model="vm.currentToken" readonly>
-                            <button class="btn btn-outline-secondary" type="button" ng-click="vm.copyToken()">
-                                <i class="bi bi-clipboard"></i> Copy
-                            </button>
-                        </div>
-                    </div>
-                </div>
+<!-- QR Code Section -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h4 class="text-center">Meu Código de Indicação</h4>
+    </div>
+    <div class="card-body text-center">
+        <div id="qrcode" class="mb-3"></div>
+        <p class="referral-link">{{ vm.referralUrl }}</p>
+        <button class="btn btn-secondary" ng-click="vm.copyReferralLink()">
+            Copiar Link
+        </button>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Debug Information</h5>
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <label class="form-label">Current Auth Token:</label>
+            <div class="input-group">
+                <input type="text" class="form-control" ng-model="vm.currentToken" readonly>
+                <button class="btn btn-outline-secondary" type="button" ng-click="vm.copyToken()">
+                    <i class="bi bi-clipboard"></i> Copy
+                </button>
             </div>
         </div>
     </div>

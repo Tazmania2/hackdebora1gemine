@@ -2,14 +2,11 @@ angular.module('funifierApp').controller('DashboardController', function($scope,
     var vm = this;
 
     vm.player = {};
-    vm.status = {};
+    vm.playerStatus = {};
     vm.activities = [];
     vm.events = [];
-    vm.currentToken = localStorage.getItem('token');
     vm.loading = true;
     vm.error = null;
-    vm.updating = false;
-    vm.editedProfile = {};
 
     function loadDashboardData() {
         vm.loading = true;
@@ -25,7 +22,7 @@ angular.module('funifierApp').controller('DashboardController', function($scope,
                 return PlayerService.getPlayerBalance();
             })
             .then(function(response) {
-                vm.status = response.data;
+                vm.playerStatus = response.data;
                 console.log('Player status loaded:', response.data);
                 
                 // Then load activities
@@ -50,65 +47,25 @@ angular.module('funifierApp').controller('DashboardController', function($scope,
             });
     }
 
-    vm.openProfileModal = function() {
-        // Create a deep copy of the player data to avoid direct modifications
-        vm.editedProfile = angular.copy(vm.player);
-        if (!vm.editedProfile.extra) {
-            vm.editedProfile.extra = {};
-        }
-        $('#profileModal').modal('show');
+    // Navigate to profile page
+    vm.goToProfile = function() {
+        $location.path('/profile');
     };
 
-    vm.updateProfile = function() {
-        vm.updating = true;
-        vm.error = null;
-
-        // Ensure we don't modify critical fields
-        var updateData = {
-            name: vm.editedProfile.name,
-            extra: vm.editedProfile.extra
-        };
-
-        PlayerService.updatePlayerProfile(updateData)
-            .then(function(response) {
-                // Update the local player data
-                vm.player = response.data;
-                // Close the modal
-                $('#profileModal').modal('hide');
-                // Show success message
-                alert('Perfil atualizado com sucesso!');
-            })
-            .catch(function(error) {
-                console.error('Error updating profile:', error);
-                vm.error = 'Erro ao atualizar perfil. Por favor, tente novamente.';
-            })
-            .finally(function() {
-                vm.updating = false;
-            });
-    };
-
-    vm.copyToken = function() {
-        navigator.clipboard.writeText(vm.currentToken).then(function() {
-            alert('Token copiado para a área de transferência!');
-        });
-    };
-
-    vm.registerForEvent = function(event) {
-        // Implement event registration
-        console.log('Registering for event:', event);
+    vm.registerForEvent = function(eventId) {
+        // Implementation for event registration
     };
 
     vm.goToRewards = function() {
         $location.path('/rewards');
     };
 
-    vm.registerPurchase = function() {
-        $location.path('/purchase');
+    vm.goToPurchases = function() {
+        $location.path('/purchases');
     };
 
     vm.shareOnSocial = function() {
-        // Implement social sharing
-        console.log('Sharing on social media');
+        // Implementation for social sharing
     };
 
     // Load dashboard data when controller initializes
