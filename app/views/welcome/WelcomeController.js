@@ -1,4 +1,6 @@
 angular.module('funifierApp').controller('WelcomeController', function($timeout, $location, $rootScope, AuthService) {
+    console.log('[WelcomeController] Loaded');
+    console.log('[WelcomeController] Email:', $rootScope.newPlayerEmail, 'Password:', $rootScope.newPlayerPassword);
     var vm = this;
     vm.status = 'Preparando seu perfil...';
     vm.error = null;
