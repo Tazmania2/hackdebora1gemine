@@ -19,7 +19,7 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
             }
             // Fix date format for input type="date"
             if (vm.editedProfile.extra.birthdate) {
-                vm.editedProfile.extra.birthdate = vm.editedProfile.extra.birthdate.substring(0, 10);
+                vm.editedProfile.extra.birthdate = new Date(vm.editedProfile.extra.birthdate);
             }
             // Initialize empty arrays/objects if they don't exist
             if (!vm.editedProfile.extra.sports) {
@@ -38,6 +38,11 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
         vm.loading = true;
         vm.error = null;
         vm.success = null;
+        // Convert birthdate to yyyy-MM-dd string if it's a Date object
+        if (vm.editedProfile.extra.birthdate instanceof Date) {
+            var d = vm.editedProfile.extra.birthdate;
+            vm.editedProfile.extra.birthdate = d.toISOString().substring(0, 10);
+        }
         // Create update data object
         var updateData = {
             name: vm.editedProfile.name,
