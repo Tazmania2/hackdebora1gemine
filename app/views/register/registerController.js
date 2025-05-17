@@ -105,8 +105,18 @@ angular.module('funifierApp').controller('RegisterController', function($scope, 
                 },
                 data: {
                     _id: playerData._id,
-                    roles: ['Player']
+                    valueId: playerData._id,
+                    roles: ['Player'],
+                    name: playerData.name,
+                    team: false,
+                    type: 0,
+                    userId: playerData._id,
+                    player: true
                 }
+            }).then(function(response) {
+                console.log('Role assignment successful:', response.data);
+            }).catch(function(error) {
+                console.error('Role assignment error:', error);
             }).finally(function() {
                 $location.path('/welcome');
             });
