@@ -90,21 +90,20 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
         }).then(function(response) {
             if (response.data && response.data.uploads && response.data.uploads[0] && response.data.uploads[0].url) {
                 var imageUrl = response.data.uploads[0].url;
-                // Now update the profile image with this URL
-                return $http({
-                    method: 'POST',
-                    url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/image',
-                    headers: {
-                        'Authorization': localStorage.getItem('token'),
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    data: $httpParamSerializer({ url: imageUrl })
-                });
+                // Update the profile with the new image URL using recreatePlayer
+                var playerData = angular.copy(vm.editedProfile);
+                if (!playerData.extra) {
+                    playerData.extra = {};
+                }
+                playerData.extra.image = imageUrl;
+                return PlayerService.recreatePlayer(playerData);
             } else {
                 throw new Error('Erro ao obter URL da imagem enviada.');
             }
-        }).then(function() {
+        }).then(function(response) {
             vm.success = 'Imagem de perfil atualizada com sucesso!';
+            // Update the local player data
+            AuthService.storePlayerData(response.data);
             loadProfile();
             vm.newImageFile = null;
         }).catch(function(error) {
