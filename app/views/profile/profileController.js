@@ -90,56 +90,22 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
         }).then(function(response) {
             if (response.data && response.data.uploads && response.data.uploads[0] && response.data.uploads[0].url) {
                 var imageUrl = response.data.uploads[0].url;
-                // Update the profile with the new image URL using recreatePlayer
-                var playerData = angular.copy(vm.editedProfile);
-                
-                // Ensure required fields exist
-                playerData.teams = playerData.teams || [];
-                playerData.friends = playerData.friends || [];
-                playerData.business = playerData.business || false;
-                playerData.developer = playerData.developer || false;
-                if (!playerData.created) {
-                    playerData.created = Date.now();
-                }
-                
-                // Set image at root level with all required sizes
-                playerData.image = {
-                    small: {
-                        url: imageUrl,
-                        size: 0,
-                        width: 0,
-                        height: 0,
-                        depth: 0
+                // Use the dedicated player image update endpoint
+                return $http({
+                    method: 'POST',
+                    url: FUNIFIER_API_CONFIG.baseUrl + '/player/' + vm.editedProfile._id + '/image',
+                    headers: {
+                        'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
+                        'Content-Type': 'application/x-www-form-urlencoded'
                     },
-                    medium: {
-                        url: imageUrl,
-                        size: 0,
-                        width: 0,
-                        height: 0,
-                        depth: 0
-                    },
-                    original: {
-                        url: imageUrl,
-                        size: 0,
-                        width: 0,
-                        height: 0,
-                        depth: 0
-                    }
-                };
-                
-                // Remove the image from extra if it exists
-                if (playerData.extra && playerData.extra.image) {
-                    delete playerData.extra.image;
-                }
-                
-                return PlayerService.recreatePlayer(playerData);
+                    data: $httpParamSerializer({ url: imageUrl })
+                });
             } else {
                 throw new Error('Erro ao obter URL da imagem enviada.');
             }
         }).then(function(response) {
             vm.success = 'Imagem de perfil atualizada com sucesso!';
-            // Update the local player data
-            AuthService.storePlayerData(response.data);
+            // Reload profile to get updated data
             loadProfile();
             vm.newImageFile = null;
         }).catch(function(error) {
