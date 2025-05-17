@@ -1,10 +1,15 @@
 <div class="welcome-container" style="text-align:center; margin-top: 80px;">
     <h2>Bem-vindo ao jogo!</h2>
     <p>{{vm.status}}</p>
-    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;" ng-if="!vm.error">
-        <span class="visually-hidden">Carregando...</span>
-    </div>
-    <div class="alert alert-danger" ng-if="vm.error">
+    <div ng-if="!vm.error" style="margin: 20px auto; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    <div ng-if="vm.error" style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; margin: 10px 0; border-radius: 4px;">
         {{vm.error}}
     </div>
-</div> 
+</div>
+
+<style>
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style> 
