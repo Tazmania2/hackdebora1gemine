@@ -1,4 +1,4 @@
-angular.module('funifierApp').factory('RewardsService', function($http, $q, FUNIFIER_API_CONFIG, AuthService) {
+angular.module('app').factory('RewardsService', function($http, $q, FUNIFIER_API_CONFIG, AuthService) {
     var service = {};
 
     service.getRewardsCatalog = function() {

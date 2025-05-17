@@ -1,4 +1,4 @@
-angular.module('funifierApp').controller('ProfileController', function($scope, $http, $location, AuthService, FUNIFIER_API_CONFIG, PlayerService, $httpParamSerializer) {
+angular.module('app').controller('ProfileController', function($scope, $http, $location, AuthService, FUNIFIER_API_CONFIG, PlayerService, $httpParamSerializer) {
     var vm = this;
     vm.loading = false;
     vm.error = null;

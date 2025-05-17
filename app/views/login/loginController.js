@@ -1,5 +1,5 @@
 // app/views/login/loginController.js
-angular.module('funifierApp').controller('LoginController', function($scope, $location, AuthService, FUNIFIER_API_CONFIG) {
+angular.module('app').controller('LoginController', function($scope, $location, AuthService, FUNIFIER_API_CONFIG) {
     var vm = this; // vm (ViewModel) é uma prática comum para 'this' em controladores
 
     vm.loading = false;

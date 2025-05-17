@@ -1,4 +1,4 @@
-angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIFIER_API_CONFIG, AuthService) {
+angular.module('app').factory('PlayerService', function($http, $q, FUNIFIER_API_CONFIG, AuthService) {
     var service = {};
 
     service.getPlayerProfile = function() {

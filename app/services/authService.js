@@ -1,5 +1,5 @@
 // app/services/authService.js
-angular.module('funifierApp')
+angular.module('app')
 .service('AuthService', function($http, $q, FUNIFIER_API_CONFIG) {
     var service = {};
     var currentPlayer = null;

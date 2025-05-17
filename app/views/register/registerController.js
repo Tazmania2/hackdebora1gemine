@@ -1,4 +1,4 @@
-angular.module('funifierApp').controller('RegisterController', function($scope, $http, $location, $routeParams, $rootScope, AuthService, FUNIFIER_API_CONFIG) {
+angular.module('app').controller('RegisterController', function($scope, $http, $location, $routeParams, $rootScope, AuthService, FUNIFIER_API_CONFIG) {
     var vm = this;
     vm.loading = false;
     vm.error = null;

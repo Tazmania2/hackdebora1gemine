@@ -1,4 +1,4 @@
-angular.module('funifierApp').controller('RewardsController', function($scope, RewardsService) {
+angular.module('app').controller('RewardsController', function($scope, RewardsService) {
     var vm = this;
 
     vm.rewards = [];
