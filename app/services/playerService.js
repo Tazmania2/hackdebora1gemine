@@ -164,15 +164,28 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
     };
 
     service.recreatePlayer = function(playerData) {
-        // playerData must include _id, name, email, and all required fields
-        return $http({
-            method: 'POST',
-            url: FUNIFIER_API_CONFIG.baseUrl + '/player',
-            headers: {
-                'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
-                'Content-Type': 'application/json'
-            },
-            data: playerData
+        // Use Fetch API to bypass AngularJS interceptors and force Basic Auth
+        return $q(function(resolve, reject) {
+            fetch(FUNIFIER_API_CONFIG.baseUrl + '/player', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(playerData)
+            })
+            .then(response => response.json().then(data => ({
+                status: response.status,
+                data: data
+            })))
+            .then(result => {
+                if (result.status >= 200 && result.status < 300) {
+                    resolve({ data: result.data });
+                } else {
+                    reject({ status: result.status, data: result.data });
+                }
+            })
+            .catch(error => reject({ status: 0, data: error }));
         });
     };
 
