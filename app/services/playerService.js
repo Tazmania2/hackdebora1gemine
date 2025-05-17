@@ -169,7 +169,7 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
             method: 'POST',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player',
             headers: {
-                'Authorization': localStorage.getItem('token'),
+                'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
                 'Content-Type': 'application/json'
             },
             data: playerData
