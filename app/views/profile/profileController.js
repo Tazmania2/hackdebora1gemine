@@ -18,7 +18,6 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
     // Generate referral URL
     function updateReferralUrl() {
         if (!vm.editedProfile || !vm.editedProfile._id) {
-            vm.error = 'Perfil não encontrado. Por favor, faça login novamente.';
             return;
         }
 
@@ -53,11 +52,24 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
     // Load player data
     function loadProfile() {
         vm.loading = true;
+        vm.error = null;
+        
         PlayerService.getPlayerProfile().then(function(response) {
+            // Create a deep copy of the profile data
             vm.editedProfile = angular.copy(response.data);
+            
+            // Ensure extra object exists
             if (!vm.editedProfile.extra) {
                 vm.editedProfile.extra = {};
             }
+            
+            // Initialize empty arrays/objects if they don't exist
+            if (!vm.editedProfile.extra.sports) {
+                vm.editedProfile.extra.sports = [];
+            }
+            
+            // Generate referral URL after profile is loaded
+            updateReferralUrl();
         }).catch(function(error) {
             console.error('Error loading profile:', error);
             vm.error = 'Erro ao carregar perfil. Por favor, tente novamente.';
@@ -82,7 +94,8 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
             vm.success = 'Perfil atualizado com sucesso!';
             // Update the local player data
             AuthService.storePlayerData(response.data);
-            generateReferralCode(); // Generate referral code after profile update
+            // Update referral URL after successful update
+            updateReferralUrl();
         }).catch(function(error) {
             console.error('Error updating profile:', error);
             vm.error = 'Erro ao atualizar perfil. Por favor, tente novamente.';

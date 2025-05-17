@@ -1,7 +1,5 @@
 angular.module('funifierApp').controller('DashboardController', function($scope, $location, PlayerService, AuthService) {
     var vm = this;
-
-    vm.player = {};
     vm.playerStatus = {};
     vm.activities = [];
     vm.events = [];
@@ -12,27 +10,20 @@ angular.module('funifierApp').controller('DashboardController', function($scope,
         vm.loading = true;
         vm.error = null;
 
-        // First get player profile
-        PlayerService.getPlayerProfile()
-            .then(function(response) {
-                vm.player = response.data;
-                console.log('Player profile loaded:', response.data);
-                
-                // Then get player status
-                return PlayerService.getPlayerBalance();
-            })
+        // Get player status (points and coins)
+        PlayerService.getPlayerBalance()
             .then(function(response) {
                 vm.playerStatus = response.data;
                 console.log('Player status loaded:', response.data);
                 
-                // Then load activities
+                // Load activities
                 return PlayerService.getPlayerActivities();
             })
             .then(function(response) {
                 vm.activities = response.data;
                 console.log('Activities loaded:', response.data);
                 
-                // Finally load events
+                // Load events
                 return PlayerService.getPlayerEvents();
             })
             .then(function(response) {

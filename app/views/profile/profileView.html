@@ -7,7 +7,14 @@
         <h2>Editar Perfil</h2>
     </div>
 
-    <div class="profile-content">
+    <div class="profile-content" ng-if="!vm.loading">
+        <div class="alert alert-success" ng-if="vm.success">
+            {{ vm.success }}
+        </div>
+        <div class="alert alert-danger" ng-if="vm.error">
+            {{ vm.error }}
+        </div>
+
         <form ng-submit="vm.updateProfile()">
             <div class="form-group">
                 <label for="name">Nome Completo</label>
@@ -45,39 +52,28 @@
             </div>
             <div class="form-actions">
                 <button type="button" class="btn btn-secondary" ng-click="vm.goBack()">Cancelar</button>
-                <button type="submit" class="btn btn-primary" ng-disabled="vm.updating">Salvar Alterações</button>
+                <button type="submit" class="btn btn-primary" ng-disabled="vm.loading">Salvar Alterações</button>
             </div>
         </form>
     </div>
-</div>
 
-<!-- QR Code Section -->
-<div class="card mt-4">
-    <div class="card-header">
-        <h4 class="text-center">Meu Código de Indicação</h4>
+    <div class="loading-spinner" ng-if="vm.loading">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
     </div>
-    <div class="card-body text-center">
-        <div id="qrcode" class="mb-3"></div>
-        <p class="referral-link">{{ vm.referralUrl }}</p>
-        <button class="btn btn-secondary" ng-click="vm.copyReferralLink()">
-            Copiar Link
-        </button>
-    </div>
-</div>
 
-<div class="card mb-4">
-    <div class="card-header">
-        <h5 class="mb-0">Debug Information</h5>
-    </div>
-    <div class="card-body">
-        <div class="mb-3">
-            <label class="form-label">Current Auth Token:</label>
-            <div class="input-group">
-                <input type="text" class="form-control" ng-model="vm.currentToken" readonly>
-                <button class="btn btn-outline-secondary" type="button" ng-click="vm.copyToken()">
-                    <i class="bi bi-clipboard"></i> Copy
-                </button>
-            </div>
+    <!-- QR Code Section -->
+    <div class="card mt-4" ng-if="vm.referralUrl">
+        <div class="card-header">
+            <h4 class="text-center">Meu Código de Indicação</h4>
+        </div>
+        <div class="card-body text-center">
+            <div id="qrcode" class="mb-3"></div>
+            <p class="referral-link">{{ vm.referralUrl }}</p>
+            <button class="btn btn-secondary" ng-click="vm.copyReferralLink()">
+                Copiar Link
+            </button>
         </div>
     </div>
 </div> 
