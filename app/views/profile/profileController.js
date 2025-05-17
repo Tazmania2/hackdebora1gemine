@@ -116,6 +116,10 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
                         depth: 0
                     }
                 };
+                // Remove the image from extra if it exists
+                if (playerData.extra && playerData.extra.image) {
+                    delete playerData.extra.image;
+                }
                 return PlayerService.recreatePlayer(playerData);
             } else {
                 throw new Error('Erro ao obter URL da imagem enviada.');
