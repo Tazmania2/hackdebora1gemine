@@ -1,4 +1,4 @@
-angular.module('funifierApp').controller('ProfileController', function($scope, $http, $location, AuthService, FUNIFIER_API_CONFIG, PlayerService) {
+angular.module('funifierApp').controller('ProfileController', function($scope, $http, $location, AuthService, FUNIFIER_API_CONFIG, PlayerService, $httpParamSerializer) {
     var vm = this;
     vm.loading = false;
     vm.error = null;
@@ -74,7 +74,10 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
         // Prepare form data
         var formData = new FormData();
         formData.append('file', vm.newImageFile);
-        formData.append('extra', '{}'); // Required by Funifier API
+        formData.append('extra', JSON.stringify({
+            session: 'images',
+            transform: [{ stage: 'size', width: 350, height: 350 }]
+        }));
         $http({
             method: 'POST',
             url: FUNIFIER_API_CONFIG.baseUrl + '/upload/image',
@@ -95,7 +98,7 @@ angular.module('funifierApp').controller('ProfileController', function($scope, $
                         'Authorization': localStorage.getItem('token'),
                         'Content-Type': 'application/x-www-form-urlencoded'
                     },
-                    data: $.param({ url: imageUrl })
+                    data: $httpParamSerializer({ url: imageUrl })
                 });
             } else {
                 throw new Error('Erro ao obter URL da imagem enviada.');
