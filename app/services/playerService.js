@@ -17,17 +17,20 @@ angular.module('funifierApp').factory('PlayerService', function($http, $q, FUNIF
     };
 
     service.updatePlayerProfile = function(updateData) {
+        var currentPlayer = service.getCurrentPlayer();
+        if (!currentPlayer || !currentPlayer._id) {
+            return $q.reject('Player ID not found');
+        }
         return $http({
             method: 'PUT',
-            url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/status',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player/' + currentPlayer._id + '/status',
             headers: {
-                'Authorization': localStorage.getItem('token'),
+                'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
                 'Content-Type': 'application/json'
             },
             data: updateData
         }).then(function(response) {
             // Update stored player data
-            var currentPlayer = service.getCurrentPlayer();
             var updatedPlayer = angular.copy(currentPlayer);
             updatedPlayer.name = updateData.name;
             updatedPlayer.extra = updateData.extra;
