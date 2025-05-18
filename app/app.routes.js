@@ -1,11 +1,33 @@
 angular.module('app')
-  .config(['$routeProvider','$locationProvider', function($routeProvider,$locationProvider) {
-    // Optional: enable HTML5 mode
-    // $locationProvider.html5Mode(true);
+  .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
+    // keep hashbang mode since you're using "#!/..."
+    $locationProvider.html5Mode(false);
+
     $routeProvider
-      .when('/', {
-        templateUrl: 'app/views/home.html',
-        controller:  'HomeController'
+      .when('/login', {
+        templateUrl: 'app/views/login/login.html',
+        controller:  'LoginController'
       })
-      .otherwise({ redirectTo: '/' });
+      // .when('/register', {
+      //   templateUrl: 'app/views/register/register.html',
+      //   controller:  'RegisterController'
+      // })
+      // .when('/dashboard', {
+      //   templateUrl: 'app/views/dashboard/dashboard.html',
+      //   controller:  'DashboardController'
+      // })
+      // .when('/profile', {
+      //   templateUrl: 'app/views/profile/profile.html',
+      //   controller:  'ProfileController'
+      // })
+      // .when('/rewards', {
+      //   templateUrl: 'app/views/rewards/rewards.html',
+      //   controller:  'RewardsController'
+      // })
+      // .when('/virtual-goods', {
+      //   templateUrl: 'app/views/virtual-goods/virtualGoods.html',
+      //   controller:  'VirtualGoodsController'
+      // })
+      // fallback to login if unknown route
+      .otherwise({ redirectTo: '/login' });
   }]); 
