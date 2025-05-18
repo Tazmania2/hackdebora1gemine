@@ -15,6 +15,7 @@ angular.module('app').controller('LoginController', function($scope, $location, 
     vm.resetSuccess = false;
 
     vm.login = function() {
+        console.log('login called');
         if (!vm.user.email || !vm.user.password) {
             vm.error = 'Por favor, preencha todos os campos.';
             return;
