@@ -20,11 +20,11 @@
 </head>
 <body>
     <!-- Pink App Header -->
-    <div class="app-header">
+    <div class="app-header" ng-if="isAuthenticated()">
         <span style="font-size:1.5rem; font-weight:bold; letter-spacing:1px;">Churras Club</span>
     </div>
     <!-- Pink Navigation Bar -->
-    <nav class="navbar">
+    <nav class="navbar" ng-if="isAuthenticated()">
         <a href="#!/dashboard"><i class="bi bi-house-door-fill"></i> Dashboard</a>
         <a href="#!/profile"><i class="bi bi-person-fill"></i> Perfil</a>
         <a href="#!/rewards"><i class="bi bi-gift-fill"></i> Recompensas</a>
