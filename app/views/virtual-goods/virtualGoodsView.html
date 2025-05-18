@@ -1,47 +1,83 @@
-<!-- Virtual Goods Store - Figma Style -->
+<!-- Virtual Goods Store View - Figma Style -->
 <div class="login-container" style="background: var(--background-dark); min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding-top: 32px;">
     <div style="width: 100%; max-width: 400px;">
+        <!-- Header -->
         <div style="background: var(--primary-color); color: #fff; border-radius: 24px 24px 0 0; padding: 20px 0 16px 0; text-align: center; margin-bottom: 0;">
-            <span style="font-size: 1.3rem; font-weight: bold;">Loja</span>
+            <h1 style="font-size: 1.3rem; font-weight: bold; margin: 0;">Loja Virtual</h1>
         </div>
         <div style="background: var(--background-card); border-radius: 0 0 24px 24px; padding: 20px 0 16px 0; text-align: center; margin-bottom: 24px;">
-            <span style="color: var(--primary-color); font-size: 1.1rem; font-weight: bold;">Saldo: {{vm.playerBalance.misscoins || 0}} moedas</span>
+            <span style="color: var(--primary-color); font-size: 1.1rem; font-weight: bold;">
+                <i class="bi bi-coin" aria-hidden="true"></i>
+                <span>Seu saldo: {{vm.playerBalance.misscoins}} moedas</span>
+            </span>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
+
+        <!-- Error and Success Messages -->
+        <div class="alert alert-danger" ng-if="vm.error" style="margin-bottom: 18px;" role="alert">
+            <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
+            <span>{{vm.error}}</span>
+        </div>
+        <div class="alert alert-success" ng-if="vm.successMessage" style="margin-bottom: 18px;" role="alert">
+            <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+            <span>{{vm.successMessage}}</span>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading-state" ng-if="vm.loading" style="margin: 32px 0;" role="status">
+            <div class="spinner-border text-primary" aria-hidden="true">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <p class="mt-2" style="color: var(--text-secondary);">Carregando itens...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div ng-if="!vm.loading && vm.virtualGoods.length === 0" style="text-align: center; padding: 32px 16px; background: var(--background-card); border-radius: 16px;">
+            <i class="bi bi-box" style="font-size: 2rem; color: var(--text-secondary);" aria-hidden="true"></i>
+            <p style="color: var(--text-secondary); margin-top: 16px;">Nenhum item disponível no momento.</p>
+        </div>
+
+        <!-- Virtual Goods Grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;" ng-if="!vm.loading && vm.virtualGoods.length > 0">
             <div class="card" ng-repeat="good in vm.virtualGoods" style="background: var(--background-card); border-radius: 16px; box-shadow: var(--shadow); padding: 18px 10px; text-align: center;">
                 <div style="height: 90px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
                     <img ng-src="{{good.imageUrl}}" alt="{{good.name}}" style="max-width: 70px; max-height: 70px; border-radius: 12px; background: #fff;">
                 </div>
-                <div style="color: #fff; font-size: 1.05rem; font-weight: 500; margin-bottom: 4px;">{{good.name}}</div>
-                <div style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 8px; min-height: 32px;">{{good.description}}</div>
+                <h3 style="color: #fff; font-size: 1.05rem; font-weight: 500; margin-bottom: 4px;">{{good.name}}</h3>
+                <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 8px; min-height: 32px;">{{good.description}}</p>
                 <div style="color: var(--primary-color); font-size: 1.1rem; font-weight: bold; margin-bottom: 8px;">
-                    <i class="bi bi-coin"></i> {{good.price}} moedas
+                    <i class="bi bi-coin" aria-hidden="true"></i>
+                    <span>{{good.price}} moedas</span>
                 </div>
-                <button class="btn btn-primary" style="width: 100%; font-size: 1rem;" ng-click="vm.purchaseGood(good)" ng-disabled="vm.playerBalance.misscoins < good.price">Comprar</button>
+                <button class="btn btn-primary" style="width: 100%; font-size: 1rem;" 
+                        ng-click="vm.purchaseGood(good)" 
+                        ng-disabled="vm.playerBalance.misscoins < good.price"
+                        aria-label="Comprar {{good.name}} por {{good.price}} moedas">
+                    <span ng-if="vm.playerBalance.misscoins < good.price">Saldo Insuficiente</span>
+                    <span ng-if="vm.playerBalance.misscoins >= good.price">Comprar</span>
+                </button>
             </div>
         </div>
-        <div class="alert alert-danger" ng-if="vm.error" style="margin-top: 18px;">
-            {{vm.error}}
-        </div>
-        <div class="alert alert-success" ng-if="vm.successMessage" style="margin-top: 18px;">
-            {{vm.successMessage}}
-        </div>
-        <div class="loading-state" ng-if="vm.loading" style="margin-top: 32px;">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Carregando...</span>
+
+        <!-- Purchase History Section -->
+        <div class="purchase-history" ng-if="!vm.loading && vm.purchaseHistory.length > 0" style="margin-top: 32px;">
+            <div style="background: var(--primary-color); color: #fff; border-radius: 24px 24px 0 0; padding: 20px 0 16px 0; text-align: center; margin-bottom: 0;">
+                <h2 style="font-size: 1.3rem; font-weight: bold; margin: 0;">Histórico de Compras</h2>
             </div>
-        </div>
-        <!-- Purchase History -->
-        <div class="purchase-history" ng-if="vm.purchaseHistory.length > 0" style="margin-top: 32px;">
-            <h2 style="color: var(--primary-color); font-size: 1.1rem; font-weight: bold; margin-bottom: 12px;">Histórico de Compras</h2>
-            <div class="history-list" style="display: flex; flex-direction: column; gap: 10px;">
-                <div class="history-item" ng-repeat="purchase in vm.purchaseHistory" style="background: var(--background-card); border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between;">
-                    <div class="history-info">
-                        <div style="color: #fff; font-size: 1rem; font-weight: 500;">{{purchase.goodName}}</div>
-                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Comprado em: {{purchase.purchaseDate | date:'dd/MM/yyyy HH:mm'}}</div>
-                    </div>
-                    <div class="history-price" style="color: var(--primary-color); font-weight: bold; font-size: 1rem; display: flex; align-items: center; gap: 4px;">
-                        <i class="bi bi-coin"></i> {{purchase.price}}
+            <div style="background: var(--background-card); border-radius: 0 0 24px 24px; padding: 20px 0 16px 0; text-align: center; margin-bottom: 24px;">
+                <div class="history-list" style="display: flex; flex-direction: column; gap: 10px; padding: 0 16px;">
+                    <div class="history-item" ng-repeat="purchase in vm.purchaseHistory" 
+                         style="background: var(--background-card); border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--primary-color);">
+                        <div class="history-info">
+                            <div style="color: #fff; font-size: 1rem; font-weight: 500;">{{purchase.goodName}}</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">
+                                <i class="bi bi-clock" aria-hidden="true"></i>
+                                <span>Comprado em: {{purchase.purchaseDate | date:'dd/MM/yyyy HH:mm'}}</span>
+                            </div>
+                        </div>
+                        <div class="history-price" style="color: var(--primary-color); font-weight: bold; font-size: 1rem; display: flex; align-items: center; gap: 4px;">
+                            <i class="bi bi-coin" aria-hidden="true"></i>
+                            <span>{{purchase.price}}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -54,23 +90,31 @@
             <div class="modal-content" style="background: var(--background-card); color: #fff; border-radius: 18px;">
                 <div class="modal-header" style="border-bottom: 1px solid var(--primary-color);">
                     <h5 class="modal-title" id="purchaseModalLabel" style="color: var(--primary-color); font-weight: bold;">Confirmar Compra</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #fff; font-size: 1.5rem;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar" style="color: #fff; font-size: 1.5rem;">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <p>Tem certeza que deseja comprar <strong>{{vm.selectedGood.name}}</strong>?</p>
-                    <p>Custo: <i class="bi bi-coin"></i> {{vm.selectedGood.price}} moedas</p>
-                    <p>Seu saldo após a compra: <i class="bi bi-coin"></i> {{vm.playerBalance.misscoins - vm.selectedGood.price}} moedas</p>
+                    <p>
+                        <i class="bi bi-coin" aria-hidden="true"></i>
+                        <span>Custo: {{vm.selectedGood.price}} moedas</span>
+                    </p>
+                    <p>
+                        <i class="bi bi-coin" aria-hidden="true"></i>
+                        <span>Seu saldo após a compra: {{vm.playerBalance.misscoins - vm.selectedGood.price}} moedas</span>
+                    </p>
                 </div>
                 <div class="modal-footer" style="border-top: 1px solid var(--primary-color);">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-primary" ng-click="vm.confirmPurchase()" ng-disabled="vm.processing">
                         <span ng-if="!vm.processing">Confirmar</span>
-                        <span ng-if="vm.processing" class="spinner-border spinner-border-sm" role="status"></span>
+                        <span ng-if="vm.processing" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span ng-if="vm.processing" class="visually-hidden">Processando...</span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
+</div> 
 </div> 

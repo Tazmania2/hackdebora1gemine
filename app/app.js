@@ -58,16 +58,6 @@
                     }]
                 }
             })
-            .when('/purchases', {
-                templateUrl: 'views/purchases/purchasesView.html',
-                controller: 'PurchasesController',
-                controllerAs: 'vm',
-                resolve: {
-                    auth: ['AuthService', function(AuthService) {
-                        return AuthService.isAuthenticated();
-                    }]
-                }
-            })
             .when('/virtual-goods', {
                 templateUrl: 'views/virtual-goods/virtualGoodsView.html',
                 controller: 'VirtualGoodsController',
