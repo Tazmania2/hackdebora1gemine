@@ -9,6 +9,8 @@
   align-items: center;
   justify-content: flex-start;
   padding: 0;
+  height: auto;
+  padding-bottom: 32px;
 }
 @media (min-width: 431px) {
   .dashboard-viewport {
@@ -16,7 +18,7 @@
     min-width: 430px;
     max-width: 430px;
     min-height: 900px;
-    max-height: 100vh;
+    max-height: none;
     margin: 32px auto;
     border-radius: 32px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.25);
@@ -78,24 +80,47 @@
   margin-bottom: 8px;
 }
 .saldo-card {
-  background: #181818;
+  background: #232323;
   border-radius: 16px;
   flex: 1;
   text-align: center;
   padding: 18px 0;
   min-width: 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 .saldo-label {
   color: #fff;
   font-size: 1.1rem;
   font-weight: 500;
   margin-bottom: 4px;
+  white-space: nowrap;
 }
 .saldo-value {
   color: var(--primary-color);
   font-size: 2rem;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+}
+.saldo-pontos-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+.saldo-cashback-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
 }
 .dashboard-cashback-msg {
   text-align: center;
@@ -157,11 +182,18 @@
   <div class="saldo-cards">
     <div class="saldo-card">
       <div class="saldo-label">Saldo Pontos</div>
-      <div class="saldo-value">{{vm.playerStatus.point_categories.pontos || 0}}</div>
+      <div class="saldo-value">
+        {{vm.playerStatus.point_categories.pontos || 0}}
+        <img class="saldo-pontos-icon" src="https://imagizer.imageshack.com/img923/1336/ygZCtF.png" alt="Pontos" />
+      </div>
     </div>
     <div class="saldo-card">
-      <div class="saldo-label">Saldo Cashback</div>
-      <div class="saldo-value">R$ {{vm.playerStatus.point_categories.misscoins || 0}}</div>
+      <div class="saldo-cashback-label-row">
+        <div class="saldo-label">Saldo Cashback</div>
+      </div>
+      <div class="saldo-value" style="font-size:1.7rem;">
+        R$ {{vm.playerStatus.point_categories.misscoins || 0}}
+      </div>
     </div>
   </div>
   <div class="dashboard-cashback-msg">
