@@ -8,6 +8,10 @@ angular.module('app')
         templateUrl: 'app/views/login/login.html',
         controller:  'LoginController'
       })
+      // .when('/', {
+      //   templateUrl: 'app/views/home.html',
+      //   controller:  'HomeController'
+      // })
       // .when('/register', {
       //   templateUrl: 'app/views/register/register.html',
       //   controller:  'RegisterController'
