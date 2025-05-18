@@ -73,7 +73,13 @@ angular.module('app')
 
     // Check if user is authenticated
     service.isAuthenticated = function() {
-        return !!localStorage.getItem('token');
+        var token = localStorage.getItem('token');
+        if (token) {
+            return Promise.resolve(true);
+        } else {
+            console.error('User not authenticated');
+            return Promise.reject('not_authenticated');
+        }
     };
 
     // Logout

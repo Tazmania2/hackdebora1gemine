@@ -87,6 +87,7 @@
     function run($rootScope, $location, AuthService) {
         // Handle route change errors
         $rootScope.$on('$routeChangeError', function(event, current, previous, rejection) {
+            console.error('Route change error:', { event, current, previous, rejection });
             if (rejection === 'not_authenticated') {
                 $location.path('/login');
             }
