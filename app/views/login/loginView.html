@@ -55,7 +55,7 @@
     <!-- Login Form -->
     <div style="width: 100%; max-width: 340px; margin: 0 auto; flex: 1; display: flex; flex-direction: column; justify-content: center;">
         <form name="loginForm" ng-submit="vm.login()" class="login-form" autocomplete="off" style="display: flex; flex-direction: column; gap: 24px;">
-            <input type="email" class="form-control" id="email" ng-model="vm.user.email" placeholder="miss@liguica.com" required autocomplete="username" style="border-radius: 28px; background: #f3f3f3; border: none; padding: 18px 24px; font-size: 1.1rem; color: #888; font-weight: 500; margin-bottom: 0;" />
+            <input type="email" class="form-control" id="email" ng-model="vm.user.email" placeholder="miss@linguica.com" required autocomplete="username" style="border-radius: 28px; background: #f3f3f3; border: none; padding: 18px 24px; font-size: 1.1rem; color: #888; font-weight: 500; margin-bottom: 0;" />
             <input type="password" class="form-control" id="password" ng-model="vm.user.password" placeholder="Senha" required autocomplete="current-password" style="border-radius: 28px; background: #f3f3f3; border: none; padding: 18px 24px; font-size: 1.1rem; color: #888; font-weight: 500; margin-bottom: 0;" />
             <button type="submit" class="btn btn-primary btn-block" ng-disabled="vm.loading" style="width: 100%; font-size: 1.2rem; font-weight: bold; background: #a0004d; border-radius: 16px; border: none; padding: 16px 0; margin-top: 0;">
                 <span ng-if="!vm.loading">ENTRAR</span>
