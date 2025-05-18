@@ -68,6 +68,66 @@
                     }]
                 }
             })
+            .when('/events', {
+                templateUrl: 'views/events/eventsView.html',
+                controller: 'EventsController',
+                controllerAs: 'vm',
+                resolve: {
+                    auth: ['AuthService', function(AuthService) {
+                        return AuthService.isAuthenticated();
+                    }]
+                }
+            })
+            .when('/fidelidade', {
+                templateUrl: 'views/fidelidade/fidelidadeView.html',
+                controller: 'FidelidadeController',
+                controllerAs: 'vm',
+                resolve: {
+                    auth: ['AuthService', function(AuthService) {
+                        return AuthService.isAuthenticated();
+                    }]
+                }
+            })
+            .when('/store', {
+                templateUrl: 'views/store/storeView.html',
+                controller: 'StoreController',
+                controllerAs: 'vm',
+                resolve: {
+                    auth: ['AuthService', function(AuthService) {
+                        return AuthService.isAuthenticated();
+                    }]
+                }
+            })
+            .when('/social', {
+                templateUrl: 'views/social/socialView.html',
+                controller: 'SocialController',
+                controllerAs: 'vm',
+                resolve: {
+                    auth: ['AuthService', function(AuthService) {
+                        return AuthService.isAuthenticated();
+                    }]
+                }
+            })
+            .when('/history', {
+                templateUrl: 'views/history/historyView.html',
+                controller: 'HistoryController',
+                controllerAs: 'vm',
+                resolve: {
+                    auth: ['AuthService', function(AuthService) {
+                        return AuthService.isAuthenticated();
+                    }]
+                }
+            })
+            .when('/quiz', {
+                templateUrl: 'views/quiz/quizView.html',
+                controller: 'QuizController',
+                controllerAs: 'vm',
+                resolve: {
+                    auth: ['AuthService', function(AuthService) {
+                        return AuthService.isAuthenticated();
+                    }]
+                }
+            })
             .otherwise({
                 redirectTo: '/'
             });
