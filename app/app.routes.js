@@ -38,5 +38,8 @@ angular.module('app')
         controller:  'VirtualGoodsController',
         controllerAs: 'vm'
       })
+      .when('/terms', {
+        templateUrl: 'app/views/terms/termsView.html'
+      })
       .otherwise({ redirectTo: '/login' });
   }]); 

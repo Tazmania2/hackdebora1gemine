@@ -1,0 +1,117 @@
+<style>
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: #181828;
+}
+.app-viewport {
+    background: #ec0677;
+    min-height: 100vh;
+    min-width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0;
+}
+@media (min-width: 431px) {
+    .app-viewport {
+        width: 430px;
+        min-width: 430px;
+        max-width: 430px;
+        min-height: 900px;
+        max-height: 100vh;
+        margin: 32px auto;
+        border-radius: 32px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+        position: relative;
+        left: 0; right: 0;
+    }
+    body, html {
+        background: #181828;
+    }
+}
+.terms-header {
+    width: 100%;
+    background: #6a0033;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    min-height: 60px;
+    height: 12vh;
+    max-height: 160px;
+    border-radius: 0;
+    position: relative;
+    justify-content: center;
+    box-sizing: border-box;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.terms-title {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #fff;
+    letter-spacing: 1px;
+    margin-left: 0;
+}
+.terms-content-box {
+    background: #ddd;
+    border-radius: 12px;
+    width: 85%;
+    max-width: 340px;
+    height: 320px;
+    margin: 32px auto 0 auto;
+    padding: 24px 18px;
+    overflow-y: auto;
+    font-size: 1.1rem;
+    color: #333;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+.terms-back-btn {
+    width: 56px;
+    height: 56px;
+    background: #a0004d;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 32px auto 0 auto;
+    cursor: pointer;
+    font-size: 2rem;
+    border: none;
+    color: #fff;
+}
+.terms-logo-bottom {
+    width: 120px;
+    height: auto;
+    object-fit: contain;
+    margin-top: 15px;
+    margin-bottom: 32px;
+    display: block;
+    max-width: 90%;
+}
+</style>
+
+<div class="app-viewport">
+    <!-- Header Bar -->
+    <div class="terms-header">
+        <span class="terms-title">Termo de uso</span>
+    </div>
+    <!-- Scrollable Terms Content -->
+    <div class="terms-content-box">
+        <p>Aqui vão os termos de uso. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod, urna eu tincidunt consectetur, nisi nisl aliquam nunc, eget aliquam massa nisl quis neque. Etiam euismod, urna eu tincidunt consectetur, nisi nisl aliquam nunc, eget aliquam massa nisl quis neque.</p>
+        <p>Mais texto de exemplo para simular um termo de uso longo. Pellentesque euismod, urna eu tincidunt consectetur, nisi nisl aliquam nunc, eget aliquam massa nisl quis neque.</p>
+        <p>Mais texto de exemplo para simular um termo de uso longo. Pellentesque euismod, urna eu tincidunt consectetur, nisi nisl aliquam nunc, eget aliquam massa nisl quis neque.</p>
+        <p>Mais texto de exemplo para simular um termo de uso longo. Pellentesque euismod, urna eu tincidunt consectetur, nisi nisl aliquam nunc, eget aliquam massa nisl quis neque.</p>
+    </div>
+    <!-- Back Button -->
+    <button class="terms-back-btn" onclick="window.history.back()" aria-label="Voltar">&#8617;</button>
+    <!-- Bottom Logo -->
+    <div style="width: 100%; display: flex; flex-direction: column; align-items: center; margin-bottom: 32px;">
+        <img src="https://imagizer.imageshack.com/img923/9653/ubhdbg.png" alt="Logo Bottom" class="terms-logo-bottom" />
+    </div>
+</div> 
