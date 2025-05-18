@@ -36,7 +36,10 @@
         function loadPlayerStatus() {
             PlayerService.getStatus()
                 .then(function(response) {
-                    vm.playerStatus = response.data;
+                    var data = response.data;
+                    // Normalize point_categories for view compatibility
+                    data.point_categories = data.point_categories || data.pointCategories || {};
+                    vm.playerStatus = data;
                 })
                 .catch(function(error) {
                     vm.error = 'Erro ao carregar status do jogador';

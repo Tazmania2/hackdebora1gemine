@@ -190,7 +190,14 @@ angular.module('app').factory('PlayerService', function($http, $q, FUNIFIER_API_
     };
 
     service.getStatus = function() {
-        return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/player/status');
+        return $http({
+            method: 'GET',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/status',
+            headers: {
+                'Authorization': localStorage.getItem('token'),
+                'Content-Type': 'application/json'
+            }
+        });
     };
 
     service.getProfile = function() {
