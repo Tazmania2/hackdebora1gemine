@@ -1,46 +1,197 @@
 <!-- Dashboard View - Figma Style -->
-<div class="dashboard-container" style="max-width: 400px; margin: 0 auto; padding: 0;">
-    <!-- Pink Header -->
-    <div style="background: var(--primary-color); color: #fff; border-radius: 0 0 24px 24px; padding: 24px 0 16px 0; text-align: center;">
-        <div style="display: flex; align-items: center; justify-content: space-between; max-width: 340px; margin: 0 auto;">
-            <i class="bi bi-person-circle" style="font-size: 2.2rem;"></i>
-            <span style="font-size: 1.3rem; font-weight: bold;">Olá, {{vm.playerStatus.name || 'Jogador'}}!</span>
-            <i class="bi bi-gear" style="font-size: 2.2rem;"></i>
-        </div>
+<style>
+.dashboard-viewport {
+  background: var(--background-dark);
+  min-height: 100vh;
+  min-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+}
+@media (min-width: 431px) {
+  .dashboard-viewport {
+    width: 430px;
+    min-width: 430px;
+    max-width: 430px;
+    min-height: 900px;
+    max-height: 100vh;
+    margin: 32px auto;
+    border-radius: 32px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    position: relative;
+    left: 0; right: 0;
+  }
+}
+.dashboard-header {
+  background: var(--primary-color);
+  color: #fff;
+  border-radius: 0 0 24px 24px;
+  padding: 24px 0 16px 0;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dashboard-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 90%;
+  max-width: 340px;
+}
+.dashboard-profile-img {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  object-fit: cover;
+  background: #fff;
+}
+.dashboard-header-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+  margin: 0 12px;
+  flex: 1;
+  text-align: left;
+}
+.dashboard-header-gear {
+  font-size: 2.2rem;
+  color: #fff;
+  cursor: pointer;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.saldo-cards {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+.saldo-card {
+  background: #181818;
+  border-radius: 16px;
+  flex: 1;
+  text-align: center;
+  padding: 18px 0;
+  min-width: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+.saldo-label {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.saldo-value {
+  color: var(--primary-color);
+  font-size: 2rem;
+  font-weight: bold;
+}
+.dashboard-cashback-msg {
+  text-align: center;
+  color: var(--secondary-color);
+  margin: 12px 0 24px 0;
+  font-size: 1rem;
+}
+.dashboard-cashback-msg span {
+  color: var(--primary-color);
+  font-weight: bold;
+}
+.dashboard-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+}
+.dashboard-menu-btn {
+  background: #232323;
+  color: var(--primary-color);
+  font-weight: 500;
+  font-size: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  border-radius: 16px;
+  justify-content: center;
+  border: none;
+  padding: 18px 0 10px 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.dashboard-menu-btn:active,
+.dashboard-menu-btn:focus {
+  background: #181818;
+}
+.dashboard-menu-icon {
+  font-size: 1.7rem;
+  color: var(--primary-color);
+  margin-bottom: 2px;
+}
+</style>
+<div class="dashboard-viewport">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="dashboard-header-inner">
+      <img class="dashboard-profile-img" ng-src="{{vm.playerStatus.image && vm.playerStatus.image.medium && vm.playerStatus.image.medium.url || 'https://my.funifier.com/images/funny.png'}}" alt="Foto de Perfil">
+      <span class="dashboard-header-name">Olá, {{vm.playerStatus.name || 'Jogador'}}!</span>
+      <button class="dashboard-header-gear" ng-click="vm.goToProfile()" aria-label="Editar Perfil">
+        <i class="bi bi-gear"></i>
+      </button>
     </div>
-    <!-- Saldo Cards -->
-    <div style="display: flex; gap: 12px; justify-content: center; margin-top: 24px;">
-        <div style="background: var(--background-card); border-radius: 16px; flex: 1; text-align: center; padding: 18px 0;">
-            <div style="color: #fff; font-size: 1.1rem; font-weight: 500;">Saldo Pontos</div>
-            <div style="color: var(--primary-color); font-size: 2rem; font-weight: bold;">{{vm.playerStatus.point_categories.pontos || 0}}</div>
-        </div>
-        <div style="background: var(--background-card); border-radius: 16px; flex: 1; text-align: center; padding: 18px 0;">
-            <div style="color: #fff; font-size: 1.1rem; font-weight: 500;">Saldo Cashback</div>
-            <div style="color: var(--primary-color); font-size: 2rem; font-weight: bold;">R$ {{vm.playerStatus.point_categories.misscoins || 0}}</div>
-        </div>
+  </div>
+  <!-- Saldo Cards -->
+  <div class="saldo-cards">
+    <div class="saldo-card">
+      <div class="saldo-label">Saldo Pontos</div>
+      <div class="saldo-value">{{vm.playerStatus.point_categories.pontos || 0}}</div>
     </div>
-    <div style="text-align: center; color: var(--secondary-color); margin: 12px 0 24px 0; font-size: 1rem;">
-        Seu cashback expirará em <span style="color: var(--primary-color); font-weight: bold;">10 dias</span>
+    <div class="saldo-card">
+      <div class="saldo-label">Saldo Cashback</div>
+      <div class="saldo-value">R$ {{vm.playerStatus.point_categories.misscoins || 0}}</div>
     </div>
-    <!-- Vertical Menu -->
-    <div style="display: flex; flex-direction: column; gap: 16px;">
-        <button class="btn" style="background: var(--background-card); color: var(--primary-color); font-weight: 500; font-size: 1.1rem; display: flex; align-items: center; gap: 12px; border-radius: 16px; justify-content: flex-start;" ng-click="vm.goToEvents()">
-            <i class="bi bi-calendar-event" style="font-size: 1.5rem;"></i> Próximos eventos
-        </button>
-        <button class="btn" style="background: var(--background-card); color: var(--primary-color); font-weight: 500; font-size: 1.1rem; display: flex; align-items: center; gap: 12px; border-radius: 16px; justify-content: flex-start;" ng-click="vm.goToFidelidade()">
-            <i class="bi bi-patch-check" style="font-size: 1.5rem;"></i> Fidelidade
-        </button>
-        <button class="btn" style="background: var(--background-card); color: var(--primary-color); font-weight: 500; font-size: 1.1rem; display: flex; align-items: center; gap: 12px; border-radius: 16px; justify-content: flex-start;" ng-click="vm.goToStore()">
-            <i class="bi bi-shop" style="font-size: 1.5rem;"></i> Loja
-        </button>
-        <button class="btn" style="background: var(--background-card); color: var(--primary-color); font-weight: 500; font-size: 1.1rem; display: flex; align-items: center; gap: 12px; border-radius: 16px; justify-content: flex-start;" ng-click="vm.goToSocial()">
-            <i class="bi bi-hash" style="font-size: 1.5rem;"></i> Rede Social
-        </button>
-        <button class="btn" style="background: var(--background-card); color: var(--primary-color); font-weight: 500; font-size: 1.1rem; display: flex; align-items: center; gap: 12px; border-radius: 16px; justify-content: flex-start;" ng-click="vm.goToHistory()">
-            <i class="bi bi-clock-history" style="font-size: 1.5rem;"></i> Histórico de resgates
-        </button>
-        <button class="btn" style="background: var(--background-card); color: var(--primary-color); font-weight: 500; font-size: 1.1rem; display: flex; align-items: center; gap: 12px; border-radius: 16px; justify-content: flex-start;" ng-click="vm.goToQuiz()">
-            <i class="bi bi-chat-dots" style="font-size: 1.5rem;"></i> Quiz - Testes seus conhecimentos!
-        </button>
-    </div>
+  </div>
+  <div class="dashboard-cashback-msg">
+    Seu cashback expirará em <span>10 dias</span>
+  </div>
+  <!-- Menu Buttons -->
+  <div class="dashboard-menu">
+    <button class="dashboard-menu-btn" ng-click="vm.goToEvents()">
+      <i class="bi bi-calendar-event dashboard-menu-icon"></i>
+      Próximos eventos
+    </button>
+    <button class="dashboard-menu-btn" ng-click="vm.goToFidelidade()">
+      <i class="bi bi-patch-check dashboard-menu-icon"></i>
+      Fidelidade
+    </button>
+    <button class="dashboard-menu-btn" ng-click="vm.goToStore()">
+      <i class="bi bi-shop dashboard-menu-icon"></i>
+      Loja
+    </button>
+    <button class="dashboard-menu-btn" ng-click="vm.goToSocial()">
+      <i class="bi bi-hash dashboard-menu-icon"></i>
+      Rede Social
+    </button>
+    <button class="dashboard-menu-btn" ng-click="vm.goToHistory()">
+      <i class="bi bi-clock-history dashboard-menu-icon"></i>
+      Histórico de Resgate
+    </button>
+    <button class="dashboard-menu-btn" ng-click="vm.goToQuiz()">
+      <i class="bi bi-chat-dots dashboard-menu-icon"></i>
+      Quiz - Teste seu conhecimento!
+    </button>
+  </div>
 </div> 
