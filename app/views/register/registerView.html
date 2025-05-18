@@ -71,17 +71,12 @@ body, html {
     height: 140px;
     border-radius: 0;
     position: relative;
-    justify-content: center;
+    justify-content: flex-start;
     box-sizing: border-box;
     overflow: hidden;
-    border: 2px solid yellow; /* DEBUG: Remove after confirming visibility */
 }
 
 .register-back {
-    position: absolute;
-    left: 24px;
-    top: 50%;
-    transform: translateY(-50%);
     width: 56px;
     height: 56px;
     background: #a0004d;
@@ -89,6 +84,8 @@ body, html {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-left: 24px;
+    margin-right: 16px;
     cursor: pointer;
     font-size: 2rem;
     border: none;
@@ -101,11 +98,6 @@ body, html {
     color: #fff;
     letter-spacing: 1px;
     margin-left: 0;
-    flex: 1;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .register-form {
