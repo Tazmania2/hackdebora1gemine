@@ -5,9 +5,10 @@
         .module('app')
         .service('EventService', EventService);
 
-    EventService.$inject = ['$http', 'API_URL'];
+    EventService.$inject = ['$http', 'FUNIFIER_API_CONFIG'];
 
-    function EventService($http, API_URL) {
+    function EventService($http, FUNIFIER_API_CONFIG) {
+        var baseUrl = FUNIFIER_API_CONFIG.baseUrl;
         var service = {
             getUpcoming: getUpcoming,
             getById: getById,
@@ -19,23 +20,23 @@
         return service;
 
         function getUpcoming() {
-            return $http.get(API_URL + '/events/upcoming');
+            return $http.get(baseUrl + '/events/upcoming');
         }
 
         function getById(eventId) {
-            return $http.get(API_URL + '/events/' + eventId);
+            return $http.get(baseUrl + '/events/' + eventId);
         }
 
         function register(eventId) {
-            return $http.post(API_URL + '/events/' + eventId + '/register');
+            return $http.post(baseUrl + '/events/' + eventId + '/register');
         }
 
         function unregister(eventId) {
-            return $http.post(API_URL + '/events/' + eventId + '/unregister');
+            return $http.post(baseUrl + '/events/' + eventId + '/unregister');
         }
 
         function getRegisteredEvents() {
-            return $http.get(API_URL + '/events/registered');
+            return $http.get(baseUrl + '/events/registered');
         }
     }
 })(); 
