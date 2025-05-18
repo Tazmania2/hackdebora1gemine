@@ -4,6 +4,10 @@ angular.module('app')
     $locationProvider.html5Mode(false);
 
     $routeProvider
+      // Redirect root URL to /login
+      .when('/', {
+        redirectTo: '/login'
+      })
       .when('/login', {
         templateUrl: 'app/views/login/login.html',
         controller:  'LoginController'
@@ -32,6 +36,5 @@ angular.module('app')
       //   templateUrl: 'app/views/virtual-goods/virtualGoods.html',
       //   controller:  'VirtualGoodsController'
       // })
-      // fallback to login if unknown route
       .otherwise({ redirectTo: '/login' });
   }]); 
