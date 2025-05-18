@@ -9,27 +9,27 @@ angular.module('app')
         redirectTo: '/login'
       })
       .when('/login', {
-        templateUrl: 'app/views/login/login.html',
+        templateUrl: 'app/views/login/loginView.html',
         controller:  'LoginController'
       })
       .when('/register', {
-        templateUrl: 'app/views/register/register.html',
+        templateUrl: 'app/views/register/registerView.html',
         controller:  'RegisterController'
       })
       .when('/dashboard', {
-        templateUrl: 'app/views/dashboard/dashboard.html',
+        templateUrl: 'app/views/dashboard/dashboardView.html',
         controller:  'DashboardController'
       })
       .when('/profile', {
-        templateUrl: 'app/views/profile/profile.html',
+        templateUrl: 'app/views/profile/profileView.html',
         controller:  'ProfileController'
       })
       .when('/rewards', {
-        templateUrl: 'app/views/rewards/rewards.html',
+        templateUrl: 'app/views/rewards/rewardsView.html',
         controller:  'RewardsController'
       })
       .when('/virtual-goods', {
-        templateUrl: 'app/views/virtual-goods/virtualGoods.html',
+        templateUrl: 'app/views/virtual-goods/virtualGoodsView.html',
         controller:  'VirtualGoodsController'
       })
       .otherwise({ redirectTo: '/login' });
