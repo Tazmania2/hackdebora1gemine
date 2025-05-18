@@ -46,19 +46,26 @@
     <script src="https://cdn.jsdelivr.net/npm/angular-loading-bar@0.9.0/build/loading-bar.min.js"></script>
 
     <!-- App Module -->
-    <script src="app/app.js"></script>
+    <script src="app/app.module.js"></script>
 
     <!-- App Configuration -->
-    <script src="app/config/api.config.js"></script>
+    <script src="app/api.config.js"></script>
+
+    <!-- Auth Interceptor -->
+    <script src="app/auth.interceptor.js"></script>
+
+    <!-- App Routes -->
+    <script src="app/app.routes.js"></script>
 
     <!-- Services -->
-    <script src="app/services/authService.js"></script>
+    <script src="app/auth.service.js"></script>
     <script src="app/services/playerService.js"></script>
     <script src="app/services/activityService.js"></script>
     <script src="app/services/eventService.js"></script>
     <script src="app/services/virtualGoodsService.js"></script>
 
     <!-- Controllers -->
+    <script src="app/home.controller.js"></script>
     <script src="app/views/login/loginController.js"></script>
     <script src="app/views/register/registerController.js"></script>
     <script src="app/views/dashboard/dashboardController.js"></script>
