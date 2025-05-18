@@ -1,5 +1,40 @@
-<!-- Login View - Figma Style, matches prototype -->
-<div class="login-container" style="background: #ec0677; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 0;">
+<!-- Login View - Figma Style, responsive container -->
+<style>
+  body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: #181828;
+  }
+  .app-viewport {
+    background: #ec0677;
+    min-height: 100vh;
+    min-width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+  }
+  @media (min-width: 431px) {
+    .app-viewport {
+      width: 430px;
+      min-width: 430px;
+      max-width: 430px;
+      min-height: 900px;
+      max-height: 100vh;
+      margin: 32px auto;
+      border-radius: 32px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      position: relative;
+      left: 0; right: 0;
+    }
+    body, html {
+      background: #181828;
+    }
+  }
+</style>
+<div class="app-viewport">
     <!-- Top Logo -->
     <div style="width: 100%; display: flex; flex-direction: column; align-items: center; margin-top: 48px;">
         <img src="https://imagizer.imageshack.com/img923/9653/ubhdbg.png" alt="Logo Top" style="width: 120px; height: 120px; object-fit: contain; margin-bottom: 32px;" />
