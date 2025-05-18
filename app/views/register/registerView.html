@@ -61,6 +61,20 @@ body, html {
     }
 }
 
+@media (max-width: 430px) {
+    .register-form {
+        max-width: 98vw;
+        padding: 0 2vw;
+    }
+    .app-viewport {
+        min-width: 100vw;
+        width: 100vw;
+        border-radius: 0;
+        margin: 0;
+        box-shadow: none;
+    }
+}
+
 .register-header {
     width: 100%;
     background: #6a0033;
@@ -214,6 +228,7 @@ body, html {
         <input type="text" class="register-input" id="cpf" ng-model="vm.user.cpf" placeholder="CPF" required>
         <input type="text" class="register-input" id="referralCode" ng-model="vm.user.referralCode" placeholder="Código de indicação">
         <input type="password" class="register-input" id="password" ng-model="vm.user.password" placeholder="Senha" required>
+        <input type="password" class="register-input" id="confirmPassword" ng-model="vm.user.confirmPassword" placeholder="Confirmar senha" required>
         <div class="register-checkbox-row">
             <input type="checkbox" id="termsAccept" ng-model="vm.user.acceptTerms" required class="register-checkbox">
             <label for="termsAccept" class="register-terms">
