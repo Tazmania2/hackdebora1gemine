@@ -5,9 +5,10 @@
         .module('app')
         .service('ActivityService', ActivityService);
 
-    ActivityService.$inject = ['$http', 'API_URL'];
+    ActivityService.$inject = ['$http', 'FUNIFIER_API_CONFIG'];
 
-    function ActivityService($http, API_URL) {
+    function ActivityService($http, FUNIFIER_API_CONFIG) {
+        var baseUrl = FUNIFIER_API_CONFIG.baseUrl;
         var service = {
             getRecent: getRecent,
             getByType: getByType,
@@ -17,15 +18,15 @@
         return service;
 
         function getRecent() {
-            return $http.get(API_URL + '/activities/recent');
+            return $http.get(baseUrl + '/activities/recent');
         }
 
         function getByType(type) {
-            return $http.get(API_URL + '/activities/type/' + type);
+            return $http.get(baseUrl + '/activities/type/' + type);
         }
 
         function getByDateRange(startDate, endDate) {
-            return $http.get(API_URL + '/activities/range', {
+            return $http.get(baseUrl + '/activities/range', {
                 params: {
                     startDate: startDate,
                     endDate: endDate
