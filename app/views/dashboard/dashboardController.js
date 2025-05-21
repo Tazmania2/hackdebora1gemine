@@ -136,6 +136,7 @@
                 }
             });
             console.log('vm.completedChallengesDisplay:', vm.completedChallengesDisplay);
+            $timeout(function() { $scope.$applyAsync(); });
         }
 
         function buildPurchaseHistoryDisplay() {
@@ -159,6 +160,7 @@
                     console.warn('Virtual good not found for ID:', itemId);
                 }
             });
+            $timeout(function() { $scope.$applyAsync(); });
         }
 
         function loadActivities() {
