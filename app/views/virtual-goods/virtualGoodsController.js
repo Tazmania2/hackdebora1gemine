@@ -172,6 +172,11 @@
                 showResultModal('Erro', 'Erro interno: item não definido.', false, $uibModal);
                 return;
             }
+            console.log('item._id:', item._id);
+            console.log('item.requires:', item.requires);
+            if (item.requires && item.requires.length > 0) {
+                console.log('item.requires[0]:', item.requires[0]);
+            }
             if (!item._id) {
                 console.error('doExchange: item._id is undefined', item);
                 showResultModal('Erro', 'Erro interno: ID do item não encontrado.', false, $uibModal);
@@ -179,15 +184,17 @@
             }
             var itemId = item._id;
             var playerId = vm.playerStatus._id || (vm.playerStatus && vm.playerStatus.name);
+            var payload = {
+                player: playerId,
+                item: itemId,
+                total: 1
+            };
+            console.log('POST payload:', payload);
             var req = {
                 method: 'POST',
                 url: FUNIFIER_API_CONFIG.baseUrl + '/virtualgoods/purchase',
                 headers: { 'Authorization': localStorage.getItem('token'), 'Content-Type': 'application/json' },
-                data: {
-                    player: playerId,
-                    item: itemId,
-                    total: 1
-                }
+                data: payload
             };
             $http(req).then(function(response) {
                 if (response.data.status === 'OK') {
