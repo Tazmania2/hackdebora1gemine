@@ -21,6 +21,7 @@
         vm.qrUrl = 'https://google.com';
         vm.completedChallengesDisplay = [];
         vm.purchaseHistoryDisplay = [];
+        vm.qrReady = false;
 
         // Methods
         vm.goToProfile = goToProfile;
@@ -71,6 +72,7 @@
             var url = baseUrl + '#!/register?referral=' + encodeURIComponent(code);
             $timeout(function() {
                 vm.qrUrl = url;
+                vm.qrReady = true;
                 console.log('QR URL (timeout):', vm.qrUrl);
             });
         }

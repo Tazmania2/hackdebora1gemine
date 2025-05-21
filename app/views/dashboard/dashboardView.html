@@ -240,7 +240,7 @@
       <div uib-accordion-group heading="QR Code" is-open="status.open1" class="saldo-card" style="margin-bottom: 12px;">
         <div style="display: flex; flex-direction: column; align-items: center;">
           <div class="saldo-label" style="margin-bottom: 8px;">QR Code</div>
-          <qrcode data="vm.qrUrl" size="180" color="#ec0677" background="#fff"></qrcode>
+          <qrcode ng-if="vm.qrReady" data="vm.qrUrl" size="180" color="#ec0677" background="#fff"></qrcode>
           <div style="color: #aaa; font-size: 0.95em; margin-top: 8px;">Escaneie para acessar</div>
         </div>
       </div>
