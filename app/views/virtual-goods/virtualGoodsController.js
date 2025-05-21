@@ -146,6 +146,7 @@
 
         function doExchange(item) {
             console.log('doExchange item:', item);
+            console.log('item.id:', item.id);
             var playerId = vm.playerStatus._id || (vm.playerStatus && vm.playerStatus.name);
             var req = {
                 method: 'POST',
@@ -153,7 +154,7 @@
                 headers: { 'Authorization': localStorage.getItem('token'), 'Content-Type': 'application/json' },
                 data: {
                     player: playerId,
-                    item: item._id,
+                    item: item.id,
                     total: 1
                 }
             };
