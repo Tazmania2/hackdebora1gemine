@@ -41,9 +41,13 @@
             };
             $http(req).then(function(response) {
                 // Only items from 'recompensas' catalog
+                console.log('Catalog API response:', response.data);
                 vm.catalogItems = response.data.filter(function(item) {
                     return item.catalogId === 'recompensas';
                 });
+                if (vm.catalogItems.length) {
+                    console.log('First catalog item:', vm.catalogItems[0]);
+                }
                 applyFilters();
             });
         }
@@ -146,7 +150,11 @@
 
         function doExchange(item) {
             console.log('doExchange item:', item);
-            console.log('item.id:', item.id);
+            var itemId = item.id || item._id || item.item;
+            if (!itemId) {
+                alert('Erro: não foi possível identificar o ID do item para troca.');
+                return;
+            }
             var playerId = vm.playerStatus._id || (vm.playerStatus && vm.playerStatus.name);
             var req = {
                 method: 'POST',
@@ -154,7 +162,7 @@
                 headers: { 'Authorization': localStorage.getItem('token'), 'Content-Type': 'application/json' },
                 data: {
                     player: playerId,
-                    item: item.id,
+                    item: itemId,
                     total: 1
                 }
             };
