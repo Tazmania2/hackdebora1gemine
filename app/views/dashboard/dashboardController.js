@@ -215,5 +215,12 @@
                     console.error('Error registering for event:', error);
                 });
         }
+
+        // Watch for qrUrl to be set to a real value
+        $scope.$watch(function() { return vm.qrUrl; }, function(newVal) {
+            if (newVal && newVal !== 'vm.qrUrl') {
+                vm.qrReady = true;
+            }
+        });
     }
 })(); 
