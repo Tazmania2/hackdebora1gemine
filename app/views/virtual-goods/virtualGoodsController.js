@@ -100,9 +100,11 @@
             PlayerService.getStatus().then(function(response) {
                 var player = response.data;
                 vm.playerStatus = player;
-                // Set playerMisscoins for UI reference
-                var misscoinsObj = (player.points || []).find(function(p) { return p.pointType === 'misscoins'; });
-                vm.playerMisscoins = misscoinsObj ? misscoinsObj.balance : 0;
+                // Set playerMisscoins for UI reference (fixed to use pointCategories)
+                vm.playerMisscoins =
+                    (player.pointCategories && player.pointCategories.misscoins) ||
+                    (player.point_categories && player.point_categories.misscoins) ||
+                    0;
                 var playerId = player._id || player.name;
                 // Fetch all catalog items for joining
                 var reqCatalog = {
