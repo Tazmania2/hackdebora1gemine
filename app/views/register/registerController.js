@@ -19,6 +19,7 @@ angular.module('app').controller('RegisterController', function($scope, $http, $
     // Check for referral in URL
     if ($routeParams.referral) {
         vm.referralId = $routeParams.referral;
+        vm.user.referralCode = $routeParams.referral; // Pre-fill the input
     }
 
     vm.showTerms = function(event) {
