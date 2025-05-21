@@ -5,9 +5,9 @@
         .module('app')
         .controller('DashboardController', DashboardController);
 
-    DashboardController.$inject = ['$scope', '$location', 'AuthService', 'PlayerService', 'EventService', 'ActivityService', '$http', 'FUNIFIER_API_CONFIG'];
+    DashboardController.$inject = ['$scope', '$location', 'AuthService', 'PlayerService', 'EventService', 'ActivityService', '$http', 'FUNIFIER_API_CONFIG', '$timeout'];
 
-    function DashboardController($scope, $location, AuthService, PlayerService, EventService, ActivityService, $http, FUNIFIER_API_CONFIG) {
+    function DashboardController($scope, $location, AuthService, PlayerService, EventService, ActivityService, $http, FUNIFIER_API_CONFIG, $timeout) {
         var vm = this;
 
         // Properties
@@ -68,9 +68,11 @@
         function setReferralQrUrl() {
             var code = (playerStatus.extra && playerStatus.extra.mycode) ? playerStatus.extra.mycode : 'N0c()63';
             var baseUrl = window.location.origin + window.location.pathname;
-            vm.qrUrl = baseUrl + '#!/register?referral=' + encodeURIComponent(code);
-            console.log('QR URL:', vm.qrUrl);
-            if ($scope && $scope.$applyAsync) $scope.$applyAsync();
+            var url = baseUrl + '#!/register?referral=' + encodeURIComponent(code);
+            $timeout(function() {
+                vm.qrUrl = url;
+                console.log('QR URL (timeout):', vm.qrUrl);
+            });
         }
 
         function loadChallenges() {
