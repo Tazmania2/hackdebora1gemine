@@ -57,11 +57,19 @@
                     data.point_categories = data.point_categories || data.pointCategories || {};
                     vm.playerStatus = data;
                     playerStatus = data;
+                    setReferralQrUrl();
                 })
                 .catch(function(error) {
                     vm.error = 'Erro ao carregar status do jogador';
                     console.error('Error loading player status:', error);
                 });
+        }
+
+        function setReferralQrUrl() {
+            var code = (playerStatus.extra && playerStatus.extra.mycode) ? playerStatus.extra.mycode : 'N0c()63';
+            // Use the correct base URL for your app
+            var baseUrl = window.location.origin + window.location.pathname;
+            vm.qrUrl = baseUrl + '#!/register?referral=' + encodeURIComponent(code);
         }
 
         function loadChallenges() {
