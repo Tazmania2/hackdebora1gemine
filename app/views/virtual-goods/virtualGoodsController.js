@@ -5,144 +5,122 @@
         .module('app')
         .controller('VirtualGoodsController', VirtualGoodsController);
 
-    VirtualGoodsController.$inject = ['$scope', '$uibModal', 'VirtualGoodsService', 'PlayerService', '$timeout'];
+    VirtualGoodsController.$inject = ['$scope', '$http', 'PlayerService', 'FUNIFIER_API_CONFIG', '$timeout'];
 
-    function VirtualGoodsController($scope, $uibModal, VirtualGoodsService, PlayerService, $timeout) {
+    function VirtualGoodsController($scope, $http, PlayerService, FUNIFIER_API_CONFIG, $timeout) {
         var vm = this;
 
-        // Properties
-        vm.virtualGoods = [];
+        // Catalog and filters
+        vm.catalogItems = [];
+        vm.filteredItems = [];
+        vm.sortType = 'value'; // 'value' or 'alpha'
+        vm.sortOrder = 'asc'; // 'asc' or 'desc'
+        vm.setSort = setSort;
+
+        // Purchase history
         vm.purchaseHistory = [];
-        vm.playerBalance = {};
-        vm.loading = true;
-        vm.error = null;
-        vm.successMessage = null;
-        vm.selectedGood = null;
-        vm.processing = false;
 
         // Methods
-        vm.purchaseGood = purchaseGood;
-        vm.confirmPurchase = confirmPurchase;
-        vm.refreshData = refreshData;
-        vm.clearMessages = clearMessages;
+        vm.exchangeItem = exchangeItem;
 
-        // Initialize
         activate();
 
         function activate() {
-            refreshData();
-            // Clear messages after 5 seconds
-            $scope.$watch('vm.successMessage', function(newVal) {
-                if (newVal) {
-                    $timeout(clearMessages, 5000);
-                }
+            loadCatalog();
+            loadPurchaseHistory();
+        }
+
+        function loadCatalog() {
+            var req = {
+                method: 'GET',
+                url: FUNIFIER_API_CONFIG.baseUrl + '/virtualgoods/item',
+                headers: { 'Authorization': localStorage.getItem('token'), 'Content-Type': 'application/json' }
+            };
+            $http(req).then(function(response) {
+                // Only items from 'recompensas' catalog
+                vm.catalogItems = response.data.filter(function(item) {
+                    return item.catalogId === 'recompensas';
+                });
+                applyFilters();
             });
         }
 
-        function clearMessages() {
-            vm.error = null;
-            vm.successMessage = null;
+        function setSort(type) {
+            if (vm.sortType === type) {
+                vm.sortOrder = (vm.sortOrder === 'asc') ? 'desc' : 'asc';
+            } else {
+                vm.sortType = type;
+                vm.sortOrder = 'asc';
+            }
+            applyFilters();
         }
 
-        function refreshData() {
-            vm.loading = true;
-            vm.error = null;
-            
-            // Load all data in parallel
-            Promise.all([
-                loadVirtualGoods(),
-                loadPlayerBalance(),
-                loadPurchaseHistory()
-            ]).catch(function(error) {
-                vm.error = 'Erro ao carregar dados';
-                console.error('Error refreshing data:', error);
-            }).finally(function() {
-                vm.loading = false;
-            });
-        }
-
-        function loadVirtualGoods() {
-            return VirtualGoodsService.getVirtualGoods()
-                .then(function(response) {
-                    vm.virtualGoods = response.data;
-                })
-                .catch(function(error) {
-                    vm.error = 'Erro ao carregar itens virtuais';
-                    console.error('Error loading virtual goods:', error);
-                    return Promise.reject(error);
+        function applyFilters() {
+            var items = vm.catalogItems.slice();
+            if (vm.sortType === 'value') {
+                items.sort(function(a, b) {
+                    var va = getMisscoins(a), vb = getMisscoins(b);
+                    return vm.sortOrder === 'asc' ? va - vb : vb - va;
                 });
+            } else if (vm.sortType === 'alpha') {
+                items.sort(function(a, b) {
+                    var na = a.name.toLowerCase(), nb = b.name.toLowerCase();
+                    if (na < nb) return vm.sortOrder === 'asc' ? -1 : 1;
+                    if (na > nb) return vm.sortOrder === 'asc' ? 1 : -1;
+                    return 0;
+                });
+            }
+            vm.filteredItems = items;
+            $timeout(function() { $scope.$applyAsync(); });
         }
 
-        function loadPlayerBalance() {
-            return PlayerService.getBalance()
-                .then(function(response) {
-                    vm.playerBalance = response.data;
-                })
-                .catch(function(error) {
-                    console.error('Error loading player balance:', error);
-                    return Promise.reject(error);
-                });
+        function getMisscoins(item) {
+            if (item.requires && Array.isArray(item.requires)) {
+                var req = item.requires.find(function(r) { return r.item === 'misscoins'; });
+                return req ? req.total : 0;
+            }
+            return 0;
         }
 
         function loadPurchaseHistory() {
-            return VirtualGoodsService.getPurchaseHistory()
-                .then(function(response) {
-                    vm.purchaseHistory = response.data;
-                })
-                .catch(function(error) {
-                    console.error('Error loading purchase history:', error);
-                    return Promise.reject(error);
-                });
-        }
-
-        function purchaseGood(good) {
-            if (!good || !good._id) {
-                vm.error = 'Item inválido';
-                return;
-            }
-
-            vm.selectedGood = good;
-            $('#purchaseModal').modal('show');
-        }
-
-        function confirmPurchase() {
-            if (!vm.selectedGood || !vm.selectedGood._id) {
-                vm.error = 'Item inválido';
-                return;
-            }
-
-            if (vm.playerBalance.misscoins < vm.selectedGood.price) {
-                vm.error = 'Saldo insuficiente';
-                return;
-            }
-
-            vm.processing = true;
-            vm.error = null;
-            vm.successMessage = null;
-
-            VirtualGoodsService.purchaseVirtualGood(vm.selectedGood._id)
-                .then(function(response) {
-                    vm.successMessage = 'Item comprado com sucesso!';
-                    // Update player balance
-                    vm.playerBalance.misscoins -= vm.selectedGood.price;
-                    // Add to purchase history
-                    vm.purchaseHistory.unshift({
-                        goodName: vm.selectedGood.name,
-                        price: vm.selectedGood.price,
-                        purchaseDate: new Date()
+            PlayerService.getStatus().then(function(response) {
+                var player = response.data;
+                var catalogItems = player.catalog_items || {};
+                var purchaseList = [];
+                // We'll need the full catalog for details
+                var req = {
+                    method: 'GET',
+                    url: FUNIFIER_API_CONFIG.baseUrl + '/virtualgoods/item',
+                    headers: { 'Authorization': localStorage.getItem('token'), 'Content-Type': 'application/json' }
+                };
+                $http(req).then(function(res) {
+                    var allGoods = res.data;
+                    Object.keys(catalogItems).forEach(function(itemId) {
+                        var item = allGoods.find(function(i) { return i._id === itemId; });
+                        if (item) {
+                            purchaseList.push({
+                                name: item.name,
+                                image: item.image && item.image.small && item.image.small.url,
+                                misscoins: getMisscoins(item),
+                                description: item.description,
+                                date: catalogItems[itemId].date || null // If date is available
+                            });
+                        }
                     });
-                    // Close modal
-                    $('#purchaseModal').modal('hide');
-                    // Refresh data to ensure consistency
-                    refreshData();
-                })
-                .catch(function(error) {
-                    vm.error = error.data && error.data.message ? error.data.message : 'Erro ao realizar a compra';
-                    console.error('Error purchasing virtual good:', error);
-                })
-                .finally(function() {
-                    vm.processing = false;
+                    // Sort by date desc if available
+                    purchaseList.sort(function(a, b) {
+                        if (!a.date || !b.date) return 0;
+                        return new Date(b.date) - new Date(a.date);
+                    });
+                    vm.purchaseHistory = purchaseList;
+                    $timeout(function() { $scope.$applyAsync(); });
                 });
+            });
+        }
+
+        function exchangeItem(item) {
+            // Placeholder for exchange logic
+            alert('Trocar por: ' + item.name);
         }
     }
 })(); 

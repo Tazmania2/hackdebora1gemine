@@ -1,120 +1,209 @@
-<!-- Virtual Goods Store View - Figma Style -->
-<div class="login-container" style="background: var(--background-dark); min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding-top: 32px;">
-    <div style="width: 100%; max-width: 400px;">
-        <!-- Header -->
-        <div style="background: var(--primary-color); color: #fff; border-radius: 24px 24px 0 0; padding: 20px 0 16px 0; text-align: center; margin-bottom: 0;">
-            <h1 style="font-size: 1.3rem; font-weight: bold; margin: 0;">Loja Virtual</h1>
-        </div>
-        <div style="background: var(--background-card); border-radius: 0 0 24px 24px; padding: 20px 0 16px 0; text-align: center; margin-bottom: 24px;">
-            <span style="color: var(--primary-color); font-size: 1.1rem; font-weight: bold;">
-                <i class="bi bi-coin" aria-hidden="true"></i>
-                <span>Seu saldo: {{vm.playerBalance.misscoins}} moedas</span>
-            </span>
-        </div>
-
-        <!-- Error and Success Messages -->
-        <div class="alert alert-danger" ng-if="vm.error" style="margin-bottom: 18px;" role="alert">
-            <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
-            <span>{{vm.error}}</span>
-        </div>
-        <div class="alert alert-success" ng-if="vm.successMessage" style="margin-bottom: 18px;" role="alert">
-            <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
-            <span>{{vm.successMessage}}</span>
-        </div>
-
-        <!-- Loading State -->
-        <div class="loading-state" ng-if="vm.loading" style="margin: 32px 0;" role="status">
-            <div class="spinner-border text-primary" aria-hidden="true">
-                <span class="visually-hidden">Carregando...</span>
-            </div>
-            <p class="mt-2" style="color: var(--text-secondary);">Carregando itens...</p>
-        </div>
-
-        <!-- Empty State -->
-        <div ng-if="!vm.loading && vm.virtualGoods.length === 0" style="text-align: center; padding: 32px 16px; background: var(--background-card); border-radius: 16px;">
-            <i class="bi bi-box" style="font-size: 2rem; color: var(--text-secondary);" aria-hidden="true"></i>
-            <p style="color: var(--text-secondary); margin-top: 16px;">Nenhum item disponível no momento.</p>
-        </div>
-
-        <!-- Virtual Goods Grid -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;" ng-if="!vm.loading && vm.virtualGoods.length > 0">
-            <div class="card" ng-repeat="good in vm.virtualGoods" style="background: var(--background-card); border-radius: 16px; box-shadow: var(--shadow); padding: 18px 10px; text-align: center;">
-                <div style="height: 90px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
-                    <img ng-src="{{good.imageUrl}}" alt="{{good.name}}" style="max-width: 70px; max-height: 70px; border-radius: 12px; background: #fff;">
-                </div>
-                <h3 style="color: #fff; font-size: 1.05rem; font-weight: 500; margin-bottom: 4px;">{{good.name}}</h3>
-                <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 8px; min-height: 32px;">{{good.description}}</p>
-                <div style="color: var(--primary-color); font-size: 1.1rem; font-weight: bold; margin-bottom: 8px;">
-                    <i class="bi bi-coin" aria-hidden="true"></i>
-                    <span>{{good.price}} moedas</span>
-                </div>
-                <button class="btn btn-primary" style="width: 100%; font-size: 1rem;" 
-                        ng-click="vm.purchaseGood(good)" 
-                        ng-disabled="vm.playerBalance.misscoins < good.price"
-                        aria-label="Comprar {{good.name}} por {{good.price}} moedas">
-                    <span ng-if="vm.playerBalance.misscoins < good.price">Saldo Insuficiente</span>
-                    <span ng-if="vm.playerBalance.misscoins >= good.price">Comprar</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Purchase History Section -->
-        <div class="purchase-history" ng-if="!vm.loading && vm.purchaseHistory.length > 0" style="margin-top: 32px;">
-            <div style="background: var(--primary-color); color: #fff; border-radius: 24px 24px 0 0; padding: 20px 0 16px 0; text-align: center; margin-bottom: 0;">
-                <h2 style="font-size: 1.3rem; font-weight: bold; margin: 0;">Histórico de Compras</h2>
-            </div>
-            <div style="background: var(--background-card); border-radius: 0 0 24px 24px; padding: 20px 0 16px 0; text-align: center; margin-bottom: 24px;">
-                <div class="history-list" style="display: flex; flex-direction: column; gap: 10px; padding: 0 16px;">
-                    <div class="history-item" ng-repeat="purchase in vm.purchaseHistory" 
-                         style="background: var(--background-card); border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--primary-color);">
-                        <div class="history-info">
-                            <div style="color: #fff; font-size: 1rem; font-weight: 500;">{{purchase.goodName}}</div>
-                            <div style="color: var(--text-secondary); font-size: 0.9rem;">
-                                <i class="bi bi-clock" aria-hidden="true"></i>
-                                <span>Comprado em: {{purchase.purchaseDate | date:'dd/MM/yyyy HH:mm'}}</span>
-                            </div>
-                        </div>
-                        <div class="history-price" style="color: var(--primary-color); font-weight: bold; font-size: 1rem; display: flex; align-items: center; gap: 4px;">
-                            <i class="bi bi-coin" aria-hidden="true"></i>
-                            <span>{{purchase.price}}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!-- Virtual Goods Store View -->
+<style>
+.vg-container {
+  max-width: 430px;
+  margin: 0 auto;
+  padding: 0 0 32px 0;
+  background: var(--background-dark, #232323);
+  min-height: 100vh;
+}
+.vg-header {
+  padding: 24px 0 12px 0;
+  text-align: center;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: bold;
+  background: var(--primary-color, #ec0677);
+  border-radius: 0 0 24px 24px;
+  margin-bottom: 12px;
+}
+.vg-filters {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.vg-filter-btn {
+  background: #181818;
+  color: var(--primary-color, #ec0677);
+  border: 1.5px solid var(--primary-color, #ec0677);
+  border-radius: 999px;
+  padding: 6px 18px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+.vg-filter-btn.active, .vg-filter-btn:hover {
+  background: var(--primary-color, #ec0677);
+  color: #fff;
+}
+.vg-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 12px;
+  margin-bottom: 32px;
+  padding: 0 12px;
+}
+.vg-item-card {
+  background: #232323;
+  border-radius: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 8px 12px 8px;
+  cursor: pointer;
+  transition: background 0.18s;
+  border: 1.5px solid transparent;
+}
+.vg-item-card:hover {
+  background: #292929;
+  border: 1.5px solid var(--primary-color, #ec0677);
+}
+.vg-item-img {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  background: #fff;
+  object-fit: contain;
+  margin-bottom: 8px;
+}
+.vg-item-name {
+  font-weight: bold;
+  color: var(--primary-color, #ec0677);
+  font-size: 1.08rem;
+  text-align: center;
+  margin-bottom: 6px;
+}
+.points-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 14px 4px 10px;
+  background: #181818;
+  border-radius: 999px;
+  border: 1.5px solid #ec0677;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-top: 2px;
+  min-width: 48px;
+  text-align: right;
+}
+.points-pill .bi-coin {
+  color: #ec0677;
+  font-size: 1.1em;
+}
+.vg-divider {
+  width: 80%;
+  margin: 32px auto 18px auto;
+  border: none;
+  border-top: 2px solid #444;
+}
+.vg-history-header {
+  text-align: center;
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.vg-history-icon {
+  font-size: 2.2rem;
+  color: #fff;
+  background: var(--primary-color, #ec0677);
+  border-radius: 50%;
+  padding: 8px;
+  margin-bottom: 2px;
+}
+.vg-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 12px;
+}
+.vg-history-card {
+  background: #232323;
+  border-radius: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 12px 12px 12px 8px;
+  gap: 14px;
+}
+.vg-history-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: #fff;
+  object-fit: contain;
+}
+.vg-history-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.vg-history-name {
+  font-weight: bold;
+  color: var(--primary-color, #ec0677);
+  font-size: 1.05rem;
+  margin-bottom: 2px;
+}
+.vg-history-desc {
+  color: #aaa;
+  font-size: 0.97em;
+  margin-bottom: 2px;
+}
+.vg-history-date {
+  color: #fff;
+  font-size: 0.93em;
+  margin-bottom: 2px;
+}
+.vg-history-pill {
+  margin-left: 8px;
+}
+</style>
+<div class="vg-container" ng-controller="VirtualGoodsController as vm">
+  <div class="vg-header">Loja</div>
+  <div class="vg-filters">
+    <button class="vg-filter-btn" ng-class="{active: vm.sortType === 'value'}" ng-click="vm.setSort('value')">
+      Valor <span ng-if="vm.sortType === 'value'">{{vm.sortOrder === 'asc' ? '↑' : '↓'}}</span>
+    </button>
+    <button class="vg-filter-btn" ng-class="{active: vm.sortType === 'alpha'}" ng-click="vm.setSort('alpha')">
+      Alfabética <span ng-if="vm.sortType === 'alpha'">{{vm.sortOrder === 'asc' ? 'A-Z' : 'Z-A'}}</span>
+    </button>
+  </div>
+  <div class="vg-grid">
+    <div class="vg-item-card" ng-repeat="item in vm.filteredItems" ng-click="vm.exchangeItem(item)">
+      <img ng-if="item.image && item.image.small && item.image.small.url" ng-src="{{item.image.small.url}}" alt="{{item.name}}" class="vg-item-img">
+      <div class="vg-item-name">{{item.name}}</div>
+      <div class="points-pill">
+        <i class="bi bi-coin"></i> {{item.requires[0].total}}
+      </div>
     </div>
-
-    <!-- Purchase Confirmation Modal -->
-    <div class="modal fade" id="purchaseModal" tabindex="-1" role="dialog" aria-labelledby="purchaseModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content" style="background: var(--background-card); color: #fff; border-radius: 18px;">
-                <div class="modal-header" style="border-bottom: 1px solid var(--primary-color);">
-                    <h5 class="modal-title" id="purchaseModalLabel" style="color: var(--primary-color); font-weight: bold;">Confirmar Compra</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar" style="color: #fff; font-size: 1.5rem;">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>Tem certeza que deseja comprar <strong>{{vm.selectedGood.name}}</strong>?</p>
-                    <p>
-                        <i class="bi bi-coin" aria-hidden="true"></i>
-                        <span>Custo: {{vm.selectedGood.price}} moedas</span>
-                    </p>
-                    <p>
-                        <i class="bi bi-coin" aria-hidden="true"></i>
-                        <span>Seu saldo após a compra: {{vm.playerBalance.misscoins - vm.selectedGood.price}} moedas</span>
-                    </p>
-                </div>
-                <div class="modal-footer" style="border-top: 1px solid var(--primary-color);">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" ng-click="vm.confirmPurchase()" ng-disabled="vm.processing">
-                        <span ng-if="!vm.processing">Confirmar</span>
-                        <span ng-if="vm.processing" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        <span ng-if="vm.processing" class="visually-hidden">Processando...</span>
-                    </button>
-                </div>
-            </div>
-        </div>
+  </div>
+  <hr class="vg-divider">
+  <div class="vg-history-header">
+    <span class="vg-history-icon"><i class="bi bi-clock-history"></i></span>
+    Histórico
+  </div>
+  <div class="vg-history-list">
+    <div class="vg-history-card" ng-repeat="purchase in vm.purchaseHistory">
+      <img ng-if="purchase.image" ng-src="{{purchase.image}}" alt="{{purchase.name}}" class="vg-history-img">
+      <div class="vg-history-info">
+        <div class="vg-history-name">{{purchase.name}}</div>
+        <div class="vg-history-desc">{{purchase.description}}</div>
+        <div class="vg-history-date" ng-if="purchase.date">Data: {{purchase.date | date:'dd/MM/yyyy'}}</div>
+      </div>
+      <div class="points-pill vg-history-pill">
+        <i class="bi bi-coin"></i> {{purchase.misscoins}}
+      </div>
     </div>
-</div> 
+    <div ng-if="!vm.purchaseHistory.length" style="color: #aaa; text-align: center;">Nenhuma compra realizada ainda.</div>
+  </div>
 </div> 

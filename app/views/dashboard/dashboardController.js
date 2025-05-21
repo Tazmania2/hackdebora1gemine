@@ -38,6 +38,9 @@
             console.log('Clicked purchase:', item);
             // $location.path('/virtual-good/' + item.id); // to be implemented
         };
+        vm.goToStore = function() {
+            $location.path('/virtual-goods');
+        };
 
         // Initialize
         activate();
