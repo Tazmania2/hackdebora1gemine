@@ -154,11 +154,17 @@
 
         function doExchange(item, $uibModal) {
             console.log('doExchange item:', item);
-            var itemId = item._id;
-            if (!itemId) {
-                showResultModal('Erro', 'Erro: não foi possível identificar o ID do item para troca.', false, $uibModal);
+            if (!item) {
+                console.error('doExchange called with undefined item');
+                showResultModal('Erro', 'Erro interno: item não definido.', false, $uibModal);
                 return;
             }
+            if (!item._id) {
+                console.error('doExchange: item._id is undefined', item);
+                showResultModal('Erro', 'Erro interno: ID do item não encontrado.', false, $uibModal);
+                return;
+            }
+            var itemId = item._id;
             var playerId = vm.playerStatus._id || (vm.playerStatus && vm.playerStatus.name);
             var req = {
                 method: 'POST',
