@@ -1,4 +1,4 @@
-angular.module('app', ['ngRoute'])
+angular.module('app', ['ngRoute', 'monospaced.qrcode'])
   .run(['$rootScope', 'AuthService', '$location', function($rootScope, AuthService, $location) {
     $rootScope.isAuthenticated = function() {
       return !!AuthService.getToken();

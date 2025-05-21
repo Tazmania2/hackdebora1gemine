@@ -92,8 +92,8 @@ angular.module('app')
     return service;
 })
 .factory('AuthInterceptor', function ($rootScope, $q, $window, $location, FUNIFIER_API_CONFIG) {
-    return {
-        request: function (config) {
+  return {
+    request: function (config) {
             config.headers = config.headers || {};
             // Debug log for Authorization header
             console.log('[AuthInterceptor] Before:', config.url, 'Authorization:', config.headers.Authorization);
@@ -109,20 +109,20 @@ angular.module('app')
             }
             // Debug log after possible modification
             console.log('[AuthInterceptor] After:', config.url, 'Authorization:', config.headers.Authorization);
-            return config;
-        },
-        responseError: function (response) {
+      return config;
+    },
+    responseError: function (response) {
             if (response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('currentPlayer');
                 if ($location.path() !== '/login') {
-                    $location.path('/login');
-                }
-            }
-            return $q.reject(response);
+             $location.path('/login');
         }
-    };
+      }
+      return $q.reject(response);
+    }
+  };
 })
 .config(function ($httpProvider) {
-    $httpProvider.interceptors.push('AuthInterceptor');
+  $httpProvider.interceptors.push('AuthInterceptor');
 });

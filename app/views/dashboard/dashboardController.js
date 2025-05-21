@@ -5,9 +5,9 @@
         .module('app')
         .controller('DashboardController', DashboardController);
 
-    DashboardController.$inject = ['$scope', '$location', 'AuthService', 'PlayerService', 'EventService', 'ActivityService'];
+    DashboardController.$inject = ['$scope', '$location', 'AuthService', 'PlayerService', 'EventService', 'ActivityService', '$http', 'FUNIFIER_API_CONFIG'];
 
-    function DashboardController($scope, $location, AuthService, PlayerService, EventService, ActivityService) {
+    function DashboardController($scope, $location, AuthService, PlayerService, EventService, ActivityService, $http, FUNIFIER_API_CONFIG) {
         var vm = this;
 
         // Properties
@@ -16,6 +16,11 @@
         vm.events = [];
         vm.loading = true;
         vm.error = null;
+        vm.completedChallenges = [];
+        vm.purchaseHistory = [];
+        vm.qrUrl = 'https://google.com';
+        vm.completedChallengesDisplay = [];
+        vm.purchaseHistoryDisplay = [];
 
         // Methods
         vm.goToProfile = goToProfile;
@@ -28,32 +33,113 @@
         activate();
 
         function activate() {
-            loadPlayerStatus();
+            Promise.all([
+                loadPlayerStatus(),
+                loadChallenges(),
+                loadVirtualGoods()
+            ]).then(function() {
+                buildCompletedChallengesDisplay();
+                buildPurchaseHistoryDisplay();
+            });
             loadActivities();
             loadEvents();
         }
 
+        // --- Data holders for mapping ---
+        var allChallenges = [];
+        var allVirtualGoods = [];
+        var playerStatus = {};
+
         function loadPlayerStatus() {
-            PlayerService.getStatus()
+            return PlayerService.getStatus()
                 .then(function(response) {
                     var data = response.data;
-                    // Normalize point_categories for view compatibility
                     data.point_categories = data.point_categories || data.pointCategories || {};
                     vm.playerStatus = data;
+                    playerStatus = data;
                 })
                 .catch(function(error) {
                     vm.error = 'Erro ao carregar status do jogador';
                     console.error('Error loading player status:', error);
-                })
-                .finally(function() {
-                    vm.loading = false;
                 });
+        }
+
+        function loadChallenges() {
+            var req = {
+                method: 'GET',
+                url: FUNIFIER_API_CONFIG.baseUrl + '/challenge',
+                headers: { 'Authorization': localStorage.getItem('token'), 'Content-Type': 'application/json' }
+            };
+            return $http(req).then(function(response) {
+                allChallenges = response.data;
+            });
+        }
+
+        function loadVirtualGoods() {
+            var req = {
+                method: 'GET',
+                url: FUNIFIER_API_CONFIG.baseUrl + '/virtualgoods/item',
+                headers: { 'Authorization': localStorage.getItem('token'), 'Content-Type': 'application/json' }
+            };
+            return $http(req).then(function(response) {
+                allVirtualGoods = response.data;
+            });
+        }
+
+        function buildCompletedChallengesDisplay() {
+            vm.completedChallengesDisplay = [];
+            if (!playerStatus.challenges) return;
+            Object.keys(playerStatus.challenges).forEach(function(challengeId) {
+                var challenge = allChallenges.find(function(c) { return c._id === challengeId; });
+                if (challenge) {
+                    // Find misscoins points
+                    var misscoins = 0;
+                    if (challenge.points && Array.isArray(challenge.points)) {
+                        var mc = challenge.points.find(function(p) { return p.category === 'misscoins'; });
+                        if (mc) misscoins = mc.total;
+                    }
+                    vm.completedChallengesDisplay.push({
+                        name: challenge.challenge,
+                        badge: challenge.badge && challenge.badge.small && challenge.badge.small.url,
+                        misscoins: misscoins,
+                        description: challenge.description
+                    });
+                }
+            });
+        }
+
+        function buildPurchaseHistoryDisplay() {
+            vm.purchaseHistoryDisplay = [];
+            var catalogItems = playerStatus.catalog_items || {};
+            Object.keys(catalogItems).forEach(function(itemId) {
+                var item = allVirtualGoods.find(function(i) { return i._id === itemId; });
+                if (item) {
+                    // Find misscoins cost (from requires)
+                    var misscoins = 0;
+                    if (item.requires && Array.isArray(item.requires)) {
+                        var req = item.requires.find(function(r) { return r.item === 'misscoins'; });
+                        if (req) misscoins = req.total;
+                    }
+                    vm.purchaseHistoryDisplay.push({
+                        name: item.name,
+                        image: item.image && item.image.small && item.image.small.url,
+                        misscoins: misscoins,
+                        description: item.description
+                    });
+                }
+            });
         }
 
         function loadActivities() {
             ActivityService.getRecent()
                 .then(function(response) {
                     vm.activities = response.data;
+                    // Fallback: If completed challenges are not in playerStatus, try to extract from activities
+                    if (!vm.completedChallenges.length && Array.isArray(vm.activities)) {
+                        vm.completedChallenges = vm.activities.filter(function(act) {
+                            return act.type === 'challenge' && act.status === 'completed';
+                        });
+                    }
                 })
                 .catch(function(error) {
                     console.error('Error loading activities:', error);
