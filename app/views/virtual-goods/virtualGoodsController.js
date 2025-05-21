@@ -32,7 +32,6 @@
         activate();
 
         function activate() {
-            loadCatalog();
             loadPlayerStatusAndHistory();
         }
 
@@ -146,6 +145,8 @@
                         $timeout(function() { $scope.$applyAsync(); });
                     });
                 });
+                // Now that playerMisscoins is set, load the catalog
+                loadCatalog();
             });
         }
 
@@ -193,7 +194,6 @@
             }).then(function(response) {
                 if (response.data.status === 'OK') {
                     showResultModal('Sucesso', 'Troca realizada com sucesso!', true, $uibModal);
-                    loadCatalog();
                     loadPlayerStatusAndHistory();
                 } else if (response.data.status === 'UNAUTHORIZED') {
                     var reasons = (response.data.restrictions || []).map(translateRestriction).join('<br>');
