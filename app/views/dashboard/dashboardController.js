@@ -22,6 +22,7 @@
         vm.completedChallengesDisplay = [];
         vm.purchaseHistoryDisplay = [];
         vm.qrReady = false;
+        vm.qrImgUrl = '';
 
         // Methods
         vm.goToProfile = goToProfile;
@@ -70,11 +71,17 @@
             var code = (playerStatus.extra && playerStatus.extra.mycode) ? playerStatus.extra.mycode : 'N0c()63';
             var baseUrl = window.location.origin + window.location.pathname;
             var url = baseUrl + '#!/register?referral=' + encodeURIComponent(code);
-            $timeout(function() {
-                vm.qrUrl = url;
-                vm.qrReady = true;
-                console.log('QR URL (timeout):', vm.qrUrl);
-            });
+            vm.qrUrl = url;
+            // Generate QR code as data URL
+            var qr = new window.QRCode(4, 'L');
+            qr.addData(url);
+            qr.make();
+            // Get the data URL from the generated QR code
+            var qrImg = qr.createImgTag(8); // 8 = pixel size
+            // Extract src from <img src="...">
+            var match = qrImg.match(/src=['\"]([^'\"]+)['\"]/);
+            vm.qrImgUrl = match ? match[1] : '';
+            vm.qrReady = true;
         }
 
         function loadChallenges() {
@@ -215,12 +222,5 @@
                     console.error('Error registering for event:', error);
                 });
         }
-
-        // Watch for qrUrl to be set to a real value
-        $scope.$watch(function() { return vm.qrUrl; }, function(newVal) {
-            if (newVal && newVal !== 'vm.qrUrl') {
-                vm.qrReady = true;
-            }
-        });
     }
 })(); 
