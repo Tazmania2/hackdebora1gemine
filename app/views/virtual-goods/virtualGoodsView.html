@@ -1,11 +1,33 @@
 <!-- Virtual Goods Store View -->
 <style>
-.vg-container {
-  max-width: 430px;
-  margin: 0 auto;
-  padding: 0 0 32px 0;
+.dashboard-viewport {
   background: var(--background-dark, #232323);
   min-height: 100vh;
+  min-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+  height: auto;
+  padding-bottom: 32px;
+  border-radius: 32px 32px 32px 32px;
+  max-width: 430px;
+  margin: 0 auto;
+}
+@media (min-width: 431px) {
+  .dashboard-viewport {
+    width: 430px;
+    min-width: 430px;
+    max-width: 430px;
+    min-height: 900px;
+    max-height: none;
+    margin: 32px auto;
+    border-radius: 32px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    position: relative;
+    left: 0; right: 0;
+  }
 }
 .vg-header {
   padding: 24px 0 12px 0;
@@ -14,8 +36,28 @@
   font-size: 2rem;
   font-weight: bold;
   background: var(--primary-color, #ec0677);
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 0 0;
   margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.vg-header-back {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.7rem;
+  cursor: pointer;
+  z-index: 2;
+}
+.vg-header-title {
+  flex: 1;
+  text-align: center;
 }
 .vg-filters {
   display: flex;
@@ -114,9 +156,9 @@
 .vg-history-icon {
   font-size: 2.2rem;
   color: #fff;
-  background: var(--primary-color, #ec0677);
+  background: none;
   border-radius: 50%;
-  padding: 8px;
+  padding: 0;
   margin-bottom: 2px;
 }
 .vg-history-list {
@@ -168,8 +210,13 @@
   margin-left: 8px;
 }
 </style>
-<div class="vg-container" ng-controller="VirtualGoodsController as vm">
-  <div class="vg-header">Loja</div>
+<div class="dashboard-viewport" ng-controller="VirtualGoodsController as vm">
+  <div class="vg-header">
+    <button class="vg-header-back" ng-click="vm.goBack()" aria-label="Voltar">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <span class="vg-header-title">Loja</span>
+  </div>
   <div class="vg-filters">
     <button class="vg-filter-btn" ng-class="{active: vm.sortType === 'value'}" ng-click="vm.setSort('value')">
       Valor <span ng-if="vm.sortType === 'value'">{{vm.sortOrder === 'asc' ? '↑' : '↓'}}</span>
@@ -190,7 +237,7 @@
   <hr class="vg-divider">
   <div class="vg-history-header">
     <span class="vg-history-icon"><i class="bi bi-clock-history"></i></span>
-    Histórico
+    Histórico de Trocas
   </div>
   <div class="vg-history-list">
     <div class="vg-history-card" ng-repeat="purchase in vm.purchaseHistory">
@@ -204,6 +251,6 @@
         <i class="bi bi-coin"></i> {{purchase.misscoins}}
       </div>
     </div>
-    <div ng-if="!vm.purchaseHistory.length" style="color: #aaa; text-align: center;">Nenhuma compra realizada ainda.</div>
+    <div ng-if="!vm.purchaseHistory.length" style="color: #aaa; text-align: center;">Nenhuma troca realizada ainda.</div>
   </div>
 </div> 

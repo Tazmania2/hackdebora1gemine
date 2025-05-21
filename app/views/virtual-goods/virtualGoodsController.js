@@ -22,6 +22,9 @@
 
         // Methods
         vm.exchangeItem = exchangeItem;
+        vm.goBack = function() {
+            window.location.hash = '#!/dashboard';
+        };
 
         activate();
 
@@ -119,8 +122,52 @@
         }
 
         function exchangeItem(item) {
-            // Placeholder for exchange logic
-            alert('Trocar por: ' + item.name);
+            // Use $uibModal if available, else fallback to confirm
+            if (window.angular && angular.element(document.body).injector().has('$uibModal')) {
+                var $uibModal = angular.element(document.body).injector().get('$uibModal');
+                var modalInstance = $uibModal.open({
+                    template: '<div style="padding:24px;text-align:center"><img ng-if="item.image && item.image.small && item.image.small.url" ng-src="{{item.image.small.url}}" style="width:80px;height:80px;border-radius:16px;background:#fff;margin-bottom:12px;"><div style="font-weight:bold;font-size:1.2em;margin-bottom:8px;">{{item.name}}</div><div style="color:#aaa;margin-bottom:12px;">{{item.description}}</div><div class="points-pill" style="margin-bottom:18px;"><i class="bi bi-coin"></i> {{item.requires[0].total}}</div><div>Tem certeza que deseja trocar <b>{{item.requires[0].total}}</b> misscoins por este item?</div><div style="margin-top:18px;"><button class="btn btn-primary" ng-click="ok()">Trocar</button> <button class="btn btn-default" ng-click="cancel()">Cancelar</button></div></div>',
+                    controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance) {
+                        $scope.item = item;
+                        $scope.ok = function() { $uibModalInstance.close(true); };
+                        $scope.cancel = function() { $uibModalInstance.dismiss('cancel'); };
+                    }],
+                    size: 'sm'
+                });
+                modalInstance.result.then(function() {
+                    doExchange(item);
+                });
+            } else {
+                if (window.confirm('Tem certeza que deseja trocar ' + item.requires[0].total + ' misscoins por ' + item.name + '?')) {
+                    doExchange(item);
+                }
+            }
+        }
+
+        function doExchange(item) {
+            var playerId = vm.playerStatus._id || (vm.playerStatus && vm.playerStatus.name);
+            var req = {
+                method: 'POST',
+                url: FUNIFIER_API_CONFIG.baseUrl + '/virtualgoods/purchase',
+                headers: { 'Authorization': localStorage.getItem('token'), 'Content-Type': 'application/json' },
+                data: {
+                    player: playerId,
+                    item: item._id,
+                    total: 1
+                }
+            };
+            $http(req).then(function(response) {
+                if (response.data.status === 'OK') {
+                    alert('Troca realizada com sucesso!');
+                    loadCatalog();
+                    loadPurchaseHistory();
+                    PlayerService.getStatus().then(function(res) { vm.playerStatus = res.data; });
+                } else {
+                    alert('Não foi possível realizar a troca: ' + (response.data.restrictions && response.data.restrictions.join(', ')));
+                }
+            }, function(err) {
+                alert('Erro ao realizar a troca.');
+            });
         }
     }
 })(); 
