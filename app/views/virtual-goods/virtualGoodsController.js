@@ -126,7 +126,7 @@
         }
 
         function exchangeItem(item) {
-            // Use $uibModal if available, else fallback to confirm
+            // Use $uibModal if available, else fallback to custom overlay
             if (window.angular && angular.element(document.body).injector().has('$uibModal')) {
                 var $uibModal = angular.element(document.body).injector().get('$uibModal');
                 var modalInstance = $uibModal.open({
@@ -139,20 +139,21 @@
                     size: 'sm'
                 });
                 modalInstance.result.then(function() {
-                    doExchange(item);
+                    doExchange(item, $uibModal);
                 });
             } else {
-                if (window.confirm('Tem certeza que deseja trocar ' + item.requires[0].total + ' misscoins por ' + item.name + '?')) {
+                // Fallback: custom overlay or browser confirm
+                if (window.confirm('Tem certeza que deseja trocar ' + (item.requires[0] && item.requires[0].total) + ' misscoins por ' + item.name + '?')) {
                     doExchange(item);
                 }
             }
         }
 
-        function doExchange(item) {
+        function doExchange(item, $uibModal) {
             console.log('doExchange item:', item);
             var itemId = item._id;
             if (!itemId) {
-                alert('Erro: não foi possível identificar o ID do item para troca.');
+                showResultModal('Erro', 'Erro: não foi possível identificar o ID do item para troca.', false, $uibModal);
                 return;
             }
             var playerId = vm.playerStatus._id || (vm.playerStatus && vm.playerStatus.name);
@@ -168,16 +169,40 @@
             };
             $http(req).then(function(response) {
                 if (response.data.status === 'OK') {
-                    alert('Troca realizada com sucesso!');
+                    showResultModal('Sucesso', 'Troca realizada com sucesso!', true, $uibModal);
                     loadCatalog();
                     loadPurchaseHistory();
                     PlayerService.getStatus().then(function(res) { vm.playerStatus = res.data; });
+                } else if (response.data.status === 'UNAUTHORIZED') {
+                    var reasons = (response.data.restrictions || []).map(translateRestriction).join('<br>');
+                    showResultModal('Não autorizado', 'Não foi possível realizar a troca:<br>' + reasons, false, $uibModal);
                 } else {
-                    alert('Não foi possível realizar a troca: ' + (response.data.restrictions && response.data.restrictions.join(', ')));
+                    showResultModal('Erro', 'Erro desconhecido ao realizar a troca.', false, $uibModal);
                 }
             }, function(err) {
-                alert('Erro ao realizar a troca.');
+                showResultModal('Erro', 'Erro ao realizar a troca.', false, $uibModal);
             });
+        }
+
+        function showResultModal(title, message, success, $uibModal) {
+            if ($uibModal) {
+                $uibModal.open({
+                    template: '<div style="padding:24px;text-align:center"><div style="font-size:2.2em;margin-bottom:8px;">' + (success ? '✅' : '❌') + '</div><div style="font-weight:bold;font-size:1.2em;margin-bottom:8px;">' + title + '</div><div style="color:#aaa;margin-bottom:12px;">' + message + '</div><button class="btn btn-primary" ng-click="$close()">OK</button></div>',
+                    size: 'sm'
+                });
+            } else {
+                alert(title + '\n' + message.replace(/<br>/g, '\n'));
+            }
+        }
+
+        function translateRestriction(code) {
+            var map = {
+                'insufficient_requirements': 'Requisitos insuficientes',
+                'item_out_of_time': 'Item fora do período de troca',
+                'limit_exceeded': 'Limite excedido',
+                'principal_not_allowed': 'Usuário não autorizado'
+            };
+            return map[code] || code;
         }
     }
 })(); 
