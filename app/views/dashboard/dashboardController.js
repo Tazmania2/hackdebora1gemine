@@ -70,6 +70,7 @@
             // Use the correct base URL for your app
             var baseUrl = window.location.origin + window.location.pathname;
             vm.qrUrl = baseUrl + '#!/register?referral=' + encodeURIComponent(code);
+            console.log('QR URL:', vm.qrUrl);
         }
 
         function loadChallenges() {
