@@ -150,7 +150,7 @@
 
         function doExchange(item) {
             console.log('doExchange item:', item);
-            var itemId = item.id || item._id || item.item;
+            var itemId = item._id;
             if (!itemId) {
                 alert('Erro: não foi possível identificar o ID do item para troca.');
                 return;
