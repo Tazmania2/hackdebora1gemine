@@ -20,6 +20,9 @@
         // Purchase history
         vm.purchaseHistory = [];
 
+        // Player Misscoins
+        vm.playerMisscoins = 0;
+
         // Methods
         vm.exchangeItem = exchangeItem;
         vm.goBack = function() {
@@ -39,13 +42,15 @@
                 url: FUNIFIER_API_CONFIG.baseUrl + '/virtualgoods/item',
                 headers: { 'Authorization': localStorage.getItem('token'), 'Content-Type': 'application/json' }
             }).then(function(response) {
-                // All items from 'recompensas' catalog, but mark canExchange
-                console.log('Catalog API response:', response.data);
+                // All items from 'recompensas' catalog, but mark canExchange and canAfford
                 vm.catalogItems = response.data.filter(function(item) {
                     return item.catalogId === 'recompensas';
                 }).map(function(item) {
                     item.canExchange = Array.isArray(item.requires) && item.requires.length > 0 && item.requires[0].item === 'misscoins';
                     item.missingReason = !item.canExchange ? 'Este item não está disponível para troca no momento.' : '';
+                    // Add canAfford flag for UI
+                    var misscoins = item.requires && item.requires[0] && item.requires[0].total ? item.requires[0].total : 0;
+                    item.canAfford = (typeof vm.playerMisscoins === 'number') ? (vm.playerMisscoins >= misscoins) : true;
                     return item;
                 });
                 if (vm.catalogItems.length) {
@@ -96,6 +101,9 @@
             PlayerService.getStatus().then(function(response) {
                 var player = response.data;
                 vm.playerStatus = player;
+                // Set playerMisscoins for UI reference
+                var misscoinsObj = (player.points || []).find(function(p) { return p.pointType === 'misscoins'; });
+                vm.playerMisscoins = misscoinsObj ? misscoinsObj.balance : 0;
                 var playerId = player._id || player.name;
                 // Fetch all catalog items for joining
                 var reqCatalog = {
@@ -144,6 +152,10 @@
         function exchangeItem(item) {
             if (!item.canExchange) {
                 showResultModal('Indisponível', item.missingReason || 'Este item não está disponível para troca no momento.', false);
+                return;
+            }
+            if (!item.canAfford) {
+                showResultModal('Misscoins insuficientes', 'Você não possui misscoins suficientes para trocar por este item.', false);
                 return;
             }
             // Use $uibModal if available, else fallback to custom overlay

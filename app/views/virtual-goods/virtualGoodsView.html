@@ -147,6 +147,26 @@
   color: #ec0677;
   font-size: 1.1em;
 }
+/* Red pill for insufficient Misscoins */
+.points-pill-insufficient {
+  background: #3a181c !important;
+  border: 1.5px solid #e74c3c !important;
+  color: #fff !important;
+}
+.points-pill-insufficient .bi-coin {
+  color: #e74c3c !important;
+}
+/* Player balance pill */
+.points-pill-balance {
+  background: #181818;
+  border: 1.5px solid #ec0677;
+  color: #fff;
+  font-size: 1.13em;
+  margin-bottom: 0;
+  margin-top: 0;
+  min-width: 110px;
+  justify-content: center;
+}
 .vg-divider {
   width: 80%;
   margin: 32px auto 18px auto;
@@ -264,6 +284,12 @@
     </button>
     <span class="vg-header-title">Loja</span>
   </div>
+  <!-- Player Misscoins Pill -->
+  <div style="width:100%; display:flex; justify-content:center; margin-bottom: 10px;">
+    <div class="points-pill points-pill-balance">
+      <i class="bi bi-coin"></i> {{vm.playerMisscoins}} Misscoins
+    </div>
+  </div>
   <div class="vg-filters">
     <button class="vg-filter-btn" ng-class="{active: vm.sortType === 'value'}" ng-click="vm.setSort('value')">
       Valor <span ng-if="vm.sortType === 'value'">{{vm.sortOrder === 'asc' ? '↑' : '↓'}}</span>
@@ -273,13 +299,12 @@
     </button>
   </div>
   <div class="vg-grid">
-    <div class="vg-item-card" ng-repeat="item in vm.filteredItems"
-         ng-class="{'vg-item-disabled': !item.canExchange}"
-         ng-click="item.canExchange && vm.exchangeItem(item)"
-         tooltip="{{!item.canExchange ? item.missingReason : ''}}">
+    <div class="vg-item-card"
+         ng-repeat="item in vm.filteredItems"
+         ng-click="vm.exchangeItem(item)">
       <img ng-if="item.image && item.image.small && item.image.small.url" ng-src="{{item.image.small.url}}" alt="{{item.name}}" class="vg-item-img">
       <div class="vg-item-name">{{item.name}}</div>
-      <div class="points-pill">
+      <div class="points-pill" ng-class="{'points-pill-insufficient': !item.canAfford}">
         <i class="bi bi-coin"></i> {{item.requires[0].total}}
       </div>
     </div>
