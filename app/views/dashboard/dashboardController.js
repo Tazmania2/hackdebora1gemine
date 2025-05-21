@@ -109,21 +109,22 @@
         function buildCompletedChallengesDisplay() {
             vm.completedChallengesDisplay = [];
             if (!playerStatus.challenges) return;
+            console.log('playerStatus.challenges:', playerStatus.challenges);
+            console.log('allChallenges:', allChallenges);
             Object.keys(playerStatus.challenges).forEach(function(challengeId) {
-                var challenge = allChallenges.find(function(c) { return c._id === challengeId; });
+                var challenge = allChallenges.find(function(c) {
+                    console.log('Comparing challenge catalog _id', c._id, 'with player challengeId', challengeId);
+                    return c._id === challengeId;
+                });
                 if (challenge) {
-                    // Find misscoins points
-                    var misscoins = 0;
-                    if (challenge.points && Array.isArray(challenge.points)) {
-                        var mc = challenge.points.find(function(p) { return p.category === 'misscoins'; });
-                        if (mc) misscoins = mc.total;
-                    }
                     vm.completedChallengesDisplay.push({
                         name: challenge.challenge,
                         badge: challenge.badge && challenge.badge.small && challenge.badge.small.url,
-                        misscoins: misscoins,
+                        misscoins: (challenge.points && Array.isArray(challenge.points) && challenge.points.find(function(p) { return p.category === 'misscoins'; })) ? challenge.points.find(function(p) { return p.category === 'misscoins'; }).total : 0,
                         description: challenge.description
                     });
+                } else {
+                    console.warn('Challenge not found for ID:', challengeId);
                 }
             });
         }
@@ -131,21 +132,22 @@
         function buildPurchaseHistoryDisplay() {
             vm.purchaseHistoryDisplay = [];
             var catalogItems = playerStatus.catalog_items || {};
+            console.log('playerStatus.catalog_items:', catalogItems);
+            console.log('allVirtualGoods:', allVirtualGoods);
             Object.keys(catalogItems).forEach(function(itemId) {
-                var item = allVirtualGoods.find(function(i) { return i._id === itemId; });
+                var item = allVirtualGoods.find(function(i) {
+                    console.log('Comparing virtual good catalog _id', i._id, 'with player itemId', itemId);
+                    return i._id === itemId;
+                });
                 if (item) {
-                    // Find misscoins cost (from requires)
-                    var misscoins = 0;
-                    if (item.requires && Array.isArray(item.requires)) {
-                        var req = item.requires.find(function(r) { return r.item === 'misscoins'; });
-                        if (req) misscoins = req.total;
-                    }
                     vm.purchaseHistoryDisplay.push({
                         name: item.name,
                         image: item.image && item.image.small && item.image.small.url,
-                        misscoins: misscoins,
+                        misscoins: (item.requires && Array.isArray(item.requires) && item.requires.find(function(r) { return r.item === 'misscoins'; })) ? item.requires.find(function(r) { return r.item === 'misscoins'; }).total : 0,
                         description: item.description
                     });
+                } else {
+                    console.warn('Virtual good not found for ID:', itemId);
                 }
             });
         }
