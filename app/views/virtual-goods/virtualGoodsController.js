@@ -96,40 +96,47 @@
             PlayerService.getStatus().then(function(response) {
                 var player = response.data;
                 vm.playerStatus = player;
-                var catalogItems = player.catalog_items || {};
-                var req = {
+                var playerId = player._id || player.name;
+                // Fetch all catalog items for joining
+                var reqCatalog = {
                     method: 'GET',
                     url: FUNIFIER_API_CONFIG.baseUrl + '/virtualgoods/item',
                     headers: { 'Authorization': localStorage.getItem('token'), 'Content-Type': 'application/json' }
                 };
-                $http(req).then(function(res) {
+                // Fetch all achievements
+                var reqAchievements = {
+                    method: 'GET',
+                    url: FUNIFIER_API_CONFIG.baseUrl + '/achievement',
+                    headers: { 'Authorization': localStorage.getItem('token'), 'Content-Type': 'application/json' }
+                };
+                $http(reqCatalog).then(function(res) {
                     var allGoods = res.data;
-                    var purchaseList = [];
-                    Object.keys(catalogItems).forEach(function(itemId) {
-                        var item = allGoods.find(function(i) { return i._id === itemId; });
-                        if (!item) {
-                            console.warn('loadPlayerStatusAndHistory: No item found for itemId', itemId, 'in allGoods:', allGoods);
-                        } else {
-                            console.log('loadPlayerStatusAndHistory: Found item for itemId', itemId, item);
-                        }
-                        if (item) {
-                            purchaseList.push({
+                    $http(reqAchievements).then(function(achRes) {
+                        var achievements = achRes.data;
+                        // Filter for current player and type 2 (item exchanges)
+                        var playerAchievements = achievements.filter(function(a) {
+                            return (a.player === playerId) && a.type === 2;
+                        });
+                        // Map to history entries
+                        var purchaseList = playerAchievements.map(function(a) {
+                            var item = allGoods.find(function(i) { return i._id === a.item; });
+                            return item ? {
                                 name: item.name,
                                 image: item.image && item.image.small && item.image.small.url,
                                 misscoins: getMisscoins(item),
                                 description: item.description,
-                                date: catalogItems[itemId].date || null, // If date is available
-                                quantity: catalogItems[itemId] // Number of times bought
-                            });
-                        }
+                                date: new Date(a.time),
+                                quantity: 1
+                            } : null;
+                        }).filter(Boolean);
+                        // Sort by date desc
+                        purchaseList.sort(function(a, b) {
+                            if (!a.date || !b.date) return 0;
+                            return b.date - a.date;
+                        });
+                        vm.purchaseHistory = purchaseList;
+                        $timeout(function() { $scope.$applyAsync(); });
                     });
-                    // Sort by date desc if available
-                    purchaseList.sort(function(a, b) {
-                        if (!a.date || !b.date) return 0;
-                        return new Date(b.date) - new Date(a.date);
-                    });
-                    vm.purchaseHistory = purchaseList;
-                    $timeout(function() { $scope.$applyAsync(); });
                 });
             });
         }

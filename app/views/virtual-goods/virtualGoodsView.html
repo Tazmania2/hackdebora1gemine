@@ -287,8 +287,8 @@
           {{purchase.name}}
           <span ng-if="purchase.quantity > 1" class="vg-history-qty">&nbsp;•&nbsp;Troca(s): {{purchase.quantity}}</span>
         </div>
+        <div class="vg-history-date" ng-if="purchase.date">Data: {{purchase.date | date:'dd/MM/yyyy HH:mm'}}</div>
         <div class="vg-history-desc">{{purchase.description}}</div>
-        <div class="vg-history-date" ng-if="purchase.date">Data: {{purchase.date | date:'dd/MM/yyyy'}}</div>
       </div>
       <div class="points-pill vg-history-pill">
         <i class="bi bi-coin"></i> {{purchase.misscoins}}
