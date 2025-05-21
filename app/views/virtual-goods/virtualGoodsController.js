@@ -145,6 +145,7 @@
         }
 
         function doExchange(item) {
+            console.log('doExchange item:', item);
             var playerId = vm.playerStatus._id || (vm.playerStatus && vm.playerStatus.name);
             var req = {
                 method: 'POST',
