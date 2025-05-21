@@ -73,7 +73,7 @@
             var url = baseUrl + '#!/register?referral=' + encodeURIComponent(code);
             vm.qrUrl = url;
             // Generate QR code as data URL
-            var qr = new window.QRCode(4, 'L');
+            var qr = window.qrcode(4, 'L');
             qr.addData(url);
             qr.make();
             // Get the data URL from the generated QR code
