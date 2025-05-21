@@ -57,6 +57,14 @@
   font-size: 1.7rem;
   cursor: pointer;
   z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 40px;
+}
+.vg-header-back:focus {
+  outline: 2px solid #ec0677;
 }
 .vg-header-title {
   flex: 1;
@@ -222,20 +230,22 @@
   content: attr(tooltip);
   position: absolute;
   left: 50%;
-  top: 100%;
-  transform: translateX(-50%);
-  background: #232323;
+  top: 50%;
+  transform: translate(-50%, -120%);
+  background: #181818;
   color: #fff;
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 0.98em;
+  padding: 16px 22px;
+  border-radius: 12px;
+  font-size: 1.08em;
+  font-weight: 500;
   white-space: pre-line;
-  margin-top: 8px;
-  z-index: 10;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-  min-width: 180px;
+  margin-top: 0;
+  z-index: 20;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.22);
+  min-width: 200px;
   text-align: center;
   pointer-events: none;
+  border: 2px solid #ec0677;
 }
 .vg-history-qty {
   background: #ec0677;
