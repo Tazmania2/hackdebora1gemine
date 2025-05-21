@@ -30,16 +30,15 @@
 
         function activate() {
             loadCatalog();
-            loadPurchaseHistory();
+            loadPlayerStatusAndHistory();
         }
 
         function loadCatalog() {
-            var req = {
+            $http({
                 method: 'GET',
                 url: FUNIFIER_API_CONFIG.baseUrl + '/virtualgoods/item',
                 headers: { 'Authorization': localStorage.getItem('token'), 'Content-Type': 'application/json' }
-            };
-            $http(req).then(function(response) {
+            }).then(function(response) {
                 // All items from 'recompensas' catalog, but mark canExchange
                 console.log('Catalog API response:', response.data);
                 vm.catalogItems = response.data.filter(function(item) {
@@ -93,12 +92,11 @@
             return 0;
         }
 
-        function loadPurchaseHistory() {
+        function loadPlayerStatusAndHistory() {
             PlayerService.getStatus().then(function(response) {
                 var player = response.data;
+                vm.playerStatus = player;
                 var catalogItems = player.catalog_items || {};
-                var purchaseList = [];
-                // We'll need the full catalog for details
                 var req = {
                     method: 'GET',
                     url: FUNIFIER_API_CONFIG.baseUrl + '/virtualgoods/item',
@@ -106,12 +104,13 @@
                 };
                 $http(req).then(function(res) {
                     var allGoods = res.data;
+                    var purchaseList = [];
                     Object.keys(catalogItems).forEach(function(itemId) {
                         var item = allGoods.find(function(i) { return i._id === itemId; });
                         if (!item) {
-                            console.warn('loadPurchaseHistory: No item found for itemId', itemId, 'in allGoods:', allGoods);
+                            console.warn('loadPlayerStatusAndHistory: No item found for itemId', itemId, 'in allGoods:', allGoods);
                         } else {
-                            console.log('loadPurchaseHistory: Found item for itemId', itemId, item);
+                            console.log('loadPlayerStatusAndHistory: Found item for itemId', itemId, item);
                         }
                         if (item) {
                             purchaseList.push({
@@ -139,11 +138,6 @@
                 showResultModal('Indisponível', item.missingReason || 'Este item não está disponível para troca no momento.', false);
                 return;
             }
-            // Defensive: check if item is exchangeable
-            if (!item.requires || !item.requires[0] || item.requires[0].item !== 'misscoins') {
-                showResultModal('Indisponível', 'Este item não está disponível para troca no momento.', false);
-                return;
-            }
             // Use $uibModal if available, else fallback to custom overlay
             if (window.angular && angular.element(document.body).injector().has('$uibModal')) {
                 var $uibModal = angular.element(document.body).injector().get('$uibModal');
@@ -154,59 +148,33 @@
                         $scope.ok = function() { $uibModalInstance.close(item); };
                         $scope.cancel = function() { $uibModalInstance.dismiss('cancel'); };
                     }],
-                    resolve: {
-                        item: function() { return item; }
-                    },
+                    resolve: { item: function() { return item; } },
                     size: 'sm'
                 });
                 modalInstance.result.then(function(selectedItem) {
-                    doExchange(selectedItem, $uibModal);
+                    confirmExchange(selectedItem, $uibModal);
                 });
             } else {
                 // Fallback: custom overlay or browser confirm
                 if (window.confirm('Tem certeza que deseja trocar ' + (item.requires[0] && item.requires[0].total) + ' misscoins por ' + item.name + '?')) {
-                    doExchange(item);
+                    confirmExchange(item);
                 }
             }
         }
 
-        function doExchange(item, $uibModal) {
-            console.log('doExchange item:', item);
-            if (!item) {
-                console.error('doExchange called with undefined item');
-                showResultModal('Erro', 'Erro interno: item não definido.', false, $uibModal);
-                return;
-            }
-            console.log('item._id:', item._id);
-            console.log('item.requires:', item.requires);
-            if (item.requires && item.requires.length > 0) {
-                console.log('item.requires[0]:', item.requires[0]);
-            }
-            if (!item._id) {
-                console.error('doExchange: item._id is undefined', item);
-                showResultModal('Erro', 'Erro interno: ID do item não encontrado.', false, $uibModal);
-                return;
-            }
-            var itemId = item._id;
+        function confirmExchange(item, $uibModal) {
             var playerId = vm.playerStatus._id || (vm.playerStatus && vm.playerStatus.name);
-            var payload = {
-                player: playerId,
-                item: itemId,
-                total: 1
-            };
-            console.log('POST payload:', payload);
-            var req = {
+            var payload = { player: playerId, item: item._id, total: 1 };
+            $http({
                 method: 'POST',
                 url: FUNIFIER_API_CONFIG.baseUrl + '/virtualgoods/purchase',
                 headers: { 'Authorization': localStorage.getItem('token'), 'Content-Type': 'application/json' },
                 data: payload
-            };
-            $http(req).then(function(response) {
+            }).then(function(response) {
                 if (response.data.status === 'OK') {
                     showResultModal('Sucesso', 'Troca realizada com sucesso!', true, $uibModal);
                     loadCatalog();
-                    loadPurchaseHistory();
-                    PlayerService.getStatus().then(function(res) { vm.playerStatus = res.data; });
+                    loadPlayerStatusAndHistory();
                 } else if (response.data.status === 'UNAUTHORIZED') {
                     var reasons = (response.data.restrictions || []).map(translateRestriction).join('<br>');
                     showResultModal('Não autorizado', 'Não foi possível realizar a troca:<br>' + reasons, false, $uibModal);
