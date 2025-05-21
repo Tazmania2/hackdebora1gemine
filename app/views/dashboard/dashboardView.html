@@ -215,17 +215,23 @@
   text-align: center;
 }
 .dashboard-card-content {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
+  width: 100%;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 .dashboard-card-img {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
   background: #fff;
   object-fit: contain;
+  justify-self: center;
+}
+.points-pill {
+  justify-self: end;
 }
 </style>
 <div class="dashboard-viewport">
@@ -304,6 +310,7 @@
           <li class="dashboard-card" ng-repeat="challenge in vm.completedChallengesDisplay | limitTo:5" ng-click="vm.goToChallenge(challenge)">
             <div class="dashboard-card-title">{{challenge.name}}</div>
             <div class="dashboard-card-content">
+              <div></div>
               <img ng-if="challenge.badge" ng-src="{{challenge.badge}}" alt="Badge" class="dashboard-card-img">
               <div class="points-pill">
                 <i class="bi bi-coin"></i> {{challenge.misscoins}}
@@ -321,6 +328,7 @@
             <li class="dashboard-card" ng-repeat="item in vm.purchaseHistoryDisplay | limitTo:5" ng-click="vm.goToPurchase(item)">
               <div class="dashboard-card-title">{{item.name}}</div>
               <div class="dashboard-card-content">
+                <div></div>
                 <img ng-if="item.image" ng-src="{{item.image}}" alt="Item" class="dashboard-card-img">
                 <div class="points-pill">
                   <i class="bi bi-coin"></i> {{item.misscoins}}
