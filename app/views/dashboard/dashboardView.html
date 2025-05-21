@@ -245,23 +245,21 @@
         </div>
       </div>
       <!-- Completed Challenges Accordion -->
-      <div uib-accordion-group heading="Desafios Concluídos" is-open="status.open2" class="saldo-card" style="margin-bottom: 12px;">
-        <div ng-if="vm.completedChallengesDisplay.length">
-          <ul style="list-style: none; padding: 0; margin: 0; color: #fff;">
-            <li ng-repeat="challenge in vm.completedChallengesDisplay | limitTo:5" style="border-bottom: 1px solid #333; padding: 10px 0; display: flex; align-items: center; gap: 12px;">
-              <img ng-if="challenge.badge" ng-src="{{challenge.badge}}" alt="Badge" style="width: 36px; height: 36px; border-radius: 8px; background: #fff; object-fit: contain;">
-              <div style="flex:1;">
-                <div style="font-weight: bold; color: var(--primary-color);">{{challenge.name}}</div>
-                <div style="font-size: 0.95em; color: #aaa;">{{challenge.description}}</div>
-              </div>
-              <div style="font-size: 1.1em; color: #fff; font-weight: bold; min-width: 48px; text-align: right;">
-                <i class="bi bi-coin" style="color: #ec0677;"></i> {{challenge.misscoins}}
-              </div>
-            </li>
-            <li ng-if="vm.completedChallengesDisplay.length > 5" style="color: #aaa; font-size: 0.95em; text-align: right;">...e mais {{vm.completedChallengesDisplay.length-5}} desafios</li>
-          </ul>
-        </div>
-        <div ng-if="!vm.completedChallengesDisplay.length" style="color: #aaa; text-align: center;">Nenhum desafio concluído ainda.</div>
+      <div uib-accordion-group heading="Desafios Concluídos" is-open="true" class="saldo-card" style="margin-bottom: 12px;">
+        <ul style="list-style: none; padding: 0; margin: 0; color: #fff;">
+          <li ng-repeat="challenge in vm.completedChallengesDisplay | limitTo:5" style="border-bottom: 1px solid #333; padding: 10px 0; display: flex; align-items: center; gap: 12px;">
+            <img ng-if="challenge.badge" ng-src="{{challenge.badge}}" alt="Badge" style="width: 36px; height: 36px; border-radius: 8px; background: #fff; object-fit: contain;">
+            <div style="flex:1;">
+              <div style="font-weight: bold; color: var(--primary-color);">{{challenge.name}}</div>
+              <div style="font-size: 0.95em; color: #aaa;">{{challenge.description}}</div>
+            </div>
+            <div style="font-size: 1.1em; color: #fff; font-weight: bold; min-width: 48px; text-align: right;">
+              <i class="bi bi-coin" style="color: #ec0677;"></i> {{challenge.misscoins}}
+            </div>
+          </li>
+          <li ng-if="vm.completedChallengesDisplay.length === 0" style="color: #aaa; text-align: center;">Nenhum desafio concluído ainda.</li>
+          <li ng-if="vm.completedChallengesDisplay.length > 5" style="color: #aaa; font-size: 0.95em; text-align: right;">...e mais {{vm.completedChallengesDisplay.length-5}} desafios</li>
+        </ul>
       </div>
       <!-- Purchase History Accordion -->
       <div uib-accordion-group heading="Histórico de Compras" is-open="status.open3" class="saldo-card">
