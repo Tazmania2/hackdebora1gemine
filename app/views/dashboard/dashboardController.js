@@ -127,6 +127,7 @@
                     console.warn('Challenge not found for ID:', challengeId);
                 }
             });
+            console.log('vm.completedChallengesDisplay:', vm.completedChallengesDisplay);
         }
 
         function buildPurchaseHistoryDisplay() {
