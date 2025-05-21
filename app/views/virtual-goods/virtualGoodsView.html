@@ -237,6 +237,15 @@
   text-align: center;
   pointer-events: none;
 }
+.vg-history-qty {
+  background: #ec0677;
+  color: #fff;
+  border-radius: 8px;
+  padding: 2px 8px;
+  font-size: 0.95em;
+  margin-left: 6px;
+  font-weight: 500;
+}
 </style>
 <div class="dashboard-viewport" ng-controller="VirtualGoodsController as vm">
   <div class="vg-header">
@@ -274,7 +283,10 @@
     <div class="vg-history-card" ng-repeat="purchase in vm.purchaseHistory">
       <img ng-if="purchase.image" ng-src="{{purchase.image}}" alt="{{purchase.name}}" class="vg-history-img">
       <div class="vg-history-info">
-        <div class="vg-history-name">{{purchase.name}}</div>
+        <div class="vg-history-name">
+          {{purchase.name}}
+          <span ng-if="purchase.quantity > 1" class="vg-history-qty">&nbsp;•&nbsp;Troca(s): {{purchase.quantity}}</span>
+        </div>
         <div class="vg-history-desc">{{purchase.description}}</div>
         <div class="vg-history-date" ng-if="purchase.date">Data: {{purchase.date | date:'dd/MM/yyyy'}}</div>
       </div>

@@ -118,7 +118,8 @@
                                 image: item.image && item.image.small && item.image.small.url,
                                 misscoins: getMisscoins(item),
                                 description: item.description,
-                                date: catalogItems[itemId].date || null // If date is available
+                                date: catalogItems[itemId].date || null, // If date is available
+                                quantity: catalogItems[itemId] // Number of times bought
                             });
                         }
                     });
