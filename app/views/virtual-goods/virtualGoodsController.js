@@ -108,6 +108,11 @@
                     var allGoods = res.data;
                     Object.keys(catalogItems).forEach(function(itemId) {
                         var item = allGoods.find(function(i) { return i._id === itemId; });
+                        if (!item) {
+                            console.warn('loadPurchaseHistory: No item found for itemId', itemId, 'in allGoods:', allGoods);
+                        } else {
+                            console.log('loadPurchaseHistory: Found item for itemId', itemId, item);
+                        }
                         if (item) {
                             purchaseList.push({
                                 name: item.name,
