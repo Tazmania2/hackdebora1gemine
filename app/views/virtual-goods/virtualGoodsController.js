@@ -130,16 +130,19 @@
             if (window.angular && angular.element(document.body).injector().has('$uibModal')) {
                 var $uibModal = angular.element(document.body).injector().get('$uibModal');
                 var modalInstance = $uibModal.open({
-                    template: '<div style="padding:24px;text-align:center"><img ng-if="item.image && item.image.small && item.image.small.url" ng-src="{{item.image.small.url}}" style="width:80px;height:80px;border-radius:16px;background:#fff;margin-bottom:12px;"><div style="font-weight:bold;font-size:1.2em;margin-bottom:8px;">{{item.name}}</div><div style="color:#aaa;margin-bottom:12px;">{{item.description}}</div><div class="points-pill" style="margin-bottom:18px;"><i class="bi bi-coin"></i> {{item.requires[0].total}}</div><div>Tem certeza que deseja trocar <b>{{item.requires[0].total}}</b> misscoins por este item?</div><div style="margin-top:18px;"><button class="btn btn-primary" ng-click="ok()">Trocar</button> <button class="btn btn-default" ng-click="cancel()">Cancelar</button></div></div>',
-                    controller: ['$scope', '$uibModalInstance', function($scope, $uibModalInstance) {
-                        $scope.item = item;
-                        $scope.ok = function() { $uibModalInstance.close(true); };
+                    template: '<div style="padding:24px;text-align:center"><img ng-if="modal.item.image && modal.item.image.small && modal.item.image.small.url" ng-src="{{modal.item.image.small.url}}" style="width:80px;height:80px;border-radius:16px;background:#fff;margin-bottom:12px;"><div style="font-weight:bold;font-size:1.2em;margin-bottom:8px;">{{modal.item.name}}</div><div style="color:#aaa;margin-bottom:12px;">{{modal.item.description}}</div><div class="points-pill" style="margin-bottom:18px;"><i class="bi bi-coin"></i> {{modal.item.requires[0].total}}</div><div>Tem certeza que deseja trocar <b>{{modal.item.requires[0].total}}</b> misscoins por este item?</div><div style="margin-top:18px;"><button class="btn btn-primary" ng-click="ok()">Trocar</button> <button class="btn btn-default" ng-click="cancel()">Cancelar</button></div></div>',
+                    controller: ['$scope', '$uibModalInstance', 'item', function($scope, $uibModalInstance, item) {
+                        $scope.modal = { item: item };
+                        $scope.ok = function() { $uibModalInstance.close(item); };
                         $scope.cancel = function() { $uibModalInstance.dismiss('cancel'); };
                     }],
+                    resolve: {
+                        item: function() { return item; }
+                    },
                     size: 'sm'
                 });
-                modalInstance.result.then(function() {
-                    doExchange(item, $uibModal);
+                modalInstance.result.then(function(selectedItem) {
+                    doExchange(selectedItem, $uibModal);
                 });
             } else {
                 // Fallback: custom overlay or browser confirm
