@@ -192,6 +192,41 @@
   color: #ec0677;
   font-size: 1.1em;
 }
+.dashboard-card {
+  background: #232323;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  padding: 16px 0 12px 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.dashboard-card:hover {
+  background: #292929;
+}
+.dashboard-card-title {
+  font-weight: bold;
+  color: var(--primary-color);
+  font-size: 1.15rem;
+  margin-bottom: 8px;
+  text-align: center;
+}
+.dashboard-card-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.dashboard-card-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: #fff;
+  object-fit: contain;
+}
 </style>
 <div class="dashboard-viewport">
   <!-- Header -->
@@ -266,14 +301,13 @@
       <!-- Completed Challenges Accordion -->
       <div uib-accordion-group heading="Desafios Concluídos" is-open="true" class="saldo-card" style="margin-bottom: 12px;">
         <ul style="list-style: none; padding: 0; margin: 0; color: #fff;">
-          <li ng-repeat="challenge in vm.completedChallengesDisplay | limitTo:5" style="border-bottom: 1px solid #333; padding: 10px 0; display: flex; align-items: center; gap: 12px;">
-            <img ng-if="challenge.badge" ng-src="{{challenge.badge}}" alt="Badge" style="width: 36px; height: 36px; border-radius: 8px; background: #fff; object-fit: contain;">
-            <div style="flex:1;">
-              <div style="font-weight: bold; color: var(--primary-color);">{{challenge.name}}</div>
-              <div style="font-size: 0.95em; color: #aaa;">{{challenge.description}}</div>
-            </div>
-            <div class="points-pill">
-              <i class="bi bi-coin"></i> {{challenge.misscoins}}
+          <li class="dashboard-card" ng-repeat="challenge in vm.completedChallengesDisplay | limitTo:5" ng-click="vm.goToChallenge(challenge)">
+            <div class="dashboard-card-title">{{challenge.name}}</div>
+            <div class="dashboard-card-content">
+              <img ng-if="challenge.badge" ng-src="{{challenge.badge}}" alt="Badge" class="dashboard-card-img">
+              <div class="points-pill">
+                <i class="bi bi-coin"></i> {{challenge.misscoins}}
+              </div>
             </div>
           </li>
           <li ng-if="vm.completedChallengesDisplay.length === 0" style="color: #aaa; text-align: center;">Nenhum desafio concluído ainda.</li>
@@ -284,14 +318,13 @@
       <div uib-accordion-group heading="Histórico de Compras" is-open="status.open3" class="saldo-card">
         <div ng-if="vm.purchaseHistoryDisplay.length">
           <ul style="list-style: none; padding: 0; margin: 0; color: #fff;">
-            <li ng-repeat="item in vm.purchaseHistoryDisplay | limitTo:5" style="border-bottom: 1px solid #333; padding: 10px 0; display: flex; align-items: center; gap: 12px;">
-              <img ng-if="item.image" ng-src="{{item.image}}" alt="Item" style="width: 36px; height: 36px; border-radius: 8px; background: #fff; object-fit: contain;">
-              <div style="flex:1;">
-                <div style="font-weight: bold; color: var(--primary-color);">{{item.name}}</div>
-                <div style="font-size: 0.95em; color: #aaa;">{{item.description}}</div>
-              </div>
-              <div class="points-pill">
-                <i class="bi bi-coin"></i> {{item.misscoins}}
+            <li class="dashboard-card" ng-repeat="item in vm.purchaseHistoryDisplay | limitTo:5" ng-click="vm.goToPurchase(item)">
+              <div class="dashboard-card-title">{{item.name}}</div>
+              <div class="dashboard-card-content">
+                <img ng-if="item.image" ng-src="{{item.image}}" alt="Item" class="dashboard-card-img">
+                <div class="points-pill">
+                  <i class="bi bi-coin"></i> {{item.misscoins}}
+                </div>
               </div>
             </li>
             <li ng-if="vm.purchaseHistoryDisplay.length > 5" style="color: #aaa; font-size: 0.95em; text-align: right;">...e mais {{vm.purchaseHistoryDisplay.length-5}} compras</li>

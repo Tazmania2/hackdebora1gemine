@@ -30,6 +30,14 @@
         vm.goToPurchases = goToPurchases;
         vm.shareOnSocial = shareOnSocial;
         vm.registerForEvent = registerForEvent;
+        vm.goToChallenge = function(challenge) {
+            console.log('Clicked challenge:', challenge);
+            // $location.path('/challenge/' + challenge.id); // to be implemented
+        };
+        vm.goToPurchase = function(item) {
+            console.log('Clicked purchase:', item);
+            // $location.path('/virtual-good/' + item.id); // to be implemented
+        };
 
         // Initialize
         activate();
