@@ -40,10 +40,14 @@
                 headers: { 'Authorization': localStorage.getItem('token'), 'Content-Type': 'application/json' }
             };
             $http(req).then(function(response) {
-                // Only items from 'recompensas' catalog
+                // All items from 'recompensas' catalog, but mark canExchange
                 console.log('Catalog API response:', response.data);
                 vm.catalogItems = response.data.filter(function(item) {
                     return item.catalogId === 'recompensas';
+                }).map(function(item) {
+                    item.canExchange = Array.isArray(item.requires) && item.requires.length > 0 && item.requires[0].item === 'misscoins';
+                    item.missingReason = !item.canExchange ? 'Este item não está disponível para troca no momento.' : '';
+                    return item;
                 });
                 if (vm.catalogItems.length) {
                     console.log('First catalog item:', vm.catalogItems[0]);
@@ -126,6 +130,15 @@
         }
 
         function exchangeItem(item) {
+            if (!item.canExchange) {
+                showResultModal('Indisponível', item.missingReason || 'Este item não está disponível para troca no momento.', false);
+                return;
+            }
+            // Defensive: check if item is exchangeable
+            if (!item.requires || !item.requires[0] || item.requires[0].item !== 'misscoins') {
+                showResultModal('Indisponível', 'Este item não está disponível para troca no momento.', false);
+                return;
+            }
             // Use $uibModal if available, else fallback to custom overlay
             if (window.angular && angular.element(document.body).injector().has('$uibModal')) {
                 var $uibModal = angular.element(document.body).injector().get('$uibModal');

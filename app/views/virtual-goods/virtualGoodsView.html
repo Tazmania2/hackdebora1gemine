@@ -212,6 +212,31 @@
 .vg-history-pill {
   margin-left: 8px;
 }
+.vg-item-disabled {
+  opacity: 0.45;
+  pointer-events: auto;
+  cursor: not-allowed;
+  position: relative;
+}
+.vg-item-card[tooltip]:hover:after {
+  content: attr(tooltip);
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  background: #232323;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.98em;
+  white-space: pre-line;
+  margin-top: 8px;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  min-width: 180px;
+  text-align: center;
+  pointer-events: none;
+}
 </style>
 <div class="dashboard-viewport" ng-controller="VirtualGoodsController as vm">
   <div class="vg-header">
@@ -229,7 +254,10 @@
     </button>
   </div>
   <div class="vg-grid">
-    <div class="vg-item-card" ng-repeat="item in vm.filteredItems" ng-click="vm.exchangeItem(item)">
+    <div class="vg-item-card" ng-repeat="item in vm.filteredItems"
+         ng-class="{'vg-item-disabled': !item.canExchange}"
+         ng-click="item.canExchange && vm.exchangeItem(item)"
+         tooltip="{{!item.canExchange ? item.missingReason : ''}}">
       <img ng-if="item.image && item.image.small && item.image.small.url" ng-src="{{item.image.small.url}}" alt="{{item.name}}" class="vg-item-img">
       <div class="vg-item-name">{{item.name}}</div>
       <div class="points-pill">
