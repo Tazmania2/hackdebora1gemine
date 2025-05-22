@@ -5,9 +5,9 @@
     .module('app')
     .controller('RegisterPurchaseController', RegisterPurchaseController);
 
-  RegisterPurchaseController.$inject = ['$scope', '$http', '$timeout'];
+  RegisterPurchaseController.$inject = ['$scope', '$http', '$timeout', 'PlayerService'];
 
-  function RegisterPurchaseController($scope, $http, $timeout) {
+  function RegisterPurchaseController($scope, $http, $timeout, PlayerService) {
     var vm = this;
     vm.purchaseValue = null;
     vm.purchaseProof = null;
@@ -52,15 +52,8 @@
           }
         });
       }).then(function(logRes) {
-        // Step 3: Fetch updated player status
-        return $http({
-          method: 'GET',
-          url: 'https://service2.funifier.com/v3/player/me/status',
-          headers: {
-            'Authorization': localStorage.getItem('token'),
-            'Content-Type': 'application/json'
-          }
-        });
+        // Step 3: Fetch updated player status using PlayerService
+        return PlayerService.getStatus();
       }).then(function(statusRes) {
         var data = statusRes.data;
         vm.updatedPoints = data.total_points || (data.point_categories && data.point_categories.pontos) || 0;
