@@ -67,6 +67,7 @@
         var playerStatus = {};
 
         function loadPlayerStatus() {
+            vm.loading = true;
             return PlayerService.getStatus()
                 .then(function(response) {
                     var data = response.data;
@@ -74,9 +75,19 @@
                     vm.playerStatus = data;
                     playerStatus = data;
                     setReferralQrUrl();
+                    // Merge image from /player/me
+                    return PlayerService.getPlayerProfile().then(function(resp) {
+                        if (resp.data && resp.data.image) {
+                            vm.playerStatus.image = resp.data.image;
+                        }
+                        vm.loading = false;
+                        $scope.$applyAsync();
+                    });
                 })
                 .catch(function(error) {
                     vm.error = 'Erro ao carregar status do jogador';
+                    vm.loading = false;
+                    $scope.$applyAsync();
                     console.error('Error loading player status:', error);
                 });
         }
