@@ -14,9 +14,11 @@
         .config(config)
         .run(run);
 
-    config.$inject = ['$routeProvider', '$locationProvider', '$httpProvider', 'cfpLoadingBarProvider'];
+    config.$inject = ['$routeProvider', '$locationProvider', '$httpProvider', 'cfpLoadingBarProvider', '$log'];
 
-    function config($routeProvider, $locationProvider, $httpProvider, cfpLoadingBarProvider) {
+    function config($routeProvider, $locationProvider, $httpProvider, cfpLoadingBarProvider, $log) {
+        $log = $log || console;
+        $log.debug && $log.debug('[app.js] config block executed');
         $routeProvider
             .when('/', {
                 templateUrl: 'views/dashboard/dashboardView.html',
@@ -142,9 +144,11 @@
         $httpProvider.interceptors.push('AuthInterceptor');
     }
 
-    run.$inject = ['$rootScope', '$location', 'AuthService'];
+    run.$inject = ['$rootScope', '$location', 'AuthService', '$log'];
 
-    function run($rootScope, $location, AuthService) {
+    function run($rootScope, $location, AuthService, $log) {
+        $log = $log || console;
+        $log.debug && $log.debug('[app.js] run block executed');
         // Handle route change errors
         $rootScope.$on('$routeChangeError', function(event, current, previous, rejection) {
             console.error('[RouteChangeError]', { event, current, previous, rejection });
