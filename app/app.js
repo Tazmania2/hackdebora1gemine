@@ -107,7 +107,7 @@
                 }
             })
             .when('/register-purchase', {
-                templateUrl: 'views/purchase/registerPurchaseView.html',
+                templateUrl: 'app/views/purchase/registerPurchaseView.html',
                 controller: 'RegisterPurchaseController',
                 controllerAs: 'vm',
                 resolve: {
