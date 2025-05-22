@@ -36,5 +36,8 @@ angular.module('app')
       this.handle401 = function() {
         $location.path('/login');
       };
+      this.isAuthenticated = function() {
+        return !!localStorage.getItem('token');
+      };
     }
   ]); 
