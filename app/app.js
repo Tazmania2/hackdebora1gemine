@@ -79,14 +79,7 @@
                 }
             })
             .when('/fidelidade', {
-                templateUrl: 'views/fidelidade/fidelidadeView.html',
-                controller: 'FidelidadeController',
-                controllerAs: 'vm',
-                resolve: {
-                    auth: ['AuthService', function(AuthService) {
-                        return AuthService.isAuthenticated();
-                    }]
-                }
+                redirectTo: '/register-purchase'
             })
             .when('/store', {
                 templateUrl: 'views/store/storeView.html',
