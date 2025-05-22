@@ -241,7 +241,11 @@
   <!-- Header -->
   <div class="dashboard-header">
     <div class="dashboard-header-inner">
-      <img class="dashboard-profile-img" ng-src="{{vm.playerStatus.image && vm.playerStatus.image.medium && vm.playerStatus.image.medium.url || 'https://my.funifier.com/images/funny.png'}}" alt="Foto de Perfil">
+      <img class="dashboard-profile-img" ng-src="{{
+        (vm.playerStatus.image && vm.playerStatus.image.medium && vm.playerStatus.image.medium.url) ||
+        (vm.playerStatus.level && vm.playerStatus.level.image && vm.playerStatus.level.image.medium && vm.playerStatus.level.image.medium.url) ||
+        'https://my.funifier.com/images/funny.png'
+      }}" alt="Foto de Perfil">
       <span class="dashboard-header-name">Olá, {{vm.playerStatus.name || 'Jogador'}}!</span>
       <button class="dashboard-header-gear" ng-click="vm.goToProfile()" aria-label="Editar Perfil">
         <i class="bi bi-gear"></i>
