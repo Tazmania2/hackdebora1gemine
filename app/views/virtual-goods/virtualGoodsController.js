@@ -26,7 +26,15 @@
         // Methods
         vm.exchangeItem = exchangeItem;
         vm.goBack = function() {
-            window.location.hash = '#!/dashboard';
+            if (window.angular && angular.element(document.body).injector()) {
+                var $location = angular.element(document.body).injector().get('$location');
+                $location.path('/dashboard');
+                if (!angular.element(document.body).scope().$$phase) {
+                    angular.element(document.body).scope().$apply();
+                }
+            } else {
+                window.location.hash = '#!/dashboard';
+            }
         };
 
         activate();
