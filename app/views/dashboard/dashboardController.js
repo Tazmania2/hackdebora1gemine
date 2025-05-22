@@ -41,9 +41,7 @@
         vm.goToStore = function() {
             $location.path('/virtual-goods');
         };
-        vm.goToFidelidade = function() {
-            // intentionally left blank
-        };
+        vm.goToFidelidade = vm.goToStore;
 
         // Initialize
         activate();
