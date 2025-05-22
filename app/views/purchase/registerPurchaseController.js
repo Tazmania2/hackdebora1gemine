@@ -18,6 +18,9 @@
     vm.updatedCashback = null;
     
     vm.submit = submit;
+    vm.isLoggedIn = function() {
+      return !!localStorage.getItem('token');
+    };
 
     function submit() {
       if (!vm.purchaseValue || !vm.purchaseProof) return;
