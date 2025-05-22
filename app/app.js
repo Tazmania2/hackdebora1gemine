@@ -19,55 +19,42 @@
     function config($routeProvider, $locationProvider, $httpProvider, cfpLoadingBarProvider) {
         console.log('[app.js] config block executed');
         $routeProvider
+            // Redirect root URL to /login
             .when('/', {
-                templateUrl: 'views/dashboard/dashboardView.html',
-                controller: 'DashboardController',
-                controllerAs: 'vm',
-                resolve: {
-                    auth: ['AuthService', function(AuthService) {
-                        return AuthService.isAuthenticated();
-                    }]
-                }
+                redirectTo: '/login'
             })
             .when('/login', {
-                templateUrl: 'views/login/loginView.html',
-                controller: 'LoginController',
+                templateUrl: 'app/views/login/loginView.html',
+                controller:  'LoginController',
                 controllerAs: 'vm'
             })
             .when('/register', {
-                templateUrl: 'views/register/registerView.html',
-                controller: 'RegisterController',
+                templateUrl: 'app/views/register/registerView.html',
+                controller:  'RegisterController',
+                controllerAs: 'vm'
+            })
+            .when('/dashboard', {
+                templateUrl: 'app/views/dashboard/dashboardView.html',
+                controller:  'DashboardController',
                 controllerAs: 'vm'
             })
             .when('/profile', {
-                templateUrl: 'views/profile/profileView.html',
-                controller: 'ProfileController',
-                controllerAs: 'vm',
-                resolve: {
-                    auth: ['AuthService', function(AuthService) {
-                        return AuthService.isAuthenticated();
-                    }]
-                }
+                templateUrl: 'app/views/profile/profileView.html',
+                controller:  'ProfileController',
+                controllerAs: 'vm'
             })
             .when('/rewards', {
-                templateUrl: 'views/rewards/rewardsView.html',
-                controller: 'RewardsController',
-                controllerAs: 'vm',
-                resolve: {
-                    auth: ['AuthService', function(AuthService) {
-                        return AuthService.isAuthenticated();
-                    }]
-                }
+                templateUrl: 'app/views/rewards/rewardsView.html',
+                controller:  'RewardsController',
+                controllerAs: 'vm'
             })
             .when('/virtual-goods', {
-                templateUrl: 'views/virtual-goods/virtualGoodsView.html',
-                controller: 'VirtualGoodsController',
-                controllerAs: 'vm',
-                resolve: {
-                    auth: ['AuthService', function(AuthService) {
-                        return AuthService.isAuthenticated();
-                    }]
-                }
+                templateUrl: 'app/views/virtual-goods/virtualGoodsView.html',
+                controller:  'VirtualGoodsController',
+                controllerAs: 'vm'
+            })
+            .when('/terms', {
+                templateUrl: 'app/views/terms/termsView.html'
             })
             .when('/events', {
                 templateUrl: 'views/events/eventsView.html',
@@ -129,9 +116,7 @@
                     }]
                 }
             })
-            .otherwise({
-                redirectTo: '/'
-            });
+            .otherwise({ redirectTo: '/login' });
 
         $locationProvider.html5Mode(true);
 
