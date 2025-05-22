@@ -75,10 +75,11 @@ angular.module('app')
     // Check if user is authenticated
     service.isAuthenticated = function() {
         var token = localStorage.getItem('token');
+        console.log('[AuthService.isAuthenticated] token:', token);
         if (token) {
             return Promise.resolve(true);
         } else {
-            console.error('User not authenticated');
+            console.error('[AuthService.isAuthenticated] User not authenticated');
             return Promise.reject('not_authenticated');
         }
     };
