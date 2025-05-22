@@ -120,7 +120,7 @@
             })
             .when('/register-purchase', {
                 templateUrl: 'views/purchase/registerPurchaseView.html',
-                controller: 'RegisterPurchaseController',
+                controller: 'VirtualGoodsController',
                 controllerAs: 'vm',
                 resolve: {
                     auth: ['AuthService', function(AuthService) {

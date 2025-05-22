@@ -1,4 +1,4 @@
-<!-- Registrar Compra View -->
+<!-- Virtual Goods Store View -->
 <style>
 .dashboard-viewport {
   background: var(--background-dark, #232323);
@@ -30,7 +30,7 @@
     left: 0; right: 0;
   }
 }
-.register-header {
+.vg-header {
   width: 100%;
   padding: 24px 0 12px 0;
   text-align: center;
@@ -46,7 +46,7 @@
   position: relative;
   box-sizing: border-box;
 }
-.register-header-back {
+.vg-header-back {
   position: absolute;
   left: 18px;
   top: 50%;
@@ -63,95 +63,276 @@
   height: 40px;
   width: 40px;
 }
-.register-header-title {
+/* Force back button icon to white */
+.vg-header-back i {
+  color: #fff !important;
+}
+.vg-header-back:focus {
+  outline: 2px solid #ec0677;
+}
+.vg-header-title {
   flex: 1;
   text-align: center;
 }
-.form-section {
-  width: 100%;
-  max-width: 340px;
-  margin: 0 auto;
+.vg-filters {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.vg-filter-btn {
+  background: #181818;
+  color: var(--primary-color, #ec0677);
+  border: 1.5px solid var(--primary-color, #ec0677);
+  border-radius: 999px;
+  padding: 6px 18px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+.vg-filter-btn.active, .vg-filter-btn:hover {
+  background: var(--primary-color, #ec0677);
+  color: #fff;
+}
+.vg-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 12px;
+  margin-bottom: 32px;
+  padding: 0 12px;
+}
+.vg-item-card {
   background: #232323;
   border-radius: 18px;
-  padding: 24px 18px 18px 18px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.10);
   display: flex;
   flex-direction: column;
-  gap: 18px;
-}
-.form-label {
-  color: #fff;
-  font-size: 1.1rem;
-  font-weight: 500;
-  margin-bottom: 6px;
-}
-.form-input, .form-file {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1.5px solid #ec0677;
-  background: #181818;
-  color: #fff;
-  font-size: 1.1rem;
-  margin-bottom: 12px;
-}
-.form-file {
-  padding: 8px 0;
-  background: #181818;
-  color: #fff;
-}
-.form-btn {
-  background: var(--primary-color, #ec0677);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 0;
-  font-size: 1.15rem;
-  font-weight: bold;
+  align-items: center;
+  padding: 16px 8px 12px 8px;
   cursor: pointer;
-  margin-top: 8px;
   transition: background 0.18s;
+  border: 1.5px solid transparent;
 }
-.form-btn:disabled {
-  background: #888;
-  cursor: not-allowed;
+.vg-item-card:hover {
+  background: #292929;
+  border: 1.5px solid var(--primary-color, #ec0677);
 }
-.form-feedback {
-  margin-top: 10px;
+.vg-item-img {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  background: #fff;
+  object-fit: contain;
+  margin-bottom: 8px;
+}
+.vg-item-name {
+  font-weight: bold;
+  color: var(--primary-color, #ec0677);
   font-size: 1.08rem;
   text-align: center;
+  margin-bottom: 6px;
 }
-.form-feedback.success {
-  color: #2ecc71;
+.points-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 14px 4px 10px;
+  background: #181818;
+  border-radius: 999px;
+  border: 1.5px solid #ec0677;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-top: 2px;
+  min-width: 48px;
+  text-align: right;
 }
-.form-feedback.error {
-  color: #e74c3c;
+.points-pill .bi-coin {
+  color: #ec0677;
+  font-size: 1.1em;
+}
+/* Red pill for insufficient Misscoins */
+.points-pill-insufficient {
+  background: #3a181c !important;
+  border: 1.5px solid #e74c3c !important;
+  color: #fff !important;
+}
+.points-pill-insufficient .bi-coin {
+  color: #e74c3c !important;
+}
+/* Player balance pill */
+.points-pill-balance {
+  background: #181818;
+  border: 1.5px solid #ec0677;
+  color: #fff;
+  font-size: 1.13em;
+  margin-bottom: 0;
+  margin-top: 0;
+  min-width: 110px;
+  justify-content: center;
+}
+.vg-divider {
+  width: 80%;
+  margin: 32px auto 18px auto;
+  border: none;
+  border-top: 2px solid #444;
+}
+.vg-history-header {
+  text-align: center;
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.vg-history-icon {
+  font-size: 2.2rem;
+  color: #fff;
+  background: none;
+  border-radius: 50%;
+  padding: 0;
+  margin-bottom: 2px;
+}
+.vg-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 12px;
+}
+.vg-history-card {
+  background: #232323;
+  border-radius: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 12px 12px 12px 8px;
+  gap: 14px;
+}
+.vg-history-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: #fff;
+  object-fit: contain;
+}
+.vg-history-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.vg-history-name {
+  font-weight: bold;
+  color: var(--primary-color, #ec0677);
+  font-size: 1.05rem;
+  margin-bottom: 2px;
+}
+.vg-history-desc {
+  color: #aaa;
+  font-size: 0.97em;
+  margin-bottom: 2px;
+}
+.vg-history-date {
+  color: #fff;
+  font-size: 0.93em;
+  margin-bottom: 2px;
+}
+.vg-history-pill {
+  margin-left: 8px;
+}
+.vg-item-disabled {
+  opacity: 0.45;
+  pointer-events: auto;
+  cursor: not-allowed;
+  position: relative;
+}
+.vg-item-card[tooltip]:hover:after {
+  content: attr(tooltip);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -120%);
+  background: #181818;
+  color: #fff;
+  padding: 16px 22px;
+  border-radius: 12px;
+  font-size: 1.08em;
+  font-weight: 500;
+  white-space: pre-line;
+  margin-top: 0;
+  z-index: 20;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.22);
+  min-width: 200px;
+  text-align: center;
+  pointer-events: none;
+  border: 2px solid #ec0677;
+}
+.vg-history-qty {
+  background: #ec0677;
+  color: #fff;
+  border-radius: 8px;
+  padding: 2px 8px;
+  font-size: 0.95em;
+  margin-left: 6px;
+  font-weight: 500;
 }
 </style>
-<div class="dashboard-viewport" ng-controller="RegisterPurchaseController as vm">
-  <div class="register-header">
-    <button class="register-header-back" ng-click="window.history.back()" aria-label="Voltar">
+<div class="dashboard-viewport" ng-controller="VirtualGoodsController as vm">
+  <div class="vg-header">
+    <button class="vg-header-back" ng-click="vm.goBack()" aria-label="Voltar">
       <i class="bi bi-arrow-left"></i>
     </button>
-    <span class="register-header-title">Registrar Compra</span>
+    <span class="vg-header-title">Ganhe Cashback (CLONE)</span>
   </div>
-  <form name="registerPurchaseForm" class="form-section" ng-submit="vm.submit()" novalidate autocomplete="off">
-    <label class="form-label" for="purchaseValue">Valor da Compra (R$)</label>
-    <input class="form-input" type="number" id="purchaseValue" name="purchaseValue" ng-model="vm.purchaseValue" min="0.01" step="0.01" required placeholder="Ex: 49.90">
-
-    <label class="form-label" for="purchaseProof">Comprovante da Compra</label>
-    <input class="form-file" type="file" id="purchaseProof" name="purchaseProof" file-model="vm.purchaseProof" accept="image/*" required>
-
-    <button class="form-btn" type="submit" ng-disabled="registerPurchaseForm.$invalid || vm.loading">
-      <span ng-if="!vm.loading">Registrar Compra</span>
-      <span ng-if="vm.loading">Enviando...</span>
+  <!-- Player Misscoins Pill -->
+  <div style="width:100%; display:flex; justify-content:center; margin-bottom: 10px;">
+    <div class="points-pill points-pill-balance">
+      <i class="bi bi-coin"></i> {{vm.playerMisscoins}} Misscoins
+    </div>
+  </div>
+  <div class="vg-filters">
+    <button class="vg-filter-btn" ng-class="{active: vm.sortType === 'value'}" ng-click="vm.setSort('value')">
+      Valor <span ng-if="vm.sortType === 'value'">{{vm.sortOrder === 'asc' ? '↑' : '↓'}}</span>
     </button>
-
-    <div class="form-feedback success" ng-if="vm.success">
-      Compra registrada com sucesso! Seus pontos e cashback foram atualizados.
+    <button class="vg-filter-btn" ng-class="{active: vm.sortType === 'alpha'}" ng-click="vm.setSort('alpha')">
+      Alfabética <span ng-if="vm.sortType === 'alpha'">{{vm.sortOrder === 'asc' ? 'A-Z' : 'Z-A'}}</span>
+    </button>
+  </div>
+  <div class="vg-grid">
+    <div class="vg-item-card"
+         ng-repeat="item in vm.filteredItems"
+         ng-click="vm.exchangeItem(item)">
+      <img ng-if="item.image && item.image.small && item.image.small.url" ng-src="{{item.image.small.url}}" alt="{{item.name}}" class="vg-item-img">
+      <div class="vg-item-name">{{item.name}}</div>
+      <div class="points-pill" ng-class="{'points-pill-insufficient': !item.canAfford}">
+        <i class="bi bi-coin"></i> {{item.requires[0].total}}
+      </div>
     </div>
-    <div class="form-feedback error" ng-if="vm.error">
-      {{vm.error}}
+  </div>
+  <hr class="vg-divider">
+  <div class="vg-history-header">
+    <span class="vg-history-icon"><i class="bi bi-clock-history"></i></span>
+    Histórico de Trocas
+  </div>
+  <div class="vg-history-list">
+    <div class="vg-history-card" ng-repeat="purchase in vm.purchaseHistory">
+      <img ng-if="purchase.image" ng-src="{{purchase.image}}" alt="{{purchase.name}}" class="vg-history-img">
+      <div class="vg-history-info">
+        <div class="vg-history-name">
+          {{purchase.name}}
+          <span ng-if="purchase.quantity > 1" class="vg-history-qty">&nbsp;•&nbsp;Troca(s): {{purchase.quantity}}</span>
+        </div>
+        <div class="vg-history-date" ng-if="purchase.date">Data: {{purchase.date | date:'dd/MM/yyyy HH:mm'}}</div>
+        <div class="vg-history-desc">{{purchase.description}}</div>
+      </div>
+      <div class="points-pill vg-history-pill">
+        <i class="bi bi-coin"></i> {{purchase.misscoins}}
+      </div>
     </div>
-  </form>
+    <div ng-if="!vm.purchaseHistory.length" style="color: #aaa; text-align: center;">Nenhuma troca realizada ainda.</div>
+  </div>
 </div> 
