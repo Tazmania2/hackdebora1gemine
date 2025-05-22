@@ -78,9 +78,6 @@
                     }]
                 }
             })
-            .when('/fidelidade', {
-                redirectTo: '/register-purchase'
-            })
             .when('/store', {
                 templateUrl: 'views/store/storeView.html',
                 controller: 'StoreController',
