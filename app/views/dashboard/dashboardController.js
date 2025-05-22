@@ -42,7 +42,7 @@
             $location.path('/virtual-goods');
         };
         vm.goToFidelidade = function() {
-            $location.path('/virtual-goods');
+            $location.path('/register-purchase');
         };
 
         // Initialize
