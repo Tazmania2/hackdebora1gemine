@@ -1,9 +1,8 @@
 // Deprecated: All routes are now defined in app.js
 
 angular.module('app')
-  .config(['$routeProvider', '$locationProvider', '$log', function($routeProvider, $locationProvider, $log) {
-    $log = $log || console;
-    $log.debug && $log.debug('[app.routes.js] config block executed');
+  .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
+    console.log('[app.routes.js] config block executed');
     // keep hashbang mode since you're using "#!/..."
     $locationProvider.html5Mode(false);
 

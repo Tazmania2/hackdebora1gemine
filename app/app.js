@@ -14,11 +14,10 @@
         .config(config)
         .run(run);
 
-    config.$inject = ['$routeProvider', '$locationProvider', '$httpProvider', 'cfpLoadingBarProvider', '$log'];
+    config.$inject = ['$routeProvider', '$locationProvider', '$httpProvider', 'cfpLoadingBarProvider'];
 
-    function config($routeProvider, $locationProvider, $httpProvider, cfpLoadingBarProvider, $log) {
-        $log = $log || console;
-        $log.debug && $log.debug('[app.js] config block executed');
+    function config($routeProvider, $locationProvider, $httpProvider, cfpLoadingBarProvider) {
+        console.log('[app.js] config block executed');
         $routeProvider
             .when('/', {
                 templateUrl: 'views/dashboard/dashboardView.html',
