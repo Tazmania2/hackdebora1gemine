@@ -75,10 +75,10 @@
                     vm.playerStatus = data;
                     playerStatus = data;
                     setReferralQrUrl();
-                    // Merge image from /player/me
+                    // Merge image from /player/me and assign a new object
                     return PlayerService.getPlayerProfile().then(function(resp) {
                         if (resp.data && resp.data.image) {
-                            vm.playerStatus.image = resp.data.image;
+                            vm.playerStatus = Object.assign({}, vm.playerStatus, { image: resp.data.image });
                         }
                         vm.loading = false;
                         $scope.$applyAsync();
