@@ -1,4 +1,4 @@
-<!-- Ganhe Cashback (CLONE) View -->
+<!-- Registrar Compra View -->
 <style>
 .dashboard-viewport {
   background: var(--background-dark, #232323);
@@ -30,60 +30,128 @@
     left: 0; right: 0;
   }
 }
-/* ...rest of the style from loja view... */
+.register-header {
+  width: 100%;
+  padding: 24px 0 12px 0;
+  text-align: center;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: bold;
+  background: var(--primary-color, #ec0677);
+  border-radius: 0;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+}
+.register-header-back {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.7rem;
+  cursor: pointer;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 40px;
+}
+.register-header-title {
+  flex: 1;
+  text-align: center;
+}
+.form-section {
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+  background: #232323;
+  border-radius: 18px;
+  padding: 24px 18px 18px 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.form-label {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.form-input, .form-file {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #ec0677;
+  background: #181818;
+  color: #fff;
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+.form-file {
+  padding: 8px 0;
+  background: #181818;
+  color: #fff;
+}
+.form-btn {
+  background: var(--primary-color, #ec0677);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 0;
+  font-size: 1.15rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.18s;
+}
+.form-btn:disabled {
+  background: #888;
+  cursor: not-allowed;
+}
+.form-feedback {
+  margin-top: 10px;
+  font-size: 1.08rem;
+  text-align: center;
+}
+.form-feedback.success {
+  color: #2ecc71;
+}
+.form-feedback.error {
+  color: #e74c3c;
+}
 </style>
 <div class="dashboard-viewport" ng-controller="RegisterPurchaseController as vm">
-  <div class="vg-header">
-    <button class="vg-header-back" ng-click="vm.goBack()" aria-label="Voltar">
+  <div class="register-header">
+    <button class="register-header-back" ng-click="window.history.back()" aria-label="Voltar">
       <i class="bi bi-arrow-left"></i>
     </button>
-    <span class="vg-header-title">Ganhe Cashback (CLONE)</span>
+    <span class="register-header-title">Registrar Compra</span>
   </div>
-  <!-- Player Misscoins Pill -->
-  <div style="width:100%; display:flex; justify-content:center; margin-bottom: 10px;">
-    <div class="points-pill points-pill-balance">
-      <i class="bi bi-coin"></i> {{vm.playerMisscoins}} Misscoins
-    </div>
-  </div>
-  <div class="vg-filters">
-    <button class="vg-filter-btn" ng-class="{active: vm.sortType === 'value'}" ng-click="vm.setSort('value')">
-      Valor <span ng-if="vm.sortType === 'value'">{{vm.sortOrder === 'asc' ? '↑' : '↓'}}</span>
+  <form name="registerPurchaseForm" class="form-section" ng-submit="vm.submit()" novalidate autocomplete="off">
+    <label class="form-label" for="purchaseValue">Valor da Compra (R$)</label>
+    <input class="form-input" type="number" id="purchaseValue" name="purchaseValue" ng-model="vm.purchaseValue" min="0.01" step="0.01" required placeholder="Ex: 49.90">
+
+    <label class="form-label" for="purchaseProof">Comprovante da Compra</label>
+    <input class="form-file" type="file" id="purchaseProof" name="purchaseProof" file-model="vm.purchaseProof" accept="image/*" required>
+
+    <button class="form-btn" type="submit" ng-disabled="registerPurchaseForm.$invalid || vm.loading">
+      <span ng-if="!vm.loading">Registrar Compra</span>
+      <span ng-if="vm.loading">Enviando...</span>
     </button>
-    <button class="vg-filter-btn" ng-class="{active: vm.sortType === 'alpha'}" ng-click="vm.setSort('alpha')">
-      Alfabética <span ng-if="vm.sortType === 'alpha'">{{vm.sortOrder === 'asc' ? 'A-Z' : 'Z-A'}}</span>
-    </button>
-  </div>
-  <div class="vg-grid">
-    <div class="vg-item-card"
-         ng-repeat="item in vm.filteredItems"
-         ng-click="vm.exchangeItem(item)">
-      <img ng-if="item.image && item.image.small && item.image.small.url" ng-src="{{item.image.small.url}}" alt="{{item.name}}" class="vg-item-img">
-      <div class="vg-item-name">{{item.name}}</div>
-      <div class="points-pill" ng-class="{'points-pill-insufficient': !item.canAfford}">
-        <i class="bi bi-coin"></i> {{item.requires[0].total}}
-      </div>
+
+    <div class="form-feedback success" ng-if="vm.success">
+      Compra registrada com sucesso! Seus pontos e cashback foram atualizados.
     </div>
-  </div>
-  <hr class="vg-divider">
-  <div class="vg-history-header">
-    <span class="vg-history-icon"><i class="bi bi-clock-history"></i></span>
-    Histórico de Trocas
-  </div>
-  <div class="vg-history-list">
-    <div class="vg-history-card" ng-repeat="purchase in vm.purchaseHistory">
-      <img ng-if="purchase.image" ng-src="{{purchase.image}}" alt="{{purchase.name}}" class="vg-history-img">
-      <div class="vg-history-info">
-        <div class="vg-history-name">
-          {{purchase.name}}
-          <span ng-if="purchase.quantity > 1" class="vg-history-qty">&nbsp;•&nbsp;Troca(s): {{purchase.quantity}}</span>
-        </div>
-        <div class="vg-history-date" ng-if="purchase.date">Data: {{purchase.date | date:'dd/MM/yyyy HH:mm'}}</div>
-        <div class="vg-history-desc">{{purchase.description}}</div>
-      </div>
-      <div class="points-pill vg-history-pill">
-        <i class="bi bi-coin"></i> {{purchase.misscoins}}
-      </div>
+    <div class="form-feedback error" ng-if="vm.error">
+      {{vm.error}}
     </div>
-    <div ng-if="!vm.purchaseHistory.length" style="color: #aaa; text-align: center;">Nenhuma troca realizada ainda.</div>
-  </div>
+  </form>
 </div> 
