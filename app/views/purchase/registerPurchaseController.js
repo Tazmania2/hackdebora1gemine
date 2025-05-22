@@ -31,7 +31,7 @@
         method: 'POST',
         url: 'https://service2.funifier.com/v3/upload/image',
         headers: {
-          'Authorization': localStorage.getItem('token'),
+          'Authorization': 'Bearer ' + localStorage.getItem('token'),
           'Content-Type': undefined // Let browser set multipart boundary
         },
         data: formData,
@@ -42,7 +42,7 @@
           method: 'POST',
           url: 'https://service2.funifier.com/v3/action/log',
           headers: {
-            'Authorization': localStorage.getItem('token'),
+            'Authorization': 'Bearer ' + localStorage.getItem('token'),
             'Content-Type': 'application/json'
           },
           data: {

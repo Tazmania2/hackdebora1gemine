@@ -25,7 +25,8 @@ angular.module('app')
         return $http(req).then(function(response) {
             console.log('Login response:', response.data);
             if (response.data && response.data.access_token) {
-                localStorage.setItem('token', 'Bearer ' + response.data.access_token);
+                // Store only the raw token (no 'Bearer ' prefix)
+                localStorage.setItem('token', response.data.access_token);
                 return service.getPlayerInfo();
             }
             return $q.reject('Token não encontrado na resposta');

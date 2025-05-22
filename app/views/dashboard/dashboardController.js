@@ -102,7 +102,7 @@
             var req = {
                 method: 'GET',
                 url: FUNIFIER_API_CONFIG.baseUrl + '/challenge',
-                headers: { 'Authorization': localStorage.getItem('token'), 'Content-Type': 'application/json' }
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' }
             };
             return $http(req).then(function(response) {
                 allChallenges = response.data;
@@ -113,7 +113,7 @@
             var req = {
                 method: 'GET',
                 url: FUNIFIER_API_CONFIG.baseUrl + '/virtualgoods/item',
-                headers: { 'Authorization': localStorage.getItem('token'), 'Content-Type': 'application/json' }
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' }
             };
             return $http(req).then(function(response) {
                 allVirtualGoods = response.data;

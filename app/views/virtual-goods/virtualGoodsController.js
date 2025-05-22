@@ -39,7 +39,7 @@
             $http({
                 method: 'GET',
                 url: FUNIFIER_API_CONFIG.baseUrl + '/virtualgoods/item',
-                headers: { 'Authorization': localStorage.getItem('token'), 'Content-Type': 'application/json' }
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' }
             }).then(function(response) {
                 // All items from 'recompensas' catalog, but mark canExchange and canAfford
                 vm.catalogItems = response.data.filter(function(item) {
@@ -110,13 +110,13 @@
                 var reqCatalog = {
                     method: 'GET',
                     url: FUNIFIER_API_CONFIG.baseUrl + '/virtualgoods/item',
-                    headers: { 'Authorization': localStorage.getItem('token'), 'Content-Type': 'application/json' }
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' }
                 };
                 // Fetch all achievements
                 var reqAchievements = {
                     method: 'GET',
                     url: FUNIFIER_API_CONFIG.baseUrl + '/achievement',
-                    headers: { 'Authorization': localStorage.getItem('token'), 'Content-Type': 'application/json' }
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' }
                 };
                 $http(reqCatalog).then(function(res) {
                     var allGoods = res.data;
@@ -191,7 +191,7 @@
             $http({
                 method: 'POST',
                 url: FUNIFIER_API_CONFIG.baseUrl + '/virtualgoods/purchase',
-                headers: { 'Authorization': localStorage.getItem('token'), 'Content-Type': 'application/json' },
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' },
                 data: payload
             }).then(function(response) {
                 if (response.data.status === 'OK') {

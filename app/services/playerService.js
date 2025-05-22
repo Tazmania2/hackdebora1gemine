@@ -6,7 +6,7 @@ angular.module('app').factory('PlayerService', function($http, $q, FUNIFIER_API_
             method: 'GET',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player/me',
             headers: {
-                'Authorization': localStorage.getItem('token'),
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 'Content-Type': 'application/json'
             }
         }).then(function(response) {
@@ -29,7 +29,7 @@ angular.module('app').factory('PlayerService', function($http, $q, FUNIFIER_API_
             method: 'PUT',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player/' + currentPlayer._id + '/status',
             headers: {
-                'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 'Content-Type': 'application/json'
             },
             data: payload
@@ -48,7 +48,7 @@ angular.module('app').factory('PlayerService', function($http, $q, FUNIFIER_API_
             method: 'GET',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/status',
             headers: {
-                'Authorization': localStorage.getItem('token'),
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 'Content-Type': 'application/json'
             }
         });
@@ -59,7 +59,7 @@ angular.module('app').factory('PlayerService', function($http, $q, FUNIFIER_API_
             method: 'GET',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/activity',
             headers: {
-                'Authorization': localStorage.getItem('token'),
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 'Content-Type': 'application/json'
             }
         }).then(function(response) {
@@ -76,7 +76,7 @@ angular.module('app').factory('PlayerService', function($http, $q, FUNIFIER_API_
             method: 'GET',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/rewards',
             headers: {
-                'Authorization': localStorage.getItem('token'),
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 'Content-Type': 'application/json'
             }
         });
@@ -87,7 +87,7 @@ angular.module('app').factory('PlayerService', function($http, $q, FUNIFIER_API_
             method: 'GET',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/events',
             headers: {
-                'Authorization': localStorage.getItem('token'),
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 'Content-Type': 'application/json'
             }
         }).then(function(response) {
@@ -117,7 +117,7 @@ angular.module('app').factory('PlayerService', function($http, $q, FUNIFIER_API_
             method: 'POST',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/referral',
             headers: {
-                'Authorization': token,
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 'Content-Type': 'application/json'
             },
             data: {}
@@ -129,7 +129,7 @@ angular.module('app').factory('PlayerService', function($http, $q, FUNIFIER_API_
             method: 'POST',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/purchase',
             headers: {
-                'Authorization': localStorage.getItem('token'),
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 'Content-Type': 'application/json'
             },
             data: purchaseData
@@ -141,7 +141,7 @@ angular.module('app').factory('PlayerService', function($http, $q, FUNIFIER_API_
             method: 'POST',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/share',
             headers: {
-                'Authorization': localStorage.getItem('token'),
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 'Content-Type': 'application/json'
             },
             data: {
@@ -156,7 +156,7 @@ angular.module('app').factory('PlayerService', function($http, $q, FUNIFIER_API_
             method: 'POST',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/survey/' + surveyId,
             headers: {
-                'Authorization': localStorage.getItem('token'),
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 'Content-Type': 'application/json'
             },
             data: answers
@@ -169,7 +169,7 @@ angular.module('app').factory('PlayerService', function($http, $q, FUNIFIER_API_
             fetch(FUNIFIER_API_CONFIG.baseUrl + '/player', {
                 method: 'POST',
                 headers: {
-                    'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
+                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(playerData)
@@ -194,7 +194,7 @@ angular.module('app').factory('PlayerService', function($http, $q, FUNIFIER_API_
             method: 'GET',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player/me/status',
             headers: {
-                'Authorization': localStorage.getItem('token'),
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
                 'Content-Type': 'application/json'
             }
         });
