@@ -41,7 +41,9 @@
         vm.goToStore = function() {
             $location.path('/virtual-goods');
         };
-        vm.goToFidelidade = vm.goToStore;
+        vm.goToFidelidade = function() {
+            $location.path('/register-purchase');
+        };
 
         // Initialize
         activate();
