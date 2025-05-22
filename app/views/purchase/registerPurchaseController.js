@@ -23,6 +23,9 @@
     vm.isLoggedIn = function() {
       return !!localStorage.getItem('token');
     };
+    vm.goBack = function() {
+      $location.path('/dashboard');
+    };
 
     function onFileChange(element) {
       var file = element.files[0];

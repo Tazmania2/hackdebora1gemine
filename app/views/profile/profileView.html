@@ -31,7 +31,7 @@
                 <button class="btn btn-primary" style="margin-top:10px; width:100%;" ng-click="vm.uploadProfileImage()">Salvar Imagem</button>
             </div>
             <div class="form-actions" style="display: flex; gap: 12px;">
-                <button type="button" class="btn btn-secondary" ng-click="vm.goBack()" style="flex:1;">Cancelar</button>
+                <button type="button" class="btn" ng-click="vm.goBack()" style="flex:1; background:#ec0677; color:#fff; border:none; font-weight:bold;">Cancelar</button>
                 <button type="submit" class="btn btn-primary" ng-disabled="vm.loading" style="flex:1;">Salvar Alterações</button>
             </div>
             <div class="alert alert-success" ng-if="vm.success" style="margin-top: 12px;">
