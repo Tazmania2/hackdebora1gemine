@@ -1,3 +1,5 @@
+// Deprecated: All routes are now defined in app.js
+
 angular.module('app')
   .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
     // keep hashbang mode since you're using "#!/..."
