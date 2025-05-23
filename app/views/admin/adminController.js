@@ -368,10 +368,12 @@
         vm.statModalTitle = 'Compras registradas';
         $http.get('https://service2.funifier.com/v3/action/log?actionId=comprar', { headers: { Authorization: 'Basic ' + basicAuth } })
           .then(function(resp) {
-            vm.statModalData = resp.data;
+            // Filter logs to only those with actionId 'comprar'
+            var logs = (resp.data || []).filter(function(log) { return log.actionId === 'comprar'; });
+            vm.statModalData = logs;
             // Collect all unique attribute keys for table columns
             var attrKeys = new Set();
-            resp.data.forEach(function(log) {
+            logs.forEach(function(log) {
               if (log.attributes) {
                 Object.keys(log.attributes).forEach(function(k) { attrKeys.add(k); });
               }

@@ -238,7 +238,7 @@
             <tbody>
               <tr ng-repeat="log in vm.statModalData">
                 <td>{{log.userId}}</td>
-                <td>{{log.createdAt | date:'dd/MM/yyyy HH:mm'}}</td>
+                <td>{{log.time | date:'dd/MM/yyyy HH:mm'}}</td>
                 <td ng-repeat="attr in vm.statModalAttrKeys">{{log.attributes[attr]}}</td>
               </tr>
             </tbody>
