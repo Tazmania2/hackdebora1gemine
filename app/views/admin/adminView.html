@@ -230,16 +230,16 @@
           <table ng-if="vm.statModalData.length > 0" style="width:100%;margin-bottom:18px;">
             <thead>
               <tr>
-                <th>Email</th>
-                <th>Valor</th>
+                <th>Jogador</th>
                 <th>Data</th>
+                <th ng-repeat="attr in vm.statModalAttrKeys">{{attr}}</th>
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="purchase in vm.statModalData">
-                <td>{{purchase.player}}</td>
-                <td>{{purchase.value | currency:'R$ '}}</td>
-                <td>{{purchase.createdAt | date:'dd/MM/yyyy HH:mm'}}</td>
+              <tr ng-repeat="log in vm.statModalData">
+                <td>{{log.userId}}</td>
+                <td>{{log.createdAt | date:'dd/MM/yyyy HH:mm'}}</td>
+                <td ng-repeat="attr in vm.statModalAttrKeys">{{log.attributes[attr]}}</td>
               </tr>
             </tbody>
           </table>

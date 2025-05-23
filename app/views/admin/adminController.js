@@ -222,11 +222,11 @@
     // --- Stats (Funifier API, Basic Auth) ---
     function refreshStats() {
       var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
-      // Purchases
-      $http.get('https://service2.funifier.com/v3/player/purchases', { headers: { Authorization: basicAuth } })
+      // Compras registradas: count action logs with actionId 'comprar'
+      $http.get('https://service2.funifier.com/v3/action/log?actionId=comprar', { headers: { Authorization: 'Basic ' + basicAuth } })
         .then(function(resp) { vm.stats.purchases = resp.data.length || 0; });
       // Active players
-      $http.get('https://service2.funifier.com/v3/player/active', { headers: { Authorization: basicAuth } })
+      $http.get('https://service2.funifier.com/v3/player/active', { headers: { Authorization: 'Basic ' + basicAuth } })
         .then(function(resp) { vm.stats.activePlayers = resp.data.length || 0; });
       // Cashback distributed/used/lost, points gained/used (placeholders, need real endpoints)
       // ...
@@ -366,9 +366,17 @@
       vm.statModalLoading = true;
       if (statKey === 'purchases') {
         vm.statModalTitle = 'Compras registradas';
-        $http.get('https://service2.funifier.com/v3/player/purchases', { headers: { Authorization: basicAuth } })
+        $http.get('https://service2.funifier.com/v3/action/log?actionId=comprar', { headers: { Authorization: 'Basic ' + basicAuth } })
           .then(function(resp) {
             vm.statModalData = resp.data;
+            // Collect all unique attribute keys for table columns
+            var attrKeys = new Set();
+            resp.data.forEach(function(log) {
+              if (log.attributes) {
+                Object.keys(log.attributes).forEach(function(k) { attrKeys.add(k); });
+              }
+            });
+            vm.statModalAttrKeys = Array.from(attrKeys);
           })
           .finally(function() {
             vm.statModalLoading = false;
@@ -384,8 +392,8 @@
     };
     vm.exportStatCsv = function() {
       if (vm.statModalKey === 'purchases') {
-        // Use Funifier's export endpoint for purchases
-        window.open('https://service2.funifier.com/v3/player/purchases/export/csv?Authorization=' + encodeURIComponent(basicAuth), '_blank');
+        // Use Funifier's export endpoint for action logs filtered by actionId=comprar
+        window.open('https://service2.funifier.com/v3/action/log/export/csv?actionId=comprar&Authorization=Basic%20' + basicAuth, '_blank');
       }
       // Add more statKey cases for other stats as needed
     };
