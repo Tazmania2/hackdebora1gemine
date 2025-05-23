@@ -58,6 +58,9 @@
         vm.goToRegisterPurchase = function() {
             $location.path('/register-purchase');
         };
+        vm.goToEvents = function() {
+            $location.path('/events');
+        };
 
         // Initialize
         activate();
