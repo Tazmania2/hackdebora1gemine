@@ -38,13 +38,11 @@ angular.module('app').controller('ProfileController', function($scope, $http, $l
         vm.loading = true;
         vm.error = null;
         vm.success = null;
-        // Convert birthdate to yyyy-MM-dd string if it's a Date object
         var originalBirthdate = vm.editedProfile.extra.birthdate;
         if (vm.editedProfile.extra.birthdate instanceof Date) {
             var d = vm.editedProfile.extra.birthdate;
             vm.editedProfile.extra.birthdate = d.toISOString().substring(0, 10);
         }
-        // Build playerData with all required fields
         var playerData = {
             _id: vm.editedProfile._id,
             name: vm.editedProfile.name,
@@ -53,14 +51,14 @@ angular.module('app').controller('ProfileController', function($scope, $http, $l
         };
         PlayerService.recreatePlayer(playerData).then(function(response) {
             vm.success = 'Perfil atualizado com sucesso!';
-            // Restore birthdate as Date object for the input
             if (originalBirthdate) {
                 vm.editedProfile.extra.birthdate = new Date(originalBirthdate);
             }
+            $scope.$root.$emit('profile-updated');
+            $location.path('/dashboard');
         }).catch(function(error) {
             console.error('Error updating profile:', error);
             vm.error = 'Erro ao atualizar perfil. Por favor, tente novamente.';
-            // Restore birthdate as Date object for the input
             if (originalBirthdate) {
                 vm.editedProfile.extra.birthdate = new Date(originalBirthdate);
             }
@@ -78,7 +76,6 @@ angular.module('app').controller('ProfileController', function($scope, $http, $l
         vm.loading = true;
         vm.error = null;
         vm.success = null;
-        // Prepare form data
         var formData = new FormData();
         formData.append('file', vm.newImageFile);
         formData.append('extra', JSON.stringify({
@@ -90,14 +87,13 @@ angular.module('app').controller('ProfileController', function($scope, $http, $l
             url: FUNIFIER_API_CONFIG.baseUrl + '/upload/image',
             headers: {
                 'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
-                'Content-Type': undefined // Let browser set multipart/form-data
+                'Content-Type': undefined
             },
             data: formData,
             transformRequest: angular.identity
         }).then(function(response) {
             if (response.data && response.data.uploads && response.data.uploads[0] && response.data.uploads[0].url) {
                 var imageUrl = response.data.uploads[0].url;
-                // Use the dedicated player image update endpoint
                 return $http({
                     method: 'POST',
                     url: FUNIFIER_API_CONFIG.baseUrl + '/player/' + vm.editedProfile._id + '/image',
@@ -112,9 +108,10 @@ angular.module('app').controller('ProfileController', function($scope, $http, $l
             }
         }).then(function(response) {
             vm.success = 'Imagem de perfil atualizada com sucesso!';
-            // Reload profile to get updated data
             loadProfile();
             vm.newImageFile = null;
+            $scope.$root.$emit('profile-updated');
+            $location.path('/dashboard');
         }).catch(function(error) {
             console.error('Erro ao atualizar imagem de perfil:', error);
             vm.error = 'Erro ao atualizar imagem de perfil. Por favor, tente novamente.';

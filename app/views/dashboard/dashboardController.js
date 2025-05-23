@@ -265,5 +265,10 @@
         }
 
         $scope.status = $scope.status || { open1: true, open2: false, open3: false };
+
+        // Listen for profile update events to refresh player status
+        $scope.$on('profile-updated', function() {
+            activate();
+        });
     }
 })(); 
