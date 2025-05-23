@@ -301,7 +301,8 @@
         }
 
         // --- Dashboard Buttons (Funifier sync) ---
-        var FUNIFIER_API = 'https://service2.funifier.com/v3/collection/dashboard_buttons__c';
+        var FUNIFIER_API = 'https://service2.funifier.com/v3/database/dashboard_buttons__c';
+        var CONFIG_ID = 'dashboard_buttons';
         var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
         var defaultDashboardButtons = [
             { id: 'default-events', label: 'Próximos eventos', icon: 'bi-calendar-event', route: '/events', visible: true, isDefault: true, click: vm.goToEvents },
@@ -312,9 +313,9 @@
             { id: 'default-quiz', label: 'Quiz - Teste seu conhecimento!', icon: 'bi-chat-dots', route: '/quiz', visible: true, isDefault: true, click: vm.goToQuiz }
         ];
         function loadDashboardButtons() {
-            $http.get(FUNIFIER_API, { headers: { Authorization: basicAuth } })
+            $http.get(FUNIFIER_API + "?strict=true&q=_id:'" + CONFIG_ID + "'", { headers: { Authorization: basicAuth } })
                 .then(function(resp) {
-                    var data = (resp.data && resp.data.value) ? resp.data.value : [];
+                    var data = (resp.data && resp.data[0] && resp.data[0].value) ? resp.data[0].value : [];
                     // Merge defaults: use override if present, else visible: true
                     var all = defaultDashboardButtons.map(function(def) {
                         var found = data.find(function(btn) { return btn.id === def.id; });

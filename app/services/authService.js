@@ -89,6 +89,9 @@ angular.module('app')
         localStorage.removeItem('token');
         localStorage.removeItem('currentPlayer');
         currentPlayer = null;
+        if (window.sessionStorage) sessionStorage.clear();
+        // Force reload to ensure all state is cleared and user is redirected
+        window.location.href = '/#!/login';
     };
 
     return service;
