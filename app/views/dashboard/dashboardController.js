@@ -23,6 +23,7 @@
         vm.purchaseHistoryDisplay = [];
         vm.qrReady = false;
         vm.qrImgUrl = '';
+        vm.accordionOpen = 1;
 
         // Methods
         vm.goToProfile = goToProfile;
@@ -50,6 +51,9 @@
         vm.logout = function() {
             AuthService.logout();
             $location.path('/login');
+        };
+        vm.toggleAccordion = function(idx) {
+            vm.accordionOpen = (vm.accordionOpen === idx) ? -1 : idx;
         };
 
         // Initialize
