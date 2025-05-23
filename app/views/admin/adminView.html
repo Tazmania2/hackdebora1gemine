@@ -148,7 +148,7 @@
     </div>
     <div class="admin-section">
       <div class="admin-label">Botões do Dashboard</div>
-      <div ng-repeat="btn in vm.dashboardButtons track by btn.route + (btn.isDefault ? '-default' : '-custom')">
+      <div ng-repeat="btn in vm.dashboardButtons track by btn.id">
         <div ng-if="btn.isDefault">
           <input class="admin-input" ng-model="btn.label" placeholder="Nome do botão" readonly>
           <input class="admin-input" ng-model="btn.icon" placeholder="Ícone (Bootstrap)" readonly>

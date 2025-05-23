@@ -120,24 +120,31 @@
     }
     // --- Dashboard Buttons ---
     var defaultDashboardButtons = [
-      { label: 'Próximos eventos', icon: 'bi-calendar-event', route: '/events', visible: true, isDefault: true },
-      { label: 'Fidelidade', icon: 'bi-puzzle', route: '/fidelidade', visible: true, isDefault: true },
-      { label: 'Registrar compra', icon: 'bi-receipt', route: '/register-purchase', visible: true, isDefault: true },
-      { label: 'Loja', icon: 'bi-shop', route: '/virtual-goods', visible: true, isDefault: true },
-      { label: 'Rede Social', icon: 'bi-hash', route: '/social', visible: true, isDefault: true },
-      { label: 'Quiz - Teste seu conhecimento!', icon: 'bi-chat-dots', route: '/quiz', visible: true, isDefault: true }
+      { id: 'default-events', label: 'Próximos eventos', icon: 'bi-calendar-event', route: '/events', visible: true, isDefault: true },
+      { id: 'default-fidelidade', label: 'Fidelidade', icon: 'bi-puzzle', route: '/fidelidade', visible: true, isDefault: true },
+      { id: 'default-register', label: 'Registrar compra', icon: 'bi-receipt', route: '/register-purchase', visible: true, isDefault: true },
+      { id: 'default-store', label: 'Loja', icon: 'bi-shop', route: '/virtual-goods', visible: true, isDefault: true },
+      { id: 'default-social', label: 'Rede Social', icon: 'bi-hash', route: '/social', visible: true, isDefault: true },
+      { id: 'default-quiz', label: 'Quiz - Teste seu conhecimento!', icon: 'bi-chat-dots', route: '/quiz', visible: true, isDefault: true }
     ];
     function mergeDashboardButtons() {
       var stored = JSON.parse(localStorage.getItem('admin_dashboardButtons') || '[]');
       var all = defaultDashboardButtons.map(function(def) {
-        var found = stored.find(function(btn) { return btn.route === def.route; });
-        return found ? Object.assign({}, def, found) : def;
+        var found = stored.find(function(btn) { return btn.route === def.route && btn.isDefault; });
+        if (found) {
+          found.id = def.id; // Always use the default id for default buttons
+          return Object.assign({}, def, found);
+        }
+        return def;
       });
       // Add custom buttons (not default)
       stored.forEach(function(btn) {
-        if (!btn.isDefault) all.push(btn);
+        if (!btn.isDefault) {
+          if (!btn.id) btn.id = 'custom-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now();
+          all.push(btn);
+        }
       });
-      return all; // Do not filter by visible in admin
+      return all;
     }
     vm.dashboardButtons = mergeDashboardButtons();
     function saveButton(btn) {
@@ -230,22 +237,17 @@
     }
     function addButtonFromFields() {
       if (!vm.newButtonLabel || !vm.newButtonIcon || !vm.newButtonRoute) return;
-      vm.dashboardButtons.push({
+      var newBtn = {
+        id: 'custom-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now(),
         label: vm.newButtonLabel,
         icon: vm.newButtonIcon,
         route: vm.newButtonRoute,
         visible: true,
         isDefault: false
-      });
-      // Save to localStorage
+      };
+      vm.dashboardButtons.push(newBtn);
       var stored = JSON.parse(localStorage.getItem('admin_dashboardButtons') || '[]');
-      stored.push({
-        label: vm.newButtonLabel,
-        icon: vm.newButtonIcon,
-        route: vm.newButtonRoute,
-        visible: true,
-        isDefault: false
-      });
+      stored.push(newBtn);
       localStorage.setItem('admin_dashboardButtons', JSON.stringify(stored));
       vm.newButtonLabel = '';
       vm.newButtonIcon = '';
