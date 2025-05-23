@@ -6,7 +6,11 @@ angular.module('app')
         var Auth  = $injector.get('AuthService');
         var token = Auth.getToken();
         config.headers = config.headers || {};
-        if (token && !config.headers.Authorization) {
+        if (
+          token &&
+          !config.headers.Authorization &&
+          config.url.indexOf('https://www.googleapis.com/') !== 0
+        ) {
           config.headers.Authorization = 'Bearer ' + token;
         }
         return config;
