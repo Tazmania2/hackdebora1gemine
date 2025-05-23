@@ -57,7 +57,7 @@
                 templateUrl: 'app/views/terms/termsView.html'
             })
             .when('/events', {
-                templateUrl: 'views/events/eventsView.html',
+                templateUrl: 'app/views/events/eventsView.html',
                 controller: 'EventsController',
                 controllerAs: 'vm',
                 resolve: {
