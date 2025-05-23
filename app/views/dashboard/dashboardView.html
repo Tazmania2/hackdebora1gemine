@@ -331,7 +331,7 @@
         </div>
       </div>
       <!-- Completed Challenges Accordion -->
-      <div uib-accordion-group heading="Desafios Concluídos" is-open="true" class="saldo-card" style="margin-bottom: 12px;">
+      <div uib-accordion-group heading="Desafios Concluídos" is-open="status.open2" class="saldo-card" style="margin-bottom: 12px;">
         <div class="dashboard-card-title">Desafios Concluídos</div>
         <ul style="list-style: none; padding: 0; margin: 0; color: #fff;">
           <li class="dashboard-card" ng-repeat="challenge in vm.completedChallengesDisplay | limitTo:5" ng-click="vm.goToChallenge(challenge)">

@@ -260,6 +260,6 @@
                 });
         }
 
-        $scope.status = $scope.status || { open1: false, open3: false };
+        $scope.status = $scope.status || { open1: true, open2: false, open3: false };
     }
 })(); 
