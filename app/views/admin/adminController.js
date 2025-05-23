@@ -25,7 +25,7 @@
     vm.resetToDefault = resetToDefault;
     vm.saveLogo = saveLogo;
     vm.deleteButton = deleteButton;
-    vm.addButton = addButton;
+    vm.addButtonFromFields = addButtonFromFields;
     vm.saveSuccessMessage = saveSuccessMessage;
     vm.refreshStats = refreshStats;
     vm.saveChallenge = saveChallenge;
