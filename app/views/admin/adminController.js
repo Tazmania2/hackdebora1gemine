@@ -384,8 +384,26 @@
             vm.statModalLoading = false;
             $scope.$applyAsync();
           });
+      } else if (statKey === 'activePlayers') {
+        vm.statModalTitle = 'Jogadores ativos';
+        $http.get('https://service2.funifier.com/v3/player/active', { headers: { Authorization: 'Basic ' + basicAuth } })
+          .then(function(resp) {
+            var players = resp.data || [];
+            vm.statModalData = players;
+            // Collect all unique keys for table columns (excluding system fields)
+            var attrKeys = new Set();
+            players.forEach(function(player) {
+              Object.keys(player).forEach(function(k) {
+                if (!["_id","__v","password","salt"].includes(k)) attrKeys.add(k);
+              });
+            });
+            vm.statModalAttrKeys = Array.from(attrKeys);
+          })
+          .finally(function() {
+            vm.statModalLoading = false;
+            $scope.$applyAsync();
+          });
       }
-      // Add more statKey cases for other stats as needed
     };
     vm.closeStatModal = function() {
       vm.statModalOpen = false;
@@ -419,8 +437,29 @@
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+      } else if (vm.statModalKey === 'activePlayers') {
+        // Build CSV from active players
+        var rows = [];
+        var headers = vm.statModalAttrKeys;
+        rows.push(headers.join(','));
+        vm.statModalData.forEach(function(player) {
+          var row = headers.map(function(attr) {
+            var val = player[attr];
+            return '"' + (val !== null && val !== undefined ? val : '') + '"';
+          });
+          rows.push(row.join(','));
+        });
+        var csvContent = rows.join('\r\n');
+        var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        var link = document.createElement('a');
+        var url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'jogadores_ativos.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       }
-      // Add more statKey cases for other stats as needed
     };
   }
 })(); 

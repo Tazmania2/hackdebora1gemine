@@ -212,7 +212,7 @@
     <div class="admin-section">
       <div class="admin-label">Estatísticas</div>
       <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('purchases')">Compras registradas: <b>{{vm.stats.purchases}}</b></a></div>
-      <div>Jogadores ativos: <b>{{vm.stats.activePlayers}}</b></div>
+      <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('activePlayers')">Jogadores ativos: <b>{{vm.stats.activePlayers}}</b></a></div>
       <div>Cashback distribuído: <b>{{vm.stats.cashbackDistributed}}</b></div>
       <div>Cashback perdido: <b>{{vm.stats.cashbackLost}}</b></div>
       <div>Cashback usado: <b>{{vm.stats.cashbackUsed}}</b></div>
@@ -230,16 +230,12 @@
           <table ng-if="vm.statModalData.length > 0" style="width:100%;margin-bottom:18px;">
             <thead>
               <tr>
-                <th>Jogador</th>
-                <th>Data</th>
                 <th ng-repeat="attr in vm.statModalAttrKeys">{{attr}}</th>
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="log in vm.statModalData">
-                <td>{{log.userId}}</td>
-                <td>{{log.time | date:'dd/MM/yyyy HH:mm'}}</td>
-                <td ng-repeat="attr in vm.statModalAttrKeys">{{log.attributes[attr]}}</td>
+              <tr ng-repeat="row in vm.statModalData">
+                <td ng-repeat="attr in vm.statModalAttrKeys">{{row[attr]}}</td>
               </tr>
             </tbody>
           </table>
