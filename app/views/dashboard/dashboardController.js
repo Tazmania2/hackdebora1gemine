@@ -44,6 +44,9 @@
         vm.goToFidelidade = function() {
             $location.path('/register-purchase');
         };
+        vm.goToQuiz = function() {
+            $location.path('/quiz');
+        };
 
         // Initialize
         activate();

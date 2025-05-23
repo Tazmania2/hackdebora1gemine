@@ -106,6 +106,16 @@
                     }]
                 }
             })
+            .when('/quiz/:quizId', {
+                templateUrl: 'views/quiz/quizView.html',
+                controller: 'QuizController',
+                controllerAs: 'vm',
+                resolve: {
+                    auth: ['AuthService', function(AuthService) {
+                        return AuthService.isAuthenticated();
+                    }]
+                }
+            })
             .when('/register-purchase', {
                 templateUrl: 'app/views/purchase/registerPurchaseView.html',
                 controller: 'RegisterPurchaseController',
