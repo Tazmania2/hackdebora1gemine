@@ -235,7 +235,7 @@ body, html {
                 Eu li e aceitos os <a href="#!/terms" style="color: #fff; text-decoration: underline;">termos de uso</a>
             </label>
         </div>
-        <button type="submit" class="register-btn" ng-disabled="vm.loading || !vm.user.acceptTerms">
+        <button type="submit" class="register-btn" ng-disabled="vm.loading">
             <span ng-if="!vm.loading">CADASTRAR</span>
             <span ng-if="vm.loading" class="loading-spinner-small"></span>
         </button>
