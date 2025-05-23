@@ -118,7 +118,7 @@
     }
     // --- Dashboard Buttons (Funifier sync) ---
     var FUNIFIER_COLLECTION = 'dashboard_buttons__c';
-    var FUNIFIER_API = 'https://service2.funifier.com/v3/collection/' + FUNIFIER_COLLECTION;
+    var FUNIFIER_API = 'https://service2.funifier.com/v3/database/' + FUNIFIER_COLLECTION;
     var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
     vm.loadingButtons = true;
     vm.dashboardButtons = [];
