@@ -224,10 +224,50 @@
       var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
       // Compras registradas: count action logs with actionId 'comprar'
       $http.get('https://service2.funifier.com/v3/action/log?actionId=comprar', { headers: { Authorization: 'Basic ' + basicAuth } })
-        .then(function(resp) { vm.stats.purchases = resp.data.length || 0; });
-      // Active players
-      $http.get('https://service2.funifier.com/v3/player/active', { headers: { Authorization: 'Basic ' + basicAuth } })
-        .then(function(resp) { vm.stats.activePlayers = resp.data.length || 0; });
+        .then(function(resp) { vm.stats.purchases = (resp.data || []).filter(function(log) { return log.actionId === 'comprar'; }).length; });
+      // Active players: use /v3/player/status and 90-day rule
+      $http.get('https://service2.funifier.com/v3/player/status', { headers: { Authorization: 'Basic ' + basicAuth } })
+        .then(function(resp) {
+          var players = resp.data || [];
+          var now = Date.now();
+          var ninetyDays = 90 * 24 * 60 * 60 * 1000;
+          var activeCount = 0;
+          var checked = 0;
+          if (players.length === 0) {
+            vm.stats.activePlayers = 0;
+            $scope.$applyAsync && $scope.$applyAsync();
+            return;
+          }
+          players.forEach(function(player) {
+            var created = player.created || player.createdAt || player.creation || player.created_date;
+            var createdTime = created ? new Date(created).getTime() : 0;
+            if (now - createdTime < ninetyDays) {
+              activeCount++;
+              checked++;
+              if (checked === players.length) {
+                vm.stats.activePlayers = activeCount;
+                $scope.$applyAsync && $scope.$applyAsync();
+              }
+            } else {
+              // Check action logs for this player
+              $http.get('https://service2.funifier.com/v3/action/log?playerId=' + encodeURIComponent(player.playerId || player._id), { headers: { Authorization: 'Basic ' + basicAuth } })
+                .then(function(logResp) {
+                  var logs = logResp.data || [];
+                  var hasRecent = logs.some(function(log) {
+                    return log.time && (now - new Date(log.time).getTime() < ninetyDays);
+                  });
+                  if (hasRecent) activeCount++;
+                })
+                .finally(function() {
+                  checked++;
+                  if (checked === players.length) {
+                    vm.stats.activePlayers = activeCount;
+                    $scope.$applyAsync && $scope.$applyAsync();
+                  }
+                });
+            }
+          });
+        });
       // Cashback distributed/used/lost, points gained/used (placeholders, need real endpoints)
       // ...
     }
@@ -386,22 +426,59 @@
           });
       } else if (statKey === 'activePlayers') {
         vm.statModalTitle = 'Jogadores ativos';
-        $http.get('https://service2.funifier.com/v3/player/active', { headers: { Authorization: 'Basic ' + basicAuth } })
+        $http.get('https://service2.funifier.com/v3/player/status', { headers: { Authorization: 'Basic ' + basicAuth } })
           .then(function(resp) {
             var players = resp.data || [];
-            vm.statModalData = players;
-            // Collect all unique keys for table columns (excluding system fields)
-            var attrKeys = new Set();
+            var now = Date.now();
+            var ninetyDays = 90 * 24 * 60 * 60 * 1000;
+            var activePlayers = [];
+            var checked = 0;
+            if (players.length === 0) {
+              vm.statModalData = [];
+              vm.statModalAttrKeys = [];
+              vm.statModalLoading = false;
+              $scope.$applyAsync();
+              return;
+            }
             players.forEach(function(player) {
-              Object.keys(player).forEach(function(k) {
-                if (!["_id","__v","password","salt"].includes(k)) attrKeys.add(k);
-              });
+              var created = player.created || player.createdAt || player.creation || player.created_date;
+              var createdTime = created ? new Date(created).getTime() : 0;
+              if (now - createdTime < ninetyDays) {
+                activePlayers.push(player);
+                checked++;
+                if (checked === players.length) {
+                  finishActivePlayers();
+                }
+              } else {
+                $http.get('https://service2.funifier.com/v3/action/log?playerId=' + encodeURIComponent(player.playerId || player._id), { headers: { Authorization: 'Basic ' + basicAuth } })
+                  .then(function(logResp) {
+                    var logs = logResp.data || [];
+                    var hasRecent = logs.some(function(log) {
+                      return log.time && (now - new Date(log.time).getTime() < ninetyDays);
+                    });
+                    if (hasRecent) activePlayers.push(player);
+                  })
+                  .finally(function() {
+                    checked++;
+                    if (checked === players.length) {
+                      finishActivePlayers();
+                    }
+                  });
+              }
             });
-            vm.statModalAttrKeys = Array.from(attrKeys);
-          })
-          .finally(function() {
-            vm.statModalLoading = false;
-            $scope.$applyAsync();
+            function finishActivePlayers() {
+              vm.statModalData = activePlayers;
+              // Collect all unique keys for table columns (excluding system fields)
+              var attrKeys = new Set();
+              activePlayers.forEach(function(player) {
+                Object.keys(player).forEach(function(k) {
+                  if (!["_id","__v","password","salt"].includes(k)) attrKeys.add(k);
+                });
+              });
+              vm.statModalAttrKeys = Array.from(attrKeys);
+              vm.statModalLoading = false;
+              $scope.$applyAsync();
+            }
           });
       }
     };
