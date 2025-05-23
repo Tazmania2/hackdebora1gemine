@@ -10,7 +10,9 @@
     var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
     return {
       getConfig: getConfig,
-      applyConfig: applyConfig
+      applyConfig: applyConfig,
+      saveConfig: saveConfig,
+      getDefaultConfig: getDefaultConfig
     };
     function getConfig() {
       if (configCache) return $q.resolve(configCache);
@@ -50,6 +52,35 @@
         // Set logo globally if you have a global logo element, or expose via service
         // Example: document.getElementById('main-logo').src = cfg.logo;
       }
+    }
+    function saveConfig(cfg) {
+      // Always use _id: 'global' for the main config
+      cfg._id = configId;
+      return $http({
+        method: 'PUT',
+        url: 'https://service2.funifier.com/v3/database/' + collection,
+        headers: {
+          'Authorization': basicAuth,
+          'Content-Type': 'application/json'
+        },
+        data: cfg
+      }).then(function(resp) {
+        configCache = cfg;
+        return resp;
+      });
+    }
+    function getDefaultConfig() {
+      return {
+        _id: 'global',
+        background_color: '#181818',
+        viewport_bg: '#232323',
+        header_bg: '#E6007A',
+        primary_color: '#E6007A',
+        secondary_color: '#FF4F9D',
+        font_color: '#FFFFFF',
+        font: 'Roboto, sans-serif',
+        logo: ''
+      };
     }
   }
 })(); 
