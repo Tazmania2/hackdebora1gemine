@@ -101,4 +101,8 @@ angular.module('app').controller('QuizController', function($scope, $location, $
             vm.loading = false;
         });
     }
+
+    vm.goBack = function() {
+        $location.path('/dashboard');
+    };
 }); 
