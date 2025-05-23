@@ -1,13 +1,15 @@
 (function() {
   'use strict';
   angular.module('app').controller('AdminController', AdminController);
-  AdminController.$inject = ['$scope', '$http', '$window'];
-  function AdminController($scope, $http, $window) {
+  AdminController.$inject = ['$scope', '$http', '$window', 'ThemeConfigService'];
+  function AdminController($scope, $http, $window, ThemeConfigService) {
     var vm = this;
     vm.loggedIn = false;
     vm.user = '';
     vm.pass = '';
     vm.error = '';
+    vm.themeConfig = {};
+    vm.loadingTheme = true;
     vm.themeColor = localStorage.getItem('admin_themeColor') || '#ff2e93';
     vm.secondaryColor = localStorage.getItem('admin_secondaryColor') || '#6a0033';
     vm.logoUrl = localStorage.getItem('admin_logoUrl') || '';
@@ -20,6 +22,7 @@
     vm.actionType = '';
     vm.login = login;
     vm.saveColors = saveColors;
+    vm.resetToDefault = resetToDefault;
     vm.saveLogo = saveLogo;
     vm.saveButton = saveButton;
     vm.deleteButton = deleteButton;
@@ -40,9 +43,18 @@
     }
     // --- Theme Colors ---
     function saveColors() {
-      localStorage.setItem('admin_themeColor', vm.themeColor);
-      localStorage.setItem('admin_secondaryColor', vm.secondaryColor);
-      alert('Cores salvas!');
+      vm.loadingTheme = true;
+      ThemeConfigService.saveConfig(vm.themeConfig).then(function() {
+        ThemeConfigService.applyConfig(vm.themeConfig);
+        vm.loadingTheme = false;
+        alert('Cores salvas!');
+        $scope.$applyAsync();
+      });
+    }
+    function resetToDefault() {
+      var def = ThemeConfigService.getDefaultConfig();
+      vm.themeConfig = angular.copy(def);
+      saveColors();
     }
     // --- Logo ---
     function saveLogo() {
@@ -108,5 +120,11 @@
       $http.post('https://service2.funifier.com/v3/activities', { action: vm.actionType, player: vm.actionPlayerId }, { headers: { Authorization: basicAuth } })
         .then(function() { alert('Log criado!'); });
     }
+    // Load theme config from Funifier on controller init
+    ThemeConfigService.getConfig().then(function(cfg) {
+      vm.themeConfig = angular.copy(cfg);
+      vm.loadingTheme = false;
+      $scope.$applyAsync();
+    });
   }
 })(); 

@@ -113,9 +113,22 @@
   <div ng-if="vm.loggedIn">
     <div class="admin-section">
       <div class="admin-label">Cores do Tema</div>
-      <input class="admin-input" ng-model="vm.themeColor" placeholder="Cor primária (hex ou nome)">
-      <input class="admin-input" ng-model="vm.secondaryColor" placeholder="Cor secundária (hex ou nome)">
-      <button class="admin-btn" ng-click="vm.saveColors()">Salvar Cores</button>
+      <label>Cor de fundo do site (body): <input type="color" ng-model="vm.themeConfig.background_color"></label>
+      <span class="admin-label" style="font-size:0.95em;color:#aaa;">Fundo atrás do painel</span>
+      <label>Cor de fundo do painel (viewport): <input type="color" ng-model="vm.themeConfig.viewport_bg"></label>
+      <span class="admin-label" style="font-size:0.95em;color:#aaa;">Fundo do painel principal</span>
+      <label>Cor do cabeçalho (header): <input type="color" ng-model="vm.themeConfig.header_bg"></label>
+      <span class="admin-label" style="font-size:0.95em;color:#aaa;">Barra superior de cada tela</span>
+      <label>Cor principal (botões, destaques): <input type="color" ng-model="vm.themeConfig.primary_color"></label>
+      <span class="admin-label" style="font-size:0.95em;color:#aaa;">Botões, destaques, ícones</span>
+      <label>Cor secundária: <input type="color" ng-model="vm.themeConfig.secondary_color"></label>
+      <span class="admin-label" style="font-size:0.95em;color:#aaa;">Destaques secundários</span>
+      <label>Cor do texto principal: <input type="color" ng-model="vm.themeConfig.font_color"></label>
+      <span class="admin-label" style="font-size:0.95em;color:#aaa;">Cor do texto principal</span>
+      <label>Fonte: <input type="text" ng-model="vm.themeConfig.font" placeholder="Ex: 'Roboto', Arial, sans-serif"></label>
+      <span class="admin-label" style="font-size:0.95em;color:#aaa;">Fonte usada em todo o app</span>
+      <button class="admin-btn" ng-click="vm.saveColors()" ng-disabled="vm.loadingTheme">Salvar Cores</button>
+      <button class="admin-btn" ng-click="vm.resetToDefault()" ng-disabled="vm.loadingTheme" style="background:#888;margin-left:8px;">Restaurar padrão</button>
     </div>
     <div class="admin-section">
       <div class="admin-label">Logo</div>
