@@ -137,12 +137,15 @@
       $http.get(FUNIFIER_API, { headers: { Authorization: basicAuth } })
         .then(function(resp) {
           var data = (resp.data && resp.data.value) ? resp.data.value : [];
-          // Merge defaults (always present, can only be deactivated)
+          // Merge defaults: use override if present, else visible: true
           var all = defaultDashboardButtons.map(function(def) {
             var found = data.find(function(btn) { return btn.id === def.id; });
-            return found ? Object.assign({}, def, found) : def;
+            if (found && typeof found.visible !== 'undefined') {
+              return Object.assign({}, def, { visible: found.visible });
+            }
+            return def;
           });
-          // Add custom buttons (not default)
+          // Add all custom buttons (not default)
           data.forEach(function(btn) {
             if (!btn.isDefault) all.push(btn);
           });
