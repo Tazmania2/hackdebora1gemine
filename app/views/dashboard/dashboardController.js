@@ -5,9 +5,9 @@
         .module('app')
         .controller('DashboardController', DashboardController);
 
-    DashboardController.$inject = ['$scope', '$location', 'AuthService', 'PlayerService', 'EventService', 'ActivityService', '$http', 'FUNIFIER_API_CONFIG', '$timeout', '$rootScope'];
+    DashboardController.$inject = ['$scope', '$location', 'AuthService', 'PlayerService', 'EventService', 'ActivityService', '$http', 'FUNIFIER_API_CONFIG', '$timeout', '$rootScope', 'SuccessMessageService'];
 
-    function DashboardController($scope, $location, AuthService, PlayerService, EventService, ActivityService, $http, FUNIFIER_API_CONFIG, $timeout, $rootScope) {
+    function DashboardController($scope, $location, AuthService, PlayerService, EventService, ActivityService, $http, FUNIFIER_API_CONFIG, $timeout, $rootScope, SuccessMessageService) {
         var vm = this;
 
         // Properties
@@ -25,6 +25,7 @@
         vm.qrImgUrl = '';
         vm.accordionOpen = 1;
         vm.successMessage = null;
+        vm.dailyLoginMessage = '';
 
         // Methods
         vm.goToProfile = goToProfile;
@@ -300,9 +301,12 @@
                 });
                 if (!found) {
                     ActivityService.logAction('logar').then(function() {
-                        $scope.dailyLoginPopup = true;
-                        $timeout(function() { $scope.dailyLoginPopup = false; }, 3500);
-                        $scope.$applyAsync();
+                        SuccessMessageService.fetchAll().then(function() {
+                            vm.dailyLoginMessage = SuccessMessageService.get('login_success') || 'Login diário concluído!';
+                            $scope.dailyLoginPopup = true;
+                            $timeout(function() { $scope.dailyLoginPopup = false; }, 3500);
+                            $scope.$applyAsync();
+                        });
                     });
                 }
             });
