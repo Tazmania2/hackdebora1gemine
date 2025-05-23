@@ -12,7 +12,8 @@
         var service = {
             getRecent: getRecent,
             getByType: getByType,
-            getByDateRange: getByDateRange
+            getByDateRange: getByDateRange,
+            logAction: logAction
         };
 
         return service;
@@ -32,6 +33,10 @@
                     endDate: endDate
                 }
             });
+        }
+
+        function logAction(action) {
+            return $http.post(baseUrl + '/activities', { action: action });
         }
     }
 })(); 

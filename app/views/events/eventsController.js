@@ -7,13 +7,14 @@ angular.module('app').controller('EventsController', function($scope, GoogleCale
     $scope.events = (response.data.items || []).map(function(event) {
       // Try to extract an image URL from the description
       var imgMatch = event.description && event.description.match(/https?:\/\/[^\s]+\.(jpg|jpeg|png|gif)/i);
+      var hasTime = event.start && event.start.dateTime;
       return {
         title: event.summary,
-        date: event.start && event.start.dateTime ? event.start.dateTime : event.start.date,
+        date: hasTime ? event.start.dateTime : event.start.date,
         location: event.location,
         description: event.description,
         image: imgMatch ? imgMatch[0] : 'https://via.placeholder.com/120x120?text=Evento',
-        time: event.start && event.start.dateTime ? new Date(event.start.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
+        time: hasTime ? new Date(event.start.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'O dia inteiro',
         points: extractPoints(event.description)
       };
     });

@@ -73,6 +73,7 @@
             ]).then(function() {
                 buildCompletedChallengesDisplay();
                 buildPurchaseHistoryDisplay();
+                checkAndLogLoginAction();
             });
             loadActivities();
             loadEvents();
@@ -276,5 +277,26 @@
         $scope.$on('profile-updated', function() {
             activate();
         });
+
+        // Log 'logar' action if not already logged today
+        function checkAndLogLoginAction() {
+            ActivityService.getByType('logar').then(function(response) {
+                var logs = response.data || [];
+                var today = new Date();
+                var found = logs.some(function(log) {
+                    var logDate = new Date(log.createdAt || log.date || log.timestamp);
+                    return logDate.getFullYear() === today.getFullYear() &&
+                        logDate.getMonth() === today.getMonth() &&
+                        logDate.getDate() === today.getDate();
+                });
+                if (!found) {
+                    ActivityService.logAction('logar').then(function() {
+                        $scope.dailyLoginPopup = true;
+                        $timeout(function() { $scope.dailyLoginPopup = false; }, 3500);
+                        $scope.$applyAsync();
+                    });
+                }
+            });
+        }
     }
 })(); 

@@ -1,0 +1,170 @@
+<!-- Admin Panel View -->
+<style>
+.admin-viewport {
+  background: #181828;
+  min-height: 100vh;
+  min-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+  height: auto;
+  padding-bottom: 32px;
+  border-radius: 32px 32px 32px 32px;
+  max-width: 430px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.admin-header {
+  width: 100%;
+  padding: 24px 0 12px 0;
+  text-align: center;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: bold;
+  background: #6a0033;
+  border-radius: 0;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+}
+.admin-section {
+  background: #232323;
+  border-radius: 16px;
+  margin: 18px 0 0 0;
+  padding: 18px 18px 18px 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  width: 100%;
+  max-width: 370px;
+  color: #fff;
+}
+.admin-label {
+  font-weight: bold;
+  margin-bottom: 6px;
+  display: block;
+}
+.admin-input, .admin-textarea {
+  width: 100%;
+  background: #181818;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1.1rem;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  outline: none;
+}
+.admin-btn {
+  background: #ff2e93;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 24px;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.admin-btn:active, .admin-btn:focus {
+  background: #b8005a;
+}
+.admin-login-box {
+  background: #232323;
+  border-radius: 16px;
+  margin-top: 64px;
+  padding: 32px 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  width: 100%;
+  max-width: 340px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.admin-login-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 18px;
+}
+.admin-error {
+  color: #ff2e93;
+  font-size: 1.1em;
+  margin-bottom: 8px;
+  text-align: center;
+}
+</style>
+<div class="admin-viewport" ng-controller="AdminController as vm">
+  <div class="admin-header">Painel Administrativo</div>
+  <div ng-if="!vm.loggedIn" class="admin-login-box">
+    <div class="admin-login-title">Acesso Restrito</div>
+    <form ng-submit="vm.login()" autocomplete="off" style="width:100%">
+      <label class="admin-label" for="adminUser">Usuário</label>
+      <input class="admin-input" id="adminUser" ng-model="vm.user" placeholder="Usuário" required autocomplete="off">
+      <label class="admin-label" for="adminPass">Senha</label>
+      <input class="admin-input" id="adminPass" type="password" ng-model="vm.pass" placeholder="Senha" required autocomplete="off">
+      <div class="admin-error" ng-if="vm.error">{{vm.error}}</div>
+      <button class="admin-btn" type="submit">Entrar</button>
+    </form>
+  </div>
+  <div ng-if="vm.loggedIn">
+    <div class="admin-section">
+      <div class="admin-label">Cores do Tema</div>
+      <input class="admin-input" ng-model="vm.themeColor" placeholder="Cor primária (hex ou nome)">
+      <input class="admin-input" ng-model="vm.secondaryColor" placeholder="Cor secundária (hex ou nome)">
+      <button class="admin-btn" ng-click="vm.saveColors()">Salvar Cores</button>
+    </div>
+    <div class="admin-section">
+      <div class="admin-label">Logo</div>
+      <input class="admin-input" ng-model="vm.logoUrl" placeholder="URL da logo">
+      <input class="admin-input" type="file" file-model="vm.logoFile">
+      <button class="admin-btn" ng-click="vm.saveLogo()">Salvar Logo</button>
+    </div>
+    <div class="admin-section">
+      <div class="admin-label">Botões do Dashboard</div>
+      <div ng-repeat="btn in vm.dashboardButtons">
+        <input class="admin-input" ng-model="btn.label" placeholder="Nome do botão">
+        <input class="admin-input" ng-model="btn.icon" placeholder="Ícone (Bootstrap)">
+        <input class="admin-input" ng-model="btn.route" placeholder="Rota">
+        <label><input type="checkbox" ng-model="btn.visible"> Visível</label>
+        <button class="admin-btn" ng-click="vm.saveButton(btn)">Salvar</button>
+        <button class="admin-btn" ng-click="vm.deleteButton(btn)">Excluir</button>
+      </div>
+      <button class="admin-btn" ng-click="vm.addButton()">Adicionar Botão</button>
+    </div>
+    <div class="admin-section">
+      <div class="admin-label">Mensagens de Sucesso</div>
+      <textarea class="admin-textarea" ng-model="vm.successMessage" placeholder="Mensagem de sucesso personalizada"></textarea>
+      <button class="admin-btn" ng-click="vm.saveSuccessMessage()">Salvar Mensagem</button>
+    </div>
+    <div class="admin-section">
+      <div class="admin-label">Estatísticas</div>
+      <div>Compras registradas: <b>{{vm.stats.purchases}}</b></div>
+      <div>Jogadores ativos: <b>{{vm.stats.activePlayers}}</b></div>
+      <div>Cashback distribuído: <b>{{vm.stats.cashbackDistributed}}</b></div>
+      <div>Cashback perdido: <b>{{vm.stats.cashbackLost}}</b></div>
+      <div>Cashback usado: <b>{{vm.stats.cashbackUsed}}</b></div>
+      <div>Pontos ganhos: <b>{{vm.stats.pointsGained}}</b></div>
+      <div>Pontos usados: <b>{{vm.stats.pointsUsed}}</b></div>
+      <button class="admin-btn" ng-click="vm.refreshStats()">Atualizar Estatísticas</button>
+    </div>
+    <div class="admin-section">
+      <div class="admin-label">Desafios</div>
+      <div ng-repeat="challenge in vm.challenges">
+        <input class="admin-input" ng-model="challenge.name" placeholder="Nome do desafio">
+        <input class="admin-input" ng-model="challenge.points" placeholder="Pontos">
+        <button class="admin-btn" ng-click="vm.saveChallenge(challenge)">Salvar</button>
+      </div>
+      <button class="admin-btn" ng-click="vm.addChallenge()">Adicionar Desafio</button>
+    </div>
+    <div class="admin-section">
+      <div class="admin-label">Criar Log de Ação para Jogador</div>
+      <input class="admin-input" ng-model="vm.actionPlayerId" placeholder="ID do Jogador">
+      <input class="admin-input" ng-model="vm.actionType" placeholder="Ação">
+      <button class="admin-btn" ng-click="vm.createActionLog()">Criar Log</button>
+    </div>
+  </div>
+</div> 
