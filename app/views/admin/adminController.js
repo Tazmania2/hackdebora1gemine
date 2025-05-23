@@ -32,7 +32,6 @@
     vm.addChallenge = addChallenge;
     vm.createActionLog = createActionLog;
     vm.onLogoFileChange = onLogoFileChange;
-    vm.addButtonFromFields = addButtonFromFields;
     vm.saveAllButtons = saveAllButtons;
     vm.iconOptions = [
       'bi-calendar-event',
@@ -185,9 +184,8 @@
           $scope.$applyAsync();
         });
     }
-    vm.saveAllButtons = saveAllButtons;
     // Add custom button
-    vm.addButtonFromFields = function() {
+    function addButtonFromFields() {
       if (!vm.newButtonLabel || !vm.newButtonIcon || !vm.newButtonRoute) return;
       var newBtn = {
         id: 'custom-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now(),
@@ -202,7 +200,8 @@
       vm.newButtonIcon = '';
       vm.newButtonRoute = '';
       saveAllButtons();
-    };
+    }
+    vm.addButtonFromFields = addButtonFromFields;
     // Delete custom button
     function deleteButton(btn) {
       if (btn.isDefault) return;
