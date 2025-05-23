@@ -148,26 +148,25 @@
     </div>
     <div class="admin-section">
       <div class="admin-label">Botões do Dashboard</div>
-      <div ng-repeat="btn in vm.dashboardButtons">
+      <div ng-repeat="btn in vm.dashboardButtons track by btn.route + (btn.isDefault ? '-default' : '-custom')">
         <div ng-if="btn.isDefault">
           <input class="admin-input" ng-model="btn.label" placeholder="Nome do botão" readonly>
           <input class="admin-input" ng-model="btn.icon" placeholder="Ícone (Bootstrap)" readonly>
-          <input class="admin-input" ng-model="btn.route" placeholder="Rota" readonly>
+          <input class="admin-input" ng-model="btn.route" placeholder="Link" readonly>
           <label><input type="checkbox" ng-model="btn.visible"> Visível</label>
           <span style="color:#aaa;font-size:0.95em;margin-left:8px;">(Padrão, só pode ser desativado)</span>
         </div>
         <div ng-if="!btn.isDefault">
           <input class="admin-input" ng-model="btn.label" placeholder="Nome do botão">
-          <input class="admin-input" ng-model="btn.icon" placeholder="Ícone (Bootstrap)">
           <div style="margin-bottom:8px;">
-            <span style="color:#aaa;font-size:0.95em;">Escolha um ícone:</span>
-            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;">
-              <span ng-repeat="icon in vm.iconOptions" ng-click="btn.icon=icon" style="cursor:pointer;padding:6px 8px;border-radius:8px;background:#181818;display:inline-flex;align-items:center;gap:4px;border:1.5px solid #333;" ng-style="{'border-color': btn.icon===icon ? '#ff2e93' : '#333'}">
-                <i class="bi {{icon}}" style="font-size:1.3em;"></i> <span style="font-size:0.95em;">{{icon}}</span>
-              </span>
-            </div>
+            <span style="color:#aaa;font-size:0.95em;">Ícone:</span>
+            <button type="button" class="admin-input" style="display:flex;align-items:center;gap:8px;cursor:pointer;" ng-click="vm.openIconModal(btn)">
+              <i class="bi {{btn.icon}}" style="font-size:1.3em;"></i>
+              <span>{{btn.icon || 'Escolher ícone'}}</span>
+            </button>
           </div>
-          <input class="admin-input" ng-model="btn.route" placeholder="Rota">
+          <input class="admin-input" ng-model="btn.route" placeholder="Link (ex: https://meusite.com)">
+          <span style="color:#aaa;font-size:0.95em;">Links externos são esperados para este campo.</span>
           <label><input type="checkbox" ng-model="btn.visible"> Visível</label>
           <button class="admin-btn" ng-click="vm.deleteButton(btn)" style="background:#888;">Excluir</button>
         </div>
@@ -175,19 +174,30 @@
       <div style="margin-top:18px;padding:12px 0;border-top:1px solid #333;">
         <div class="admin-label" style="margin-bottom:8px;">Adicionar novo botão personalizado</div>
         <input class="admin-input" ng-model="vm.newButtonLabel" placeholder="Nome do botão" required>
-        <input class="admin-input" ng-model="vm.newButtonIcon" placeholder="Ícone (Bootstrap, ex: bi-star)" required>
         <div style="margin-bottom:8px;">
-          <span style="color:#aaa;font-size:0.95em;">Escolha um ícone:</span>
-          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;">
-            <span ng-repeat="icon in vm.iconOptions" ng-click="vm.newButtonIcon=icon" style="cursor:pointer;padding:6px 8px;border-radius:8px;background:#181818;display:inline-flex;align-items:center;gap:4px;border:1.5px solid #333;" ng-style="{'border-color': vm.newButtonIcon===icon ? '#ff2e93' : '#333'}">
-              <i class="bi {{icon}}" style="font-size:1.3em;"></i> <span style="font-size:0.95em;">{{icon}}</span>
-            </span>
-          </div>
+          <span style="color:#aaa;font-size:0.95em;">Ícone:</span>
+          <button type="button" class="admin-input" style="display:flex;align-items:center;gap:8px;cursor:pointer;" ng-click="vm.openIconModal('new')">
+            <i class="bi {{vm.newButtonIcon}}" style="font-size:1.3em;"></i>
+            <span>{{vm.newButtonIcon || 'Escolher ícone'}}</span>
+          </button>
         </div>
-        <input class="admin-input" ng-model="vm.newButtonRoute" placeholder="Rota (ex: /minha-rota)" required>
+        <input class="admin-input" ng-model="vm.newButtonRoute" placeholder="Link (ex: https://meusite.com)" required>
+        <span style="color:#aaa;font-size:0.95em;">Links externos são esperados para este campo.</span>
         <button class="admin-btn" ng-click="vm.addButtonFromFields()" ng-disabled="!vm.newButtonLabel || !vm.newButtonIcon || !vm.newButtonRoute">Adicionar Botão</button>
       </div>
       <button class="admin-btn" ng-click="vm.saveAllButtons()" style="margin-top:18px;">Salvar Botões</button>
+      <!-- Icon Modal -->
+      <div ng-if="vm.iconModalOpen" class="modal-backdrop" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
+        <div class="modal-content" style="background:#232323;padding:32px 24px;border-radius:16px;max-width:400px;max-height:80vh;overflow:auto;">
+          <div style="font-weight:bold;font-size:1.2em;margin-bottom:18px;color:#fff;">Escolha um ícone</div>
+          <div style="display:flex;flex-wrap:wrap;gap:14px;">
+            <span ng-repeat="icon in vm.iconOptions" ng-click="vm.selectIcon(icon)" style="cursor:pointer;padding:10px 12px;border-radius:8px;background:#181818;display:inline-flex;align-items:center;gap:6px;border:2px solid #333;" ng-style="{'border-color': (vm.iconModalTarget==='new'?vm.newButtonIcon:vm.iconModalTarget.icon)===icon ? '#ff2e93' : '#333'}">
+              <i class="bi {{icon}}" style="font-size:1.5em;"></i> <span style="font-size:1em;">{{icon}}</span>
+            </span>
+          </div>
+          <button class="admin-btn" style="margin-top:24px;" ng-click="vm.closeIconModal()">Fechar</button>
+        </div>
+      </div>
     </div>
     <div class="admin-section">
       <div class="admin-label">Mensagens de Sucesso</div>

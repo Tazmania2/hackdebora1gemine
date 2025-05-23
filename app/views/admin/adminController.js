@@ -53,6 +53,28 @@
       'bi-patch-check',
       'bi-check-circle-fill'
     ];
+    vm.iconModalOpen = false;
+    vm.iconModalTarget = null;
+    vm.openIconModal = function(target) {
+      vm.iconModalOpen = true;
+      if (target === 'new') {
+        vm.iconModalTarget = 'new';
+      } else {
+        vm.iconModalTarget = target;
+      }
+    };
+    vm.closeIconModal = function() {
+      vm.iconModalOpen = false;
+      vm.iconModalTarget = null;
+    };
+    vm.selectIcon = function(icon) {
+      if (vm.iconModalTarget === 'new') {
+        vm.newButtonIcon = icon;
+      } else if (vm.iconModalTarget) {
+        vm.iconModalTarget.icon = icon;
+      }
+      vm.closeIconModal();
+    };
     // --- Auth ---
     function login() {
       if(vm.user === 'admin' && vm.pass === 'P0rquinh@') {
@@ -107,7 +129,6 @@
     ];
     function mergeDashboardButtons() {
       var stored = JSON.parse(localStorage.getItem('admin_dashboardButtons') || '[]');
-      // Merge defaults with stored (custom) buttons
       var all = defaultDashboardButtons.map(function(def) {
         var found = stored.find(function(btn) { return btn.route === def.route; });
         return found ? Object.assign({}, def, found) : def;
@@ -116,7 +137,7 @@
       stored.forEach(function(btn) {
         if (!btn.isDefault) all.push(btn);
       });
-      return all;
+      return all; // Do not filter by visible in admin
     }
     vm.dashboardButtons = mergeDashboardButtons();
     function saveButton(btn) {
