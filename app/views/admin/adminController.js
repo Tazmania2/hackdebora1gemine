@@ -33,6 +33,7 @@
     vm.addChallenge = addChallenge;
     vm.createActionLog = createActionLog;
     vm.onLogoFileChange = onLogoFileChange;
+    vm.addButtonFromFields = addButtonFromFields;
     // --- Auth ---
     function login() {
       if(vm.user === 'admin' && vm.pass === 'P0rquinh@') {
@@ -77,18 +78,53 @@
       }
     }
     // --- Dashboard Buttons ---
+    var defaultDashboardButtons = [
+      { label: 'Próximos eventos', icon: 'bi-calendar-event', route: '/events', visible: true, isDefault: true },
+      { label: 'Fidelidade', icon: 'bi-puzzle', route: '/fidelidade', visible: true, isDefault: true },
+      { label: 'Registrar compra', icon: 'bi-receipt', route: '/register-purchase', visible: true, isDefault: true },
+      { label: 'Loja', icon: 'bi-shop', route: '/virtual-goods', visible: true, isDefault: true },
+      { label: 'Rede Social', icon: 'bi-hash', route: '/social', visible: true, isDefault: true },
+      { label: 'Quiz - Teste seu conhecimento!', icon: 'bi-chat-dots', route: '/quiz', visible: true, isDefault: true }
+    ];
+    function mergeDashboardButtons() {
+      var stored = JSON.parse(localStorage.getItem('admin_dashboardButtons') || '[]');
+      // Merge defaults with stored (custom) buttons
+      var all = defaultDashboardButtons.map(function(def) {
+        var found = stored.find(function(btn) { return btn.route === def.route; });
+        return found ? Object.assign({}, def, found) : def;
+      });
+      // Add custom buttons (not default)
+      stored.forEach(function(btn) {
+        if (!btn.isDefault) all.push(btn);
+      });
+      return all;
+    }
+    vm.dashboardButtons = mergeDashboardButtons();
     function saveButton(btn) {
-      var idx = vm.dashboardButtons.indexOf(btn);
-      if(idx === -1) vm.dashboardButtons.push(btn);
-      localStorage.setItem('admin_dashboardButtons', JSON.stringify(vm.dashboardButtons));
+      var stored = JSON.parse(localStorage.getItem('admin_dashboardButtons') || '[]');
+      if (btn.isDefault) {
+        // Only update visibility for default buttons
+        var idx = stored.findIndex(function(b) { return b.route === btn.route && b.isDefault; });
+        if (idx !== -1) stored[idx] = btn;
+        else stored.push(btn);
+      } else {
+        var idx = stored.indexOf(btn);
+        if(idx === -1) stored.push(btn);
+        else stored[idx] = btn;
+      }
+      localStorage.setItem('admin_dashboardButtons', JSON.stringify(stored));
       alert('Botão salvo!');
+      vm.dashboardButtons = mergeDashboardButtons();
     }
     function deleteButton(btn) {
-      vm.dashboardButtons = vm.dashboardButtons.filter(function(b) { return b !== btn; });
-      localStorage.setItem('admin_dashboardButtons', JSON.stringify(vm.dashboardButtons));
+      if (btn.isDefault) return; // Can't delete default
+      var stored = JSON.parse(localStorage.getItem('admin_dashboardButtons') || '[]');
+      stored = stored.filter(function(b) { return b !== btn; });
+      localStorage.setItem('admin_dashboardButtons', JSON.stringify(stored));
+      vm.dashboardButtons = mergeDashboardButtons();
     }
     function addButton() {
-      vm.dashboardButtons.push({ label: '', icon: '', route: '', visible: true });
+      vm.dashboardButtons.push({ label: '', icon: '', route: '', visible: true, isDefault: false });
     }
     // --- Success Message ---
     function saveSuccessMessage() {
@@ -152,9 +188,36 @@
         $scope.$applyAsync();
       });
     }
+    function addButtonFromFields() {
+      if (!vm.newButtonLabel || !vm.newButtonIcon || !vm.newButtonRoute) return;
+      vm.dashboardButtons.push({
+        label: vm.newButtonLabel,
+        icon: vm.newButtonIcon,
+        route: vm.newButtonRoute,
+        visible: true,
+        isDefault: false
+      });
+      // Save to localStorage
+      var stored = JSON.parse(localStorage.getItem('admin_dashboardButtons') || '[]');
+      stored.push({
+        label: vm.newButtonLabel,
+        icon: vm.newButtonIcon,
+        route: vm.newButtonRoute,
+        visible: true,
+        isDefault: false
+      });
+      localStorage.setItem('admin_dashboardButtons', JSON.stringify(stored));
+      vm.newButtonLabel = '';
+      vm.newButtonIcon = '';
+      vm.newButtonRoute = '';
+      vm.dashboardButtons = mergeDashboardButtons();
+    }
     // Load theme config from Funifier on controller init
     ThemeConfigService.getConfig().then(function(cfg) {
       vm.themeConfig = angular.copy(cfg);
+      if (typeof vm.themeConfig.showStudioLogo === 'undefined') {
+        vm.themeConfig.showStudioLogo = true;
+      }
       vm.loadingTheme = false;
       $scope.$applyAsync();
     });

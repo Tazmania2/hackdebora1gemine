@@ -154,9 +154,16 @@
         <input class="admin-input" ng-model="btn.route" placeholder="Rota">
         <label><input type="checkbox" ng-model="btn.visible"> Visível</label>
         <button class="admin-btn" ng-click="vm.saveButton(btn)">Salvar</button>
-        <button class="admin-btn" ng-click="vm.deleteButton(btn)">Excluir</button>
+        <button class="admin-btn" ng-if="!btn.isDefault" ng-click="vm.deleteButton(btn)" style="background:#888;">Excluir</button>
+        <span ng-if="btn.isDefault" style="color:#aaa;font-size:0.95em;margin-left:8px;">(Padrão, só pode ser desativado)</span>
       </div>
-      <button class="admin-btn" ng-click="vm.addButton()">Adicionar Botão</button>
+      <div style="margin-top:18px;padding:12px 0;border-top:1px solid #333;">
+        <div class="admin-label" style="margin-bottom:8px;">Adicionar novo botão personalizado</div>
+        <input class="admin-input" ng-model="vm.newButtonLabel" placeholder="Nome do botão" required>
+        <input class="admin-input" ng-model="vm.newButtonIcon" placeholder="Ícone (Bootstrap, ex: bi-star)" required>
+        <input class="admin-input" ng-model="vm.newButtonRoute" placeholder="Rota (ex: /minha-rota)" required>
+        <button class="admin-btn" ng-click="vm.addButtonFromFields()" ng-disabled="!vm.newButtonLabel || !vm.newButtonIcon || !vm.newButtonRoute">Adicionar Botão</button>
+      </div>
     </div>
     <div class="admin-section">
       <div class="admin-label">Mensagens de Sucesso</div>
