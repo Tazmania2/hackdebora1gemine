@@ -318,15 +318,39 @@
         $scope.$applyAsync && $scope.$applyAsync();
       });
     };
-    vm.saveSuccessMessage = function(key) {
-      var apiUrl = 'https://service2.funifier.com/v3/database/success_messages__c';
+    vm.saveAllSuccessMessages = function() {
+      var apiUrl = 'https://service2.funifier.com/v3/database/success_messages__c/bulk';
       var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
-      var payload = { _id: key, message: vm.editingSuccessMessages[key] };
-      $http.put(apiUrl, payload, { headers: { Authorization: basicAuth } })
+      var payload = Object.keys(vm.editingSuccessMessages).map(function(key) {
+        return { _id: key, message: vm.editingSuccessMessages[key] };
+      });
+      $http.post(apiUrl, payload, { headers: { Authorization: basicAuth } })
         .then(function() {
-          vm.successMessages[key] = vm.editingSuccessMessages[key];
-          alert(SuccessMessageService.get('message_saved') || 'Mensagem salva!');
+          vm.successMessages = angular.copy(vm.editingSuccessMessages);
+          alert(SuccessMessageService.get('message_saved') || 'Mensagens salvas!');
         });
+    };
+    vm.restoreSuccessMessagesToDefault = function() {
+      if (!confirm('Tem certeza que deseja restaurar todas as mensagens de sucesso para o padrão?')) return;
+      // Default messages (should match the initial Funifier setup)
+      var defaults = {
+        login_success: 'Login diário realizado com sucesso!',
+        purchase_success: 'Compra registrada com sucesso!',
+        exchange_success: 'Troca realizada com sucesso!',
+        register_success: 'Cadastro realizado com sucesso! Faça login para continuar.',
+        logo_saved: 'Logo salva!',
+        message_saved: 'Mensagem salva!',
+        challenge_saved: 'Desafio salvo!',
+        dashboard_buttons_saved: 'Botões salvos no Funifier!',
+        dashboard_buttons_reset: 'Botões do dashboard restaurados para o padrão!',
+        redemption_success: 'Resgate realizado com sucesso!',
+        points_cashback_updated: 'Pontos e cashback atualizados!',
+        profile_updated: 'Perfil atualizado com sucesso!',
+        quiz_success: 'Quiz respondido com sucesso!',
+        log_created: 'Log criado!'
+      };
+      vm.editingSuccessMessages = angular.copy(defaults);
+      vm.saveAllSuccessMessages();
     };
     // Load on init
     vm.loadSuccessMessages();

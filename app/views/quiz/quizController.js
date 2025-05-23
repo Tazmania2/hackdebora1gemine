@@ -1,4 +1,4 @@
-angular.module('app').controller('QuizController', function($scope, $location, $routeParams, QuizService, PlayerService) {
+angular.module('app').controller('QuizController', function($scope, $location, $routeParams, QuizService, PlayerService, $rootScope, SuccessMessageService) {
     var vm = this;
     vm.loading = true;
     vm.error = null;
@@ -101,7 +101,7 @@ angular.module('app').controller('QuizController', function($scope, $location, $
         QuizService.submitAnswers(bulkAnswers).then(function() {
             return QuizService.finishQuiz(vm.quizLogId);
         }).then(function(resp) {
-            // Optionally, show results/feedback here
+            $rootScope.successMessage = SuccessMessageService.get('quiz_success');
             $location.path('/dashboard');
         }).catch(function(err) {
             vm.error = 'Erro ao enviar respostas.';

@@ -5,9 +5,9 @@
         .module('app')
         .controller('DashboardController', DashboardController);
 
-    DashboardController.$inject = ['$scope', '$location', 'AuthService', 'PlayerService', 'EventService', 'ActivityService', '$http', 'FUNIFIER_API_CONFIG', '$timeout'];
+    DashboardController.$inject = ['$scope', '$location', 'AuthService', 'PlayerService', 'EventService', 'ActivityService', '$http', 'FUNIFIER_API_CONFIG', '$timeout', '$rootScope'];
 
-    function DashboardController($scope, $location, AuthService, PlayerService, EventService, ActivityService, $http, FUNIFIER_API_CONFIG, $timeout) {
+    function DashboardController($scope, $location, AuthService, PlayerService, EventService, ActivityService, $http, FUNIFIER_API_CONFIG, $timeout, $rootScope) {
         var vm = this;
 
         // Properties
@@ -24,6 +24,7 @@
         vm.qrReady = false;
         vm.qrImgUrl = '';
         vm.accordionOpen = 1;
+        vm.successMessage = null;
 
         // Methods
         vm.goToProfile = goToProfile;
@@ -77,6 +78,13 @@
             });
             loadActivities();
             loadEvents();
+
+            // Show global success message if present
+            if ($rootScope.successMessage) {
+                vm.successMessage = $rootScope.successMessage;
+                $rootScope.successMessage = null;
+                $timeout(function() { vm.successMessage = null; $scope.$applyAsync && $scope.$applyAsync(); }, 3500);
+            }
         }
 
         // --- Data holders for mapping ---
