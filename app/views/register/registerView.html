@@ -207,6 +207,54 @@ body, html {
     margin-bottom: 32px;
     display: block;
 }
+
+.custom-modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.custom-modal-content {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 540px;
+    width: 95vw;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    padding: 0;
+    overflow: hidden;
+}
+.custom-modal-header {
+    background: #6a0033;
+    color: #fff;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.custom-modal-body {
+    padding: 24px;
+    color: #222;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+.custom-modal-footer {
+    padding: 16px 24px;
+    background: #f3f3f3;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+.custom-modal .close {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.6rem;
+    cursor: pointer;
+    margin-left: 16px;
+}
 </style>
 
 <!DOCTYPE html>
@@ -249,36 +297,32 @@ body, html {
     </div>
 </div>
 
-<!-- Terms Modal -->
-<div class="modal fade" id="termsModal" tabindex="-1" role="dialog" aria-labelledby="termsModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="termsModalLabel">Termos de Uso e Regulamento</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+<!-- Custom AngularJS Modal for Terms -->
+<div class="custom-modal" ng-show="vm.termsModalVisible">
+    <div class="custom-modal-content">
+        <div class="custom-modal-header">
+            <h5>Termos de Uso e Regulamento</h5>
+            <button type="button" class="close" ng-click="vm.closeTermsModal()">&times;</button>
+        </div>
+        <div class="custom-modal-body">
+            <div ng-show="vm.showingTerms">
+                <h4>Termos de Uso</h4>
+                <p>1. Aceitação dos Termos</p>
+                <p>Ao acessar e utilizar este aplicativo, você concorda em cumprir e ficar vinculado aos seguintes termos e condições de uso.</p>
+                <p>2. Cadastro e Conta</p>
+                <p>2.1. Para utilizar os serviços, é necessário realizar um cadastro completo e fornecer informações verdadeiras e precisas.</p>
+                <p>2.2. Você é responsável por manter a confidencialidade de sua senha e por todas as atividades que ocorrerem em sua conta.</p>
             </div>
-            <div class="modal-body">
-                <div ng-show="vm.showingTerms">
-                    <h4>Termos de Uso</h4>
-                    <p>1. Aceitação dos Termos</p>
-                    <p>Ao acessar e utilizar este aplicativo, você concorda em cumprir e ficar vinculado aos seguintes termos e condições de uso.</p>
-                    <p>2. Cadastro e Conta</p>
-                    <p>2.1. Para utilizar os serviços, é necessário realizar um cadastro completo e fornecer informações verdadeiras e precisas.</p>
-                    <p>2.2. Você é responsável por manter a confidencialidade de sua senha e por todas as atividades que ocorrerem em sua conta.</p>
-                </div>
-                <div ng-show="vm.showingRegulation">
-                    <h4>Regulamento</h4>
-                    <p>1. Regras Gerais</p>
-                    <p>1.1. O aplicativo é destinado a maiores de 18 anos.</p>
-                    <p>1.2. É proibido o uso de informações falsas ou enganosas.</p>
-                </div>
+            <div ng-show="vm.showingRegulation">
+                <h4>Regulamento</h4>
+                <p>1. Regras Gerais</p>
+                <p>1.1. O aplicativo é destinado a maiores de 18 anos.</p>
+                <p>1.2. É proibido o uso de informações falsas ou enganosas.</p>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-primary" ng-click="vm.acceptTerms()" data-dismiss="modal">Aceitar</button>
-            </div>
+        </div>
+        <div class="custom-modal-footer">
+            <button type="button" class="btn btn-secondary" ng-click="vm.closeTermsModal()">Fechar</button>
+            <button type="button" class="btn btn-primary" ng-click="vm.acceptTerms(); vm.closeTermsModal();">Aceitar</button>
         </div>
     </div>
 </div> 

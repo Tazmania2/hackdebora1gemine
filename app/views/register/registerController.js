@@ -4,6 +4,7 @@ angular.module('app').controller('RegisterController', function($scope, $http, $
     vm.error = null;
     vm.showingTerms = false;
     vm.showingRegulation = false;
+    vm.termsModalVisible = false;
     vm.user = {
         name: '',
         email: '',
@@ -23,17 +24,21 @@ angular.module('app').controller('RegisterController', function($scope, $http, $
     }
 
     vm.showTerms = function(event) {
-        event.preventDefault();
+        if (event) event.preventDefault();
         vm.showingTerms = true;
         vm.showingRegulation = false;
-        $('#termsModal').modal('show');
+        vm.termsModalVisible = true;
     };
 
     vm.showRegulation = function(event) {
-        event.preventDefault();
+        if (event) event.preventDefault();
         vm.showingTerms = false;
         vm.showingRegulation = true;
-        $('#termsModal').modal('show');
+        vm.termsModalVisible = true;
+    };
+
+    vm.closeTermsModal = function() {
+        vm.termsModalVisible = false;
     };
 
     vm.acceptTerms = function() {
