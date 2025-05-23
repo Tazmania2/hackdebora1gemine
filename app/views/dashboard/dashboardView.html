@@ -320,54 +320,52 @@
   </div>
   <!-- Accordion for QR Code, Challenges, and Purchases -->
   <div style="width: 100%; max-width: 340px; margin: 32px auto 0 auto;">
-    <uib-accordion close-others="true">
-      <!-- QR Code Accordion -->
-      <div uib-accordion-group heading="QR Code" is-open="status.open1" class="saldo-card" style="margin-bottom: 12px;">
-        <div class="dashboard-card-title">QR Code</div>
-        <div style="display: flex; flex-direction: column; align-items: center;">
-          <div class="saldo-label" style="margin-bottom: 8px;">QR Code</div>
-          <img ng-if="vm.qrReady" ng-src="{{vm.qrImgUrl}}" width="180" height="180" alt="QR Code" style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.10);">
-          <div style="color: #aaa; font-size: 0.95em; margin-top: 8px;">Escaneie para acessar</div>
-        </div>
+    <!-- QR Code Section -->
+    <div class="saldo-card" style="margin-bottom: 12px;">
+      <div class="dashboard-card-title">QR Code</div>
+      <div style="display: flex; flex-direction: column; align-items: center;">
+        <div class="saldo-label" style="margin-bottom: 8px;">QR Code</div>
+        <img ng-if="vm.qrReady" ng-src="{{vm.qrImgUrl}}" width="180" height="180" alt="QR Code" style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.10);">
+        <div style="color: #aaa; font-size: 0.95em; margin-top: 8px;">Escaneie para acessar</div>
       </div>
-      <!-- Completed Challenges Accordion -->
-      <div uib-accordion-group heading="Desafios Concluídos" is-open="status.open2" class="saldo-card" style="margin-bottom: 12px;">
-        <div class="dashboard-card-title">Desafios Concluídos</div>
+    </div>
+    <!-- Completed Challenges Section -->
+    <div class="saldo-card" style="margin-bottom: 12px;">
+      <div class="dashboard-card-title">Desafios Concluídos</div>
+      <ul style="list-style: none; padding: 0; margin: 0; color: #fff;">
+        <li class="dashboard-card" ng-repeat="challenge in vm.completedChallengesDisplay | limitTo:5" ng-click="vm.goToChallenge(challenge)">
+          <div class="dashboard-card-title">{{challenge.name}}</div>
+          <div class="dashboard-card-content">
+            <div></div>
+            <img ng-if="challenge.badge" ng-src="{{challenge.badge}}" alt="Badge" class="dashboard-card-img">
+            <div class="points-pill">
+              <i class="bi bi-coin"></i> {{challenge.misscoins}}
+            </div>
+          </div>
+        </li>
+        <li ng-if="vm.completedChallengesDisplay.length === 0" style="color: #aaa; text-align: center;">Nenhum desafio concluído ainda.</li>
+        <li ng-if="vm.completedChallengesDisplay.length > 5" style="color: #aaa; font-size: 0.95em; text-align: right;">...e mais {{vm.completedChallengesDisplay.length-5}} desafios</li>
+      </ul>
+    </div>
+    <!-- Purchase History Section -->
+    <div class="saldo-card">
+      <div class="dashboard-card-title">Histórico de Compras</div>
+      <div ng-if="vm.purchaseHistoryDisplay.length">
         <ul style="list-style: none; padding: 0; margin: 0; color: #fff;">
-          <li class="dashboard-card" ng-repeat="challenge in vm.completedChallengesDisplay | limitTo:5" ng-click="vm.goToChallenge(challenge)">
-            <div class="dashboard-card-title">{{challenge.name}}</div>
+          <li class="dashboard-card" ng-repeat="item in vm.purchaseHistoryDisplay | limitTo:5" ng-click="vm.goToPurchase(item)">
+            <div class="dashboard-card-title">{{item.name}}</div>
             <div class="dashboard-card-content">
               <div></div>
-              <img ng-if="challenge.badge" ng-src="{{challenge.badge}}" alt="Badge" class="dashboard-card-img">
+              <img ng-if="item.image" ng-src="{{item.image}}" alt="Item" class="dashboard-card-img">
               <div class="points-pill">
-                <i class="bi bi-coin"></i> {{challenge.misscoins}}
+                <i class="bi bi-coin"></i> {{item.misscoins}}
               </div>
             </div>
           </li>
-          <li ng-if="vm.completedChallengesDisplay.length === 0" style="color: #aaa; text-align: center;">Nenhum desafio concluído ainda.</li>
-          <li ng-if="vm.completedChallengesDisplay.length > 5" style="color: #aaa; font-size: 0.95em; text-align: right;">...e mais {{vm.completedChallengesDisplay.length-5}} desafios</li>
+          <li ng-if="vm.purchaseHistoryDisplay.length > 5" style="color: #aaa; font-size: 0.95em; text-align: right;">...e mais {{vm.purchaseHistoryDisplay.length-5}} compras</li>
         </ul>
       </div>
-      <!-- Purchase History Accordion -->
-      <div uib-accordion-group heading="Histórico de Compras" is-open="status.open3" class="saldo-card">
-        <div class="dashboard-card-title">Histórico de Compras</div>
-        <div ng-if="vm.purchaseHistoryDisplay.length">
-          <ul style="list-style: none; padding: 0; margin: 0; color: #fff;">
-            <li class="dashboard-card" ng-repeat="item in vm.purchaseHistoryDisplay | limitTo:5" ng-click="vm.goToPurchase(item)">
-              <div class="dashboard-card-title">{{item.name}}</div>
-              <div class="dashboard-card-content">
-                <div></div>
-                <img ng-if="item.image" ng-src="{{item.image}}" alt="Item" class="dashboard-card-img">
-                <div class="points-pill">
-                  <i class="bi bi-coin"></i> {{item.misscoins}}
-                </div>
-              </div>
-            </li>
-            <li ng-if="vm.purchaseHistoryDisplay.length > 5" style="color: #aaa; font-size: 0.95em; text-align: right;">...e mais {{vm.purchaseHistoryDisplay.length-5}} compras</li>
-          </ul>
-        </div>
-        <div ng-if="!vm.purchaseHistoryDisplay.length" style="color: #aaa; text-align: center;">Nenhuma compra realizada ainda.</div>
-      </div>
-    </uib-accordion>
+      <div ng-if="!vm.purchaseHistoryDisplay.length" style="color: #aaa; text-align: center;">Nenhuma compra realizada ainda.</div>
+    </div>
   </div>
 </div> 
