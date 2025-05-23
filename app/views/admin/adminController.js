@@ -174,10 +174,11 @@
       $http.put(FUNIFIER_API, { value: toStore }, { headers: { Authorization: basicAuth } })
         .then(function() {
           alert('Botões salvos no Funifier!');
-          loadDashboardButtons();
+          loadDashboardButtons(); // Always fetch latest after save
         })
         .catch(function() {
           alert('Erro ao salvar botões no Funifier.');
+          loadDashboardButtons(); // Also fetch on error to stay in sync
         })
         .finally(function() {
           vm.loadingButtons = false;
