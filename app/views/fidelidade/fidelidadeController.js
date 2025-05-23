@@ -18,16 +18,13 @@ angular.module('app').controller('FidelidadeController', function($scope, $timeo
     PlayerService.getStatus().then(function(response) {
         var status = response.data;
         var ownedIds = Object.keys(status.catalog_items || {});
-        vm.pieces.forEach(function(piece) {
-            if (ownedIds.includes(piece.id)) {
+        vm.piecesOwned = 0;
+        vm.pieces.forEach(function(piece, idx) {
+            if (ownedIds.includes(piece.id) || (piece.pos === 'nose')) {
                 piece.owned = true;
                 vm.piecesOwned++;
             }
         });
-        // Nose is always owned
-        var nose = vm.pieces[4];
-        nose.owned = true;
-        if (!ownedIds.includes(nose.id)) vm.piecesOwned++;
         vm.piecesMissing = 5 - vm.piecesOwned;
         // Animate pieces in sequence
         var idx = 0;
