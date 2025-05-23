@@ -186,6 +186,7 @@
         <button class="admin-btn" ng-click="vm.addButtonFromFields()" ng-disabled="!vm.newButtonLabel || !vm.newButtonIcon || !vm.newButtonRoute">Adicionar Botão</button>
       </div>
       <button class="admin-btn" ng-click="vm.saveAllButtons()" style="margin-top:18px;">Salvar Botões</button>
+      <button class="admin-btn" ng-click="vm.resetDashboardButtonsToDefault()" style="margin-top:18px;background:#888;margin-left:8px;">Reverter para padrão</button>
       <!-- Icon Modal -->
       <div ng-if="vm.iconModalOpen" class="modal-backdrop" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
         <div class="modal-content" style="background:#232323;padding:32px 24px;border-radius:16px;max-width:400px;max-height:80vh;overflow:auto;">

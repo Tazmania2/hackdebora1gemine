@@ -118,7 +118,13 @@
         alert('Logo salva!');
       }
     }
-    // --- Dashboard Buttons ---
+    // --- Dashboard Buttons (Funifier sync) ---
+    var FUNIFIER_COLLECTION = 'dashboard_buttons__c';
+    var FUNIFIER_API = 'https://service2.funifier.com/v3/collection/' + FUNIFIER_COLLECTION;
+    var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
+    vm.loadingButtons = true;
+    vm.dashboardButtons = [];
+    // Default buttons (always present)
     var defaultDashboardButtons = [
       { id: 'default-events', label: 'Próximos eventos', icon: 'bi-calendar-event', route: '/events', visible: true, isDefault: true },
       { id: 'default-fidelidade', label: 'Fidelidade', icon: 'bi-puzzle', route: '/fidelidade', visible: true, isDefault: true },
@@ -127,52 +133,84 @@
       { id: 'default-social', label: 'Rede Social', icon: 'bi-hash', route: '/social', visible: true, isDefault: true },
       { id: 'default-quiz', label: 'Quiz - Teste seu conhecimento!', icon: 'bi-chat-dots', route: '/quiz', visible: true, isDefault: true }
     ];
-    function mergeDashboardButtons() {
-      var stored = JSON.parse(localStorage.getItem('admin_dashboardButtons') || '[]');
-      var all = defaultDashboardButtons.map(function(def) {
-        var found = stored.find(function(btn) { return btn.route === def.route && btn.isDefault; });
-        if (found) {
-          found.id = def.id; // Always use the default id for default buttons
-          return Object.assign({}, def, found);
-        }
-        return def;
-      });
-      // Add custom buttons (not default)
-      stored.forEach(function(btn) {
-        if (!btn.isDefault) {
-          if (!btn.id) btn.id = 'custom-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now();
-          all.push(btn);
-        }
-      });
-      return all;
+    // Load from Funifier
+    function loadDashboardButtons() {
+      vm.loadingButtons = true;
+      $http.get(FUNIFIER_API, { headers: { Authorization: basicAuth } })
+        .then(function(resp) {
+          var data = (resp.data && resp.data.value) ? resp.data.value : [];
+          // Merge defaults (always present, can only be deactivated)
+          var all = defaultDashboardButtons.map(function(def) {
+            var found = data.find(function(btn) { return btn.id === def.id; });
+            return found ? Object.assign({}, def, found) : def;
+          });
+          // Add custom buttons (not default)
+          data.forEach(function(btn) {
+            if (!btn.isDefault) all.push(btn);
+          });
+          vm.dashboardButtons = all;
+        })
+        .catch(function() {
+          alert('Erro ao carregar botões do dashboard do Funifier.');
+        })
+        .finally(function() {
+          vm.loadingButtons = false;
+          $scope.$applyAsync();
+        });
     }
-    vm.dashboardButtons = mergeDashboardButtons();
-    function saveButton(btn) {
-      var stored = JSON.parse(localStorage.getItem('admin_dashboardButtons') || '[]');
-      if (btn.isDefault) {
-        // Only update visibility for default buttons
-        var idx = stored.findIndex(function(b) { return b.route === btn.route && b.isDefault; });
-        if (idx !== -1) stored[idx] = btn;
-        else stored.push(btn);
-      } else {
-        var idx = stored.indexOf(btn);
-        if(idx === -1) stored.push(btn);
-        else stored[idx] = btn;
-      }
-      localStorage.setItem('admin_dashboardButtons', JSON.stringify(stored));
-      alert('Botão salvo!');
-      vm.dashboardButtons = mergeDashboardButtons();
+    loadDashboardButtons();
+    // Save to Funifier
+    function saveAllButtons() {
+      vm.loadingButtons = true;
+      // Only store custom buttons and visibility overrides for defaults
+      var toStore = [];
+      vm.dashboardButtons.forEach(function(btn) {
+        if (btn.isDefault) {
+          if (btn.visible === false) {
+            toStore.push({ id: btn.id, route: btn.route, visible: false, isDefault: true });
+          }
+        } else {
+          toStore.push(btn);
+        }
+      });
+      $http.put(FUNIFIER_API, { value: toStore }, { headers: { Authorization: basicAuth } })
+        .then(function() {
+          alert('Botões salvos no Funifier!');
+          loadDashboardButtons();
+        })
+        .catch(function() {
+          alert('Erro ao salvar botões no Funifier.');
+        })
+        .finally(function() {
+          vm.loadingButtons = false;
+          $scope.$applyAsync();
+        });
     }
+    vm.saveAllButtons = saveAllButtons;
+    // Add custom button
+    vm.addButtonFromFields = function() {
+      if (!vm.newButtonLabel || !vm.newButtonIcon || !vm.newButtonRoute) return;
+      var newBtn = {
+        id: 'custom-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now(),
+        label: vm.newButtonLabel,
+        icon: vm.newButtonIcon,
+        route: vm.newButtonRoute,
+        visible: true,
+        isDefault: false
+      };
+      vm.dashboardButtons.push(newBtn);
+      vm.newButtonLabel = '';
+      vm.newButtonIcon = '';
+      vm.newButtonRoute = '';
+      saveAllButtons();
+    };
+    // Delete custom button
     function deleteButton(btn) {
-      if (btn.isDefault) return; // Can't delete default
-      var stored = JSON.parse(localStorage.getItem('admin_dashboardButtons') || '[]');
-      stored = stored.filter(function(b) { return b !== btn; });
-      localStorage.setItem('admin_dashboardButtons', JSON.stringify(stored));
-      vm.dashboardButtons = mergeDashboardButtons();
+      if (btn.isDefault) return;
+      vm.dashboardButtons = vm.dashboardButtons.filter(function(b) { return b.id !== btn.id; });
+      saveAllButtons();
     }
-    function addButton() {
-      vm.dashboardButtons.push({ label: '', icon: '', route: '', visible: true, isDefault: false });
-    }
+    vm.deleteButton = deleteButton;
     // --- Success Message ---
     function saveSuccessMessage() {
       localStorage.setItem('admin_successMessage', vm.successMessage);
@@ -235,42 +273,6 @@
         $scope.$applyAsync();
       });
     }
-    function addButtonFromFields() {
-      if (!vm.newButtonLabel || !vm.newButtonIcon || !vm.newButtonRoute) return;
-      var newBtn = {
-        id: 'custom-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now(),
-        label: vm.newButtonLabel,
-        icon: vm.newButtonIcon,
-        route: vm.newButtonRoute,
-        visible: true,
-        isDefault: false
-      };
-      vm.dashboardButtons.push(newBtn);
-      var stored = JSON.parse(localStorage.getItem('admin_dashboardButtons') || '[]');
-      stored.push(newBtn);
-      localStorage.setItem('admin_dashboardButtons', JSON.stringify(stored));
-      vm.newButtonLabel = '';
-      vm.newButtonIcon = '';
-      vm.newButtonRoute = '';
-      vm.dashboardButtons = mergeDashboardButtons();
-    }
-    function saveAllButtons() {
-      // Only store custom buttons and visibility overrides for defaults
-      var stored = [];
-      vm.dashboardButtons.forEach(function(btn) {
-        if (btn.isDefault) {
-          // Only store if visibility changed from default (true)
-          if (btn.visible === false) {
-            stored.push({ route: btn.route, visible: false, isDefault: true });
-          }
-        } else {
-          stored.push(btn);
-        }
-      });
-      localStorage.setItem('admin_dashboardButtons', JSON.stringify(stored));
-      alert('Botões salvos!');
-      vm.dashboardButtons = mergeDashboardButtons();
-    }
     // Load theme config from Funifier on controller init
     ThemeConfigService.getConfig().then(function(cfg) {
       vm.themeConfig = angular.copy(cfg);
@@ -280,5 +282,13 @@
       vm.loadingTheme = false;
       $scope.$applyAsync();
     });
+    // Reset dashboard buttons to default (remove all custom, activate all default)
+    vm.resetDashboardButtonsToDefault = function() {
+      if (!confirm('Tem certeza que deseja reverter os botões do dashboard para o padrão? Todos os botões personalizados serão removidos.')) return;
+      vm.dashboardButtons = defaultDashboardButtons.map(function(def) {
+        return Object.assign({}, def, { visible: true });
+      });
+      saveAllButtons();
+    };
   }
 })(); 
