@@ -148,11 +148,15 @@
         $httpProvider.interceptors.push('AuthInterceptor');
     }
 
-    run.$inject = ['$rootScope', '$location', 'AuthService', '$log'];
+    run.$inject = ['$rootScope', '$location', 'AuthService', '$log', 'ThemeConfigService'];
 
-    function run($rootScope, $location, AuthService, $log) {
+    function run($rootScope, $location, AuthService, $log, ThemeConfigService) {
         $log = $log || console;
         $log.debug && $log.debug('[app.js] run block executed');
+        // Apply theme config from Funifier
+        ThemeConfigService.getConfig().then(function(cfg) {
+            ThemeConfigService.applyConfig(cfg);
+        });
         // Handle route change errors
         $rootScope.$on('$routeChangeError', function(event, current, previous, rejection) {
             console.error('[RouteChangeError]', { event, current, previous, rejection });
@@ -160,7 +164,6 @@
                 $location.path('/login');
             }
         });
-
         // Handle 401 responses
         $rootScope.$on('unauthorized', function() {
             AuthService.logout();
