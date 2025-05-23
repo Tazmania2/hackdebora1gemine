@@ -268,8 +268,24 @@
             }
           });
         });
-      // Cashback distributed/used/lost, points gained/used (placeholders, need real endpoints)
-      // ...
+      // --- New: Achievements-based stats ---
+      var bearerToken = 'Bearer eyJhbGciOiJIUzUxMiIsImNhbGciOiJHWklQIn0.H4sIAAAAAAAAAE2MwQrCMBAFf0X23EOymybBs5569yrb7BYqpS1Ni4r470YK4m14zJsX8Nw3-oQj-Ig1MlokDF1wHTGJNUaggpymWYuyKMuVh6E63Jd-1R1FB_0xr9xy1vLhlKZtXPewk1rbv3ASbL_SlnUpxvkynoK_laHn8rDBRUMmkqtAH_M-eKo9ufcH5U20dbEAAAA.2VIg4wWv9vx_9laMfAhSd9Nea8N0yMew_c2ng-AQOCv7N_ELrN_SIswFz9mB4dEk-PyMOTx5uzJb48zcPONbwA';
+      $http({
+        method: 'GET',
+        url: 'https://service2.funifier.com/v3/achievement',
+        headers: { 'Authorization': bearerToken, 'Content-Type': 'application/json' }
+      }).then(function(resp) {
+        var achievements = resp.data || [];
+        // Cashback distribuído: sum of positive total for item 'cashback'
+        vm.stats.cashbackDistributed = achievements.filter(function(a) { return a.type === 0 && a.item === 'cashback' && a.total > 0; }).reduce(function(sum, a) { return sum + a.total; }, 0);
+        // Cashback perdido: sum of negative total for item 'cashback'
+        vm.stats.cashbackLost = achievements.filter(function(a) { return a.type === 0 && a.item === 'cashback' && a.total < 0; }).reduce(function(sum, a) { return sum + a.total; }, 0);
+        // Pontos ganhos: sum of positive total for item 'misscoins'
+        vm.stats.pointsGained = achievements.filter(function(a) { return a.type === 0 && a.item === 'misscoins' && a.total > 0; }).reduce(function(sum, a) { return sum + a.total; }, 0);
+        // Pontos usados: sum of negative total for item 'misscoins'
+        vm.stats.pointsUsed = achievements.filter(function(a) { return a.type === 0 && a.item === 'misscoins' && a.total < 0; }).reduce(function(sum, a) { return sum + a.total; }, 0);
+        $scope.$applyAsync && $scope.$applyAsync();
+      });
     }
     // --- Challenges ---
     function saveChallenge(challenge) {
@@ -419,6 +435,8 @@
               }
             });
             vm.statModalAttrKeys = Array.from(attrKeys);
+            // Update stats to match modal
+            vm.stats.purchases = logs.length;
           })
           .finally(function() {
             vm.statModalLoading = false;
@@ -436,6 +454,7 @@
             if (players.length === 0) {
               vm.statModalData = [];
               vm.statModalAttrKeys = [];
+              vm.stats.activePlayers = 0;
               vm.statModalLoading = false;
               $scope.$applyAsync();
               return;
@@ -476,10 +495,72 @@
                 });
               });
               vm.statModalAttrKeys = Array.from(attrKeys);
+              // Update stats to match modal
+              vm.stats.activePlayers = activePlayers.length;
               vm.statModalLoading = false;
               $scope.$applyAsync();
             }
           });
+      } else if (statKey === 'cashbackDistributed') {
+        vm.statModalTitle = 'Cashback distribuído';
+        var bearerToken = 'Bearer eyJhbGciOiJIUzUxMiIsImNhbGciOiJHWklQIn0.H4sIAAAAAAAAAE2MwQrCMBAFf0X23EOymybBs5569yrb7BYqpS1Ni4r470YK4m14zJsX8Nw3-oQj-Ig1MlokDF1wHTGJNUaggpymWYuyKMuVh6E63Jd-1R1FB_0xr9xy1vLhlKZtXPewk1rbv3ASbL_SlnUpxvkynoK_laHn8rDBRUMmkqtAH_M-eKo9ufcH5U20dbEAAAA.2VIg4wWv9vx_9laMfAhSd9Nea8N0yMew_c2ng-AQOCv7N_ELrN_SIswFz9mB4dEk-PyMOTx5uzJb48zcPONbwA';
+        $http({
+          method: 'GET',
+          url: 'https://service2.funifier.com/v3/achievement',
+          headers: { 'Authorization': bearerToken, 'Content-Type': 'application/json' }
+        }).then(function(resp) {
+          var achievements = (resp.data || []).filter(function(a) { return a.type === 0 && a.item === 'cashback' && a.total > 0; });
+          vm.statModalData = achievements;
+          vm.statModalAttrKeys = ['player', 'total', 'time'];
+          vm.stats.cashbackDistributed = achievements.reduce(function(sum, a) { return sum + a.total; }, 0);
+          vm.statModalLoading = false;
+          $scope.$applyAsync();
+        });
+      } else if (statKey === 'cashbackLost') {
+        vm.statModalTitle = 'Cashback perdido';
+        var bearerToken = 'Bearer eyJhbGciOiJIUzUxMiIsImNhbGciOiJHWklQIn0.H4sIAAAAAAAAAE2MwQrCMBAFf0X23EOymybBs5569yrb7BYqpS1Ni4r470YK4m14zJsX8Nw3-oQj-Ig1MlokDF1wHTGJNUaggpymWYuyKMuVh6E63Jd-1R1FB_0xr9xy1vLhlKZtXPewk1rbv3ASbL_SlnUpxvkynoK_laHn8rDBRUMmkqtAH_M-eKo9ufcH5U20dbEAAAA.2VIg4wWv9vx_9laMfAhSd9Nea8N0yMew_c2ng-AQOCv7N_ELrN_SIswFz9mB4dEk-PyMOTx5uzJb48zcPONbwA';
+        $http({
+          method: 'GET',
+          url: 'https://service2.funifier.com/v3/achievement',
+          headers: { 'Authorization': bearerToken, 'Content-Type': 'application/json' }
+        }).then(function(resp) {
+          var achievements = (resp.data || []).filter(function(a) { return a.type === 0 && a.item === 'cashback' && a.total < 0; });
+          vm.statModalData = achievements;
+          vm.statModalAttrKeys = ['player', 'total', 'time'];
+          vm.stats.cashbackLost = achievements.reduce(function(sum, a) { return sum + a.total; }, 0);
+          vm.statModalLoading = false;
+          $scope.$applyAsync();
+        });
+      } else if (statKey === 'pointsGained') {
+        vm.statModalTitle = 'Pontos ganhos';
+        var bearerToken = 'Bearer eyJhbGciOiJIUzUxMiIsImNhbGciOiJHWklQIn0.H4sIAAAAAAAAAE2MwQrCMBAFf0X23EOymybBs5569yrb7BYqpS1Ni4r470YK4m14zJsX8Nw3-oQj-Ig1MlokDF1wHTGJNUaggpymWYuyKMuVh6E63Jd-1R1FB_0xr9xy1vLhlKZtXPewk1rbv3ASbL_SlnUpxvkynoK_laHn8rDBRUMmkqtAH_M-eKo9ufcH5U20dbEAAAA.2VIg4wWv9vx_9laMfAhSd9Nea8N0yMew_c2ng-AQOCv7N_ELrN_SIswFz9mB4dEk-PyMOTx5uzJb48zcPONbwA';
+        $http({
+          method: 'GET',
+          url: 'https://service2.funifier.com/v3/achievement',
+          headers: { 'Authorization': bearerToken, 'Content-Type': 'application/json' }
+        }).then(function(resp) {
+          var achievements = (resp.data || []).filter(function(a) { return a.type === 0 && a.item === 'misscoins' && a.total > 0; });
+          vm.statModalData = achievements;
+          vm.statModalAttrKeys = ['player', 'total', 'time'];
+          vm.stats.pointsGained = achievements.reduce(function(sum, a) { return sum + a.total; }, 0);
+          vm.statModalLoading = false;
+          $scope.$applyAsync();
+        });
+      } else if (statKey === 'pointsUsed') {
+        vm.statModalTitle = 'Pontos usados';
+        var bearerToken = 'Bearer eyJhbGciOiJIUzUxMiIsImNhbGciOiJHWklQIn0.H4sIAAAAAAAAAE2MwQrCMBAFf0X23EOymybBs5569yrb7BYqpS1Ni4r470YK4m14zJsX8Nw3-oQj-Ig1MlokDF1wHTGJNUaggpymWYuyKMuVh6E63Jd-1R1FB_0xr9xy1vLhlKZtXPewk1rbv3ASbL_SlnUpxvkynoK_laHn8rDBRUMmkqtAH_M-eKo9ufcH5U20dbEAAAA.2VIg4wWv9vx_9laMfAhSd9Nea8N0yMew_c2ng-AQOCv7N_ELrN_SIswFz9mB4dEk-PyMOTx5uzJb48zcPONbwA';
+        $http({
+          method: 'GET',
+          url: 'https://service2.funifier.com/v3/achievement',
+          headers: { 'Authorization': bearerToken, 'Content-Type': 'application/json' }
+        }).then(function(resp) {
+          var achievements = (resp.data || []).filter(function(a) { return a.type === 0 && a.item === 'misscoins' && a.total < 0; });
+          vm.statModalData = achievements;
+          vm.statModalAttrKeys = ['player', 'total', 'time'];
+          vm.stats.pointsUsed = achievements.reduce(function(sum, a) { return sum + a.total; }, 0);
+          vm.statModalLoading = false;
+          $scope.$applyAsync();
+        });
       }
     };
     vm.closeStatModal = function() {
@@ -514,24 +595,32 @@
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-      } else if (vm.statModalKey === 'activePlayers') {
-        // Build CSV from active players
+      } else if (
+        vm.statModalKey === 'cashbackDistributed' ||
+        vm.statModalKey === 'cashbackLost' ||
+        vm.statModalKey === 'pointsGained' ||
+        vm.statModalKey === 'pointsUsed'
+      ) {
+        // Build CSV from achievement data
         var rows = [];
         var headers = vm.statModalAttrKeys;
         rows.push(headers.join(','));
-        vm.statModalData.forEach(function(player) {
-          var row = headers.map(function(attr) {
-            var val = player[attr];
+        vm.statModalData.forEach(function(row) {
+          var csvRow = headers.map(function(attr) {
+            var val = row[attr];
+            if (attr === 'time' && val) {
+              return '"' + (new Date(val)).toLocaleString('pt-BR') + '"';
+            }
             return '"' + (val !== null && val !== undefined ? val : '') + '"';
           });
-          rows.push(row.join(','));
+          rows.push(csvRow.join(','));
         });
         var csvContent = rows.join('\r\n');
         var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         var link = document.createElement('a');
         var url = URL.createObjectURL(blob);
         link.setAttribute('href', url);
-        link.setAttribute('download', 'jogadores_ativos.csv');
+        link.setAttribute('download', vm.statModalTitle.replace(/ /g, '_').toLowerCase() + '.csv');
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();

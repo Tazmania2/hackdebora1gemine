@@ -213,11 +213,11 @@
       <div class="admin-label">Estatísticas</div>
       <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('purchases')">Compras registradas: <b>{{vm.stats.purchases}}</b></a></div>
       <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('activePlayers')">Jogadores ativos: <b>{{vm.stats.activePlayers}}</b></a></div>
-      <div>Cashback distribuído: <b>{{vm.stats.cashbackDistributed}}</b></div>
-      <div>Cashback perdido: <b>{{vm.stats.cashbackLost}}</b></div>
+      <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('cashbackDistributed')">Cashback distribuído: <b>{{vm.stats.cashbackDistributed}}</b></a></div>
+      <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('cashbackLost')">Cashback perdido: <b>{{vm.stats.cashbackLost}}</b></a></div>
       <div>Cashback usado: <b>{{vm.stats.cashbackUsed}}</b></div>
-      <div>Pontos ganhos: <b>{{vm.stats.pointsGained}}</b></div>
-      <div>Pontos usados: <b>{{vm.stats.pointsUsed}}</b></div>
+      <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('pointsGained')">Pontos ganhos: <b>{{vm.stats.pointsGained}}</b></a></div>
+      <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('pointsUsed')">Pontos usados: <b>{{vm.stats.pointsUsed}}</b></a></div>
       <button class="admin-btn" ng-click="vm.refreshStats()">Atualizar Estatísticas</button>
     </div>
     <!-- Statistics Modal -->
