@@ -119,6 +119,7 @@
     // --- Dashboard Buttons (Funifier sync) ---
     var FUNIFIER_COLLECTION = 'dashboard_buttons__c';
     var FUNIFIER_API = 'https://service2.funifier.com/v3/database/' + FUNIFIER_COLLECTION;
+    var CONFIG_ID = 'dashboard_buttons';
     var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
     vm.loadingButtons = true;
     vm.dashboardButtons = [];
@@ -134,9 +135,9 @@
     // Load from Funifier
     function loadDashboardButtons() {
       vm.loadingButtons = true;
-      $http.get(FUNIFIER_API, { headers: { Authorization: basicAuth } })
+      $http.get(FUNIFIER_API + "?strict=true&q=_id:'" + CONFIG_ID + "'", { headers: { Authorization: basicAuth } })
         .then(function(resp) {
-          var data = (resp.data && resp.data.value) ? resp.data.value : [];
+          var data = (resp.data && resp.data[0] && resp.data[0].value) ? resp.data[0].value : [];
           // Merge defaults: use override if present, else visible: true
           var all = defaultDashboardButtons.map(function(def) {
             var found = data.find(function(btn) { return btn.id === def.id; });
@@ -166,16 +167,14 @@
       vm.loadingButtons = true;
       var toStore = [];
       vm.dashboardButtons.forEach(function(btn) {
-        if (btn.isDefault) {
-          if (btn.visible === false) {
-            toStore.push({ id: btn.id, route: btn.route, visible: false, isDefault: true });
-          }
-        } else {
-          toStore.push(btn);
-        }
+        toStore.push(btn);
       });
-      console.log('About to PUT to Funifier:', toStore);
-      $http.put(FUNIFIER_API, { value: toStore }, { headers: { Authorization: basicAuth } })
+      var payload = {
+        _id: CONFIG_ID,
+        value: toStore
+      };
+      console.log('About to PUT to Funifier:', payload);
+      $http.put(FUNIFIER_API, payload, { headers: { Authorization: basicAuth } })
         .then(function(resp) {
           console.log('Funifier PUT success', resp);
           alert('Botões salvos no Funifier!');
@@ -293,7 +292,24 @@
       vm.dashboardButtons = defaultDashboardButtons.map(function(def) {
         return Object.assign({}, def, { visible: true });
       });
-      saveAllButtons();
+      // Overwrite the database with the default buttons
+      var payload = {
+        _id: CONFIG_ID,
+        value: vm.dashboardButtons
+      };
+      $http.put(FUNIFIER_API, payload, { headers: { Authorization: basicAuth } })
+        .then(function(resp) {
+          alert('Botões do dashboard restaurados para o padrão!');
+          loadDashboardButtons();
+        })
+        .catch(function(e) {
+          alert('Erro ao restaurar botões do dashboard.');
+          loadDashboardButtons();
+        })
+        .finally(function() {
+          vm.loadingButtons = false;
+          $scope.$applyAsync();
+        });
     };
   }
 })(); 
