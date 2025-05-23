@@ -1,9 +1,11 @@
-angular.module('app').controller('ProfileController', function($scope, $http, $location, AuthService, FUNIFIER_API_CONFIG, PlayerService, $httpParamSerializer) {
+angular.module('app').controller('ProfileController', function($scope, $http, $location, AuthService, FUNIFIER_API_CONFIG, PlayerService, $httpParamSerializer, SuccessMessageService) {
     var vm = this;
     vm.loading = false;
     vm.error = null;
     vm.success = null;
     vm.editedProfile = {};
+
+    SuccessMessageService.fetchAll();
 
     // Load player data
     function loadProfile() {
@@ -50,7 +52,7 @@ angular.module('app').controller('ProfileController', function($scope, $http, $l
             extra: vm.editedProfile.extra
         };
         PlayerService.recreatePlayer(playerData).then(function(response) {
-            vm.success = 'Perfil atualizado com sucesso!';
+            vm.success = SuccessMessageService.get('profile_updated');
             if (originalBirthdate) {
                 vm.editedProfile.extra.birthdate = new Date(originalBirthdate);
             }

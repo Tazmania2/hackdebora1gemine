@@ -5,9 +5,9 @@
     .module('app')
     .controller('RegisterPurchaseController', RegisterPurchaseController);
 
-  RegisterPurchaseController.$inject = ['$scope', '$http', '$timeout', '$location', 'PlayerService'];
+  RegisterPurchaseController.$inject = ['$scope', '$http', '$timeout', '$location', 'PlayerService', 'SuccessMessageService'];
 
-  function RegisterPurchaseController($scope, $http, $timeout, $location, PlayerService) {
+  function RegisterPurchaseController($scope, $http, $timeout, $location, PlayerService, SuccessMessageService) {
     var vm = this;
     vm.purchaseValue = null;
     vm.purchaseProof = null;
@@ -26,6 +26,8 @@
     vm.goBack = function() {
       $location.path('/dashboard');
     };
+
+    SuccessMessageService.fetchAll();
 
     function onFileChange(element) {
       var file = element.files[0];
@@ -93,7 +95,7 @@
         var data = statusRes.data;
         vm.updatedPoints = data.total_points || (data.point_categories && data.point_categories.pontos) || 0;
         vm.updatedCashback = (data.point_categories && (data.point_categories.cashback || data.point_categories.misscoins)) || 0;
-        vm.success = true;
+        vm.success = SuccessMessageService.get('purchase_success');
         vm.animating = true;
         // Animate for 2s, then redirect
         $timeout(function() {

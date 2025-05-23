@@ -1,8 +1,8 @@
 (function() {
   'use strict';
   angular.module('app').controller('AdminController', AdminController);
-  AdminController.$inject = ['$scope', '$http', '$window', 'ThemeConfigService'];
-  function AdminController($scope, $http, $window, ThemeConfigService) {
+  AdminController.$inject = ['$scope', '$http', '$window', 'ThemeConfigService', 'SuccessMessageService'];
+  function AdminController($scope, $http, $window, ThemeConfigService, SuccessMessageService) {
     var vm = this;
     vm.loggedIn = false;
     vm.user = '';
@@ -90,7 +90,7 @@
         vm.loadingTheme = false;
         // Broadcast logo change so all views update
         $scope.$root.$broadcast('theme-logo-updated', vm.themeConfig.logo);
-        alert('Cores e logo salvos!');
+        alert(SuccessMessageService.get('colors_saved'));
         $scope.$applyAsync();
       });
     }
@@ -102,18 +102,17 @@
     // --- Logo ---
     function saveLogo() {
       if(vm.logoFile) {
-        // Simulate upload and get URL
         var reader = new FileReader();
         reader.onload = function(e) {
           vm.logoUrl = e.target.result;
           localStorage.setItem('admin_logoUrl', vm.logoUrl);
           $scope.$apply();
-          alert('Logo salva!');
+          alert(SuccessMessageService.get('logo_saved'));
         };
         reader.readAsDataURL(vm.logoFile);
       } else if(vm.logoUrl) {
         localStorage.setItem('admin_logoUrl', vm.logoUrl);
-        alert('Logo salva!');
+        alert(SuccessMessageService.get('logo_saved'));
       }
     }
     // --- Dashboard Buttons (Funifier sync) ---
@@ -177,7 +176,7 @@
       $http.put(FUNIFIER_API, payload, { headers: { Authorization: basicAuth } })
         .then(function(resp) {
           console.log('Funifier PUT success', resp);
-          alert('Botões salvos no Funifier!');
+          alert(SuccessMessageService.get('dashboard_buttons_saved'));
           loadDashboardButtons();
         })
         .catch(function(e) {
@@ -218,7 +217,7 @@
     // --- Success Message ---
     function saveSuccessMessage() {
       localStorage.setItem('admin_successMessage', vm.successMessage);
-      alert('Mensagem salva!');
+      alert(SuccessMessageService.get('message_saved'));
     }
     // --- Stats (Funifier API, Basic Auth) ---
     function refreshStats() {
@@ -237,7 +236,7 @@
       var idx = vm.challenges.indexOf(challenge);
       if(idx === -1) vm.challenges.push(challenge);
       localStorage.setItem('admin_challenges', JSON.stringify(vm.challenges));
-      alert('Desafio salvo!');
+      alert(SuccessMessageService.get('challenge_saved'));
     }
     function addChallenge() {
       vm.challenges.push({ name: '', points: 0 });
@@ -246,7 +245,7 @@
     function createActionLog() {
       var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
       $http.post('https://service2.funifier.com/v3/activities', { action: vm.actionType, player: vm.actionPlayerId }, { headers: { Authorization: basicAuth } })
-        .then(function() { alert('Log criado!'); });
+        .then(function() { alert(SuccessMessageService.get('log_created')); });
     }
     function onLogoFileChange(input) {
       var file = input.files[0];
@@ -292,14 +291,13 @@
       vm.dashboardButtons = defaultDashboardButtons.map(function(def) {
         return Object.assign({}, def, { visible: true });
       });
-      // Overwrite the database with the default buttons
       var payload = {
         _id: CONFIG_ID,
         value: vm.dashboardButtons
       };
       $http.put(FUNIFIER_API, payload, { headers: { Authorization: basicAuth } })
         .then(function(resp) {
-          alert('Botões do dashboard restaurados para o padrão!');
+          alert(SuccessMessageService.get('dashboard_buttons_reset'));
           loadDashboardButtons();
         })
         .catch(function(e) {
@@ -311,5 +309,26 @@
           $scope.$applyAsync();
         });
     };
+    vm.successMessages = {};
+    vm.editingSuccessMessages = {};
+    vm.loadSuccessMessages = function() {
+      SuccessMessageService.fetchAll().then(function(messages) {
+        vm.successMessages = angular.copy(messages);
+        vm.editingSuccessMessages = angular.copy(messages);
+        $scope.$applyAsync && $scope.$applyAsync();
+      });
+    };
+    vm.saveSuccessMessage = function(key) {
+      var apiUrl = 'https://service2.funifier.com/v3/database/success_messages__c';
+      var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
+      var payload = { _id: key, message: vm.editingSuccessMessages[key] };
+      $http.put(apiUrl, payload, { headers: { Authorization: basicAuth } })
+        .then(function() {
+          vm.successMessages[key] = vm.editingSuccessMessages[key];
+          alert(SuccessMessageService.get('message_saved') || 'Mensagem salva!');
+        });
+    };
+    // Load on init
+    vm.loadSuccessMessages();
   }
 })(); 

@@ -202,8 +202,11 @@
     </div>
     <div class="admin-section">
       <div class="admin-label">Mensagens de Sucesso</div>
-      <textarea class="admin-textarea" ng-model="vm.successMessage" placeholder="Mensagem de sucesso personalizada"></textarea>
-      <button class="admin-btn" ng-click="vm.saveSuccessMessage()">Salvar Mensagem</button>
+      <div ng-repeat="(key, msg) in vm.successMessages" style="margin-bottom:18px;">
+        <div style="font-size:0.98em;color:#aaa;margin-bottom:4px;">{{key}}</div>
+        <textarea class="admin-textarea" ng-model="vm.editingSuccessMessages[key]" style="margin-bottom:4px;"></textarea>
+        <button class="admin-btn" ng-click="vm.saveSuccessMessage(key)">Salvar</button>
+      </div>
     </div>
     <div class="admin-section">
       <div class="admin-label">Estatísticas</div>
