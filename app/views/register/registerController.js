@@ -1,4 +1,10 @@
 angular.module('app').controller('RegisterController', function($scope, $http, $location, $routeParams, $rootScope, AuthService, FUNIFIER_API_CONFIG) {
+    // Redirect if already logged in
+    if (localStorage.getItem('token')) {
+        $rootScope.successMessage = 'Você já está logado!';
+        $location.path('/dashboard');
+        return;
+    }
     var vm = this;
     vm.loading = false;
     vm.error = null;

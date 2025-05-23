@@ -19,16 +19,50 @@
         return service;
 
         function getRecent() {
-            return $http.get(baseUrl + '/activities/recent');
+            var player = JSON.parse(localStorage.getItem('currentPlayer'));
+            var userId = player && (player._id || player.name);
+            return $http({
+                method: 'GET',
+                url: 'https://service2.funifier.com/v3/action/log',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                },
+                params: {
+                    userId: userId
+                }
+            });
         }
 
         function getByType(type) {
-            return $http.get(baseUrl + '/activities/type/' + type);
+            var player = JSON.parse(localStorage.getItem('currentPlayer'));
+            var userId = player && (player._id || player.name);
+            return $http({
+                method: 'GET',
+                url: 'https://service2.funifier.com/v3/action/log',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                },
+                params: {
+                    userId: userId,
+                    actionId: type
+                }
+            });
         }
 
         function getByDateRange(startDate, endDate) {
-            return $http.get(baseUrl + '/activities/range', {
+            var player = JSON.parse(localStorage.getItem('currentPlayer'));
+            var userId = player && (player._id || player.name);
+            return $http({
+                method: 'GET',
+                url: 'https://service2.funifier.com/v3/action/log',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                },
                 params: {
+                    userId: userId,
                     startDate: startDate,
                     endDate: endDate
                 }
@@ -36,7 +70,21 @@
         }
 
         function logAction(action) {
-            return $http.post(baseUrl + '/activities', { action: action });
+            var player = JSON.parse(localStorage.getItem('currentPlayer'));
+            var userId = player && (player._id || player.name);
+            return $http({
+                method: 'POST',
+                url: 'https://service2.funifier.com/v3/action/log',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                },
+                data: {
+                    actionId: action,
+                    userId: userId,
+                    attributes: {}
+                }
+            });
         }
     }
 })(); 
