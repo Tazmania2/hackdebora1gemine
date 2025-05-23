@@ -289,18 +289,28 @@
 
         // Log 'logar' action if not already logged today
         function checkAndLogLoginAction() {
+            var todayStr = (new Date()).toISOString().slice(0, 10); // YYYY-MM-DD
+            var lastLoginDay = localStorage.getItem('lastDailyLoginDay');
+            if (lastLoginDay === todayStr) {
+                // Already logged in today, do not trigger again
+                return;
+            }
             ActivityService.getByType('logar').then(function(response) {
-                var logs = response.data || [];
-                if (!Array.isArray(logs)) logs = [];
+                var player = PlayerService.getCurrentPlayer();
+                var userId = player && (player._id || player.name);
+                var logs = (response.data || []).filter(function(log) {
+                    return log.actionId === 'logar' && log.userId === userId;
+                });
                 var today = new Date();
                 var found = logs.some(function(log) {
-                    var logDate = new Date(log.createdAt || log.date || log.timestamp);
+                    var logDate = new Date(log.createdAt || log.date || log.timestamp || log.time);
                     return logDate.getFullYear() === today.getFullYear() &&
                         logDate.getMonth() === today.getMonth() &&
                         logDate.getDate() === today.getDate();
                 });
                 if (!found) {
                     ActivityService.logAction('logar').then(function() {
+                        localStorage.setItem('lastDailyLoginDay', todayStr);
                         SuccessMessageService.fetchAll().then(function() {
                             vm.dailyLoginMessage = SuccessMessageService.get('login_success') || 'Login diário concluído!';
                             $scope.dailyLoginPopup = true;
@@ -308,6 +318,9 @@
                             $scope.$applyAsync();
                         });
                     });
+                } else {
+                    // Even if found in backend, set localStorage to prevent re-trigger
+                    localStorage.setItem('lastDailyLoginDay', todayStr);
                 }
             });
         }

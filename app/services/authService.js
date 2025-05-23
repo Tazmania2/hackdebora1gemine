@@ -94,38 +94,41 @@ angular.module('app')
     };
 });
 
+angular.module('app')
 .factory('AuthInterceptor', function ($rootScope, $q, $window, $location, FUNIFIER_API_CONFIG) {
   return {
     request: function (config) {
-            config.headers = config.headers || {};
-            // Debug log for Authorization header
-            console.log('[AuthInterceptor] Before:', config.url, 'Authorization:', config.headers.Authorization);
-            // Only set Authorization if it is not already set
-            if (config.url.indexOf(FUNIFIER_API_CONFIG.baseUrl) === 0 && 
-                !config.url.includes('/auth/token')) {
-                if (!config.headers.Authorization) {
-                    var token = localStorage.getItem('token');
-                    if (token) {
-                        config.headers.Authorization = token;
-                    }
-                }
-            }
-            // Debug log after possible modification
-            console.log('[AuthInterceptor] After:', config.url, 'Authorization:', config.headers.Authorization);
+      config.headers = config.headers || {};
+      // Debug log for Authorization header
+      console.log('[AuthInterceptor] Before:', config.url, 'Authorization:', config.headers.Authorization);
+      // Only set Authorization if it is not already set
+      if (config.url.indexOf(FUNIFIER_API_CONFIG.baseUrl) === 0 && 
+          !config.url.includes('/auth/token')) {
+        if (!config.headers.Authorization) {
+          var token = localStorage.getItem('token');
+          if (token) {
+            config.headers.Authorization = token;
+          }
+        }
+      }
+      // Debug log after possible modification
+      console.log('[AuthInterceptor] After:', config.url, 'Authorization:', config.headers.Authorization);
       return config;
     },
     responseError: function (response) {
-            if (response.status === 401) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('currentPlayer');
-                if ($location.path() !== '/login') {
-             $location.path('/login');
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('currentPlayer');
+        if ($location.path() !== '/login') {
+          $location.path('/login');
         }
       }
       return $q.reject(response);
     }
   };
-})
+});
+
+angular.module('app')
 .config(function ($httpProvider) {
   $httpProvider.interceptors.push('AuthInterceptor');
 });
