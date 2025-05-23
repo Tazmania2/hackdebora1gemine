@@ -39,6 +39,7 @@ angular.module('app').controller('ProfileController', function($scope, $http, $l
         vm.error = null;
         vm.success = null;
         // Convert birthdate to yyyy-MM-dd string if it's a Date object
+        var originalBirthdate = vm.editedProfile.extra.birthdate;
         if (vm.editedProfile.extra.birthdate instanceof Date) {
             var d = vm.editedProfile.extra.birthdate;
             vm.editedProfile.extra.birthdate = d.toISOString().substring(0, 10);
@@ -52,11 +53,17 @@ angular.module('app').controller('ProfileController', function($scope, $http, $l
         };
         PlayerService.recreatePlayer(playerData).then(function(response) {
             vm.success = 'Perfil atualizado com sucesso!';
-            // Update the local player data
-            AuthService.storePlayerData(response.data);
+            // Restore birthdate as Date object for the input
+            if (originalBirthdate) {
+                vm.editedProfile.extra.birthdate = new Date(originalBirthdate);
+            }
         }).catch(function(error) {
             console.error('Error updating profile:', error);
             vm.error = 'Erro ao atualizar perfil. Por favor, tente novamente.';
+            // Restore birthdate as Date object for the input
+            if (originalBirthdate) {
+                vm.editedProfile.extra.birthdate = new Date(originalBirthdate);
+            }
         }).finally(function() {
             vm.loading = false;
         });
