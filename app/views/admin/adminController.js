@@ -395,7 +395,9 @@
     vm.exportStatCsv = function() {
       if (vm.statModalKey === 'purchases') {
         // Use Funifier's export endpoint for action logs filtered by actionId=comprar
-        window.open('https://service2.funifier.com/v3/action/log/export/csv?actionId=comprar&Authorization=Basic%20' + basicAuth, '_blank');
+        var base64 = basicAuth.replace(/^Basic\s+/i, '');
+        var authParam = encodeURIComponent('Basic ' + base64);
+        window.open('https://service2.funifier.com/v3/action/log/export/csv?actionId=comprar&Authorization=' + authParam, '_blank');
       }
       // Add more statKey cases for other stats as needed
     };
