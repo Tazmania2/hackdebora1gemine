@@ -149,13 +149,22 @@
     <div class="admin-section">
       <div class="admin-label">Botões do Dashboard</div>
       <div ng-repeat="btn in vm.dashboardButtons">
-        <input class="admin-input" ng-model="btn.label" placeholder="Nome do botão">
-        <input class="admin-input" ng-model="btn.icon" placeholder="Ícone (Bootstrap)">
-        <input class="admin-input" ng-model="btn.route" placeholder="Rota">
-        <label><input type="checkbox" ng-model="btn.visible"> Visível</label>
-        <button class="admin-btn" ng-click="vm.saveButton(btn)">Salvar</button>
-        <button class="admin-btn" ng-if="!btn.isDefault" ng-click="vm.deleteButton(btn)" style="background:#888;">Excluir</button>
-        <span ng-if="btn.isDefault" style="color:#aaa;font-size:0.95em;margin-left:8px;">(Padrão, só pode ser desativado)</span>
+        <div ng-if="btn.isDefault">
+          <input class="admin-input" ng-model="btn.label" placeholder="Nome do botão" readonly>
+          <input class="admin-input" ng-model="btn.icon" placeholder="Ícone (Bootstrap)" readonly>
+          <input class="admin-input" ng-model="btn.route" placeholder="Rota" readonly>
+          <label><input type="checkbox" ng-model="btn.visible"> Visível</label>
+          <button class="admin-btn" ng-click="vm.saveButton(btn)">Salvar</button>
+          <span style="color:#aaa;font-size:0.95em;margin-left:8px;">(Padrão, só pode ser desativado)</span>
+        </div>
+        <div ng-if="!btn.isDefault">
+          <input class="admin-input" ng-model="btn.label" placeholder="Nome do botão">
+          <input class="admin-input" ng-model="btn.icon" placeholder="Ícone (Bootstrap)">
+          <input class="admin-input" ng-model="btn.route" placeholder="Rota">
+          <label><input type="checkbox" ng-model="btn.visible"> Visível</label>
+          <button class="admin-btn" ng-click="vm.saveButton(btn)">Salvar</button>
+          <button class="admin-btn" ng-click="vm.deleteButton(btn)" style="background:#888;">Excluir</button>
+        </div>
       </div>
       <div style="margin-top:18px;padding:12px 0;border-top:1px solid #333;">
         <div class="admin-label" style="margin-bottom:8px;">Adicionar novo botão personalizado</div>
