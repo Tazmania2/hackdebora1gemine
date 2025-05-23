@@ -1,11 +1,10 @@
 // app/services/authService.js
 angular.module('app')
 .service('AuthService', function($http, $q, FUNIFIER_API_CONFIG) {
-    var service = {};
     var currentPlayer = null;
 
     // Login with password authentication
-    service.login = function(email, password) {
+    this.login = function(email, password) {
         console.log('Attempting login for:', email);
         var req = {
             method: 'POST',
@@ -27,7 +26,7 @@ angular.module('app')
             if (response.data && response.data.access_token) {
                 // Store only the raw token (no 'Bearer ' prefix)
                 localStorage.setItem('token', response.data.access_token);
-                return service.getPlayerInfo();
+                return this.getPlayerInfo();
             }
             return $q.reject('Token não encontrado na resposta');
         }).catch(function(error) {
@@ -37,7 +36,7 @@ angular.module('app')
     };
 
     // Get player information
-    service.getPlayerInfo = function() {
+    this.getPlayerInfo = function() {
         console.log('Getting player info...');
         return $http({
             method: 'GET',
@@ -47,7 +46,7 @@ angular.module('app')
             }
         }).then(function(response) {
             console.log('Player info received:', response.data);
-            service.storePlayerData(response.data);
+            this.storePlayerData(response.data);
             return response.data;
         }).catch(function(error) {
             console.error('Error getting player info:', error);
@@ -56,13 +55,13 @@ angular.module('app')
     };
 
     // Store player data
-    service.storePlayerData = function(playerData) {
+    this.storePlayerData = function(playerData) {
         currentPlayer = playerData;
         localStorage.setItem('currentPlayer', JSON.stringify(playerData));
     };
 
     // Get current player
-    service.getCurrentPlayer = function() {
+    this.getCurrentPlayer = function() {
         if (!currentPlayer) {
             var stored = localStorage.getItem('currentPlayer');
             if (stored) {
@@ -73,7 +72,7 @@ angular.module('app')
     };
 
     // Check if user is authenticated
-    service.isAuthenticated = function() {
+    this.isAuthenticated = function() {
         var token = localStorage.getItem('token');
         console.log('[AuthService.isAuthenticated] token:', token);
         if (token) {
@@ -85,7 +84,7 @@ angular.module('app')
     };
 
     // Logout
-    service.logout = function() {
+    this.logout = function() {
         localStorage.removeItem('token');
         localStorage.removeItem('currentPlayer');
         currentPlayer = null;
@@ -93,9 +92,8 @@ angular.module('app')
         // Force reload to ensure all state is cleared and user is redirected
         window.location.href = '/#!/login';
     };
+});
 
-    return service;
-})
 .factory('AuthInterceptor', function ($rootScope, $q, $window, $location, FUNIFIER_API_CONFIG) {
   return {
     request: function (config) {

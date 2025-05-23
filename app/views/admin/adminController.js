@@ -394,10 +394,31 @@
     };
     vm.exportStatCsv = function() {
       if (vm.statModalKey === 'purchases') {
-        // Use Funifier's export endpoint for action logs filtered by actionId=comprar
-        var base64 = basicAuth.replace(/^Basic\s+/i, '');
-        var authParam = encodeURIComponent('Basic ' + base64);
-        window.open('https://service2.funifier.com/v3/action/log/export/csv?actionId=comprar&Authorization=' + authParam, '_blank');
+        // Build CSV from modal data
+        var rows = [];
+        var headers = ['Jogador', 'Data'].concat(vm.statModalAttrKeys);
+        rows.push(headers.join(','));
+        vm.statModalData.forEach(function(log) {
+          var row = [
+            '"' + (log.userId || '') + '"',
+            '"' + (log.time ? (new Date(log.time)).toLocaleString('pt-BR') : '') + '"'
+          ];
+          vm.statModalAttrKeys.forEach(function(attr) {
+            var val = (log.attributes && log.attributes[attr] !== undefined) ? log.attributes[attr] : '';
+            row.push('"' + (val !== null ? val : '') + '"');
+          });
+          rows.push(row.join(','));
+        });
+        var csvContent = rows.join('\r\n');
+        var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        var link = document.createElement('a');
+        var url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'compras_registradas.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       }
       // Add more statKey cases for other stats as needed
     };
