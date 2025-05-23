@@ -298,5 +298,41 @@
                 }
             });
         }
+
+        // --- Dashboard Buttons ---
+        var defaultDashboardButtons = [
+            { label: 'Próximos eventos', icon: 'bi-calendar-event', route: '/events', visible: true, isDefault: true, click: vm.goToEvents },
+            { label: 'Fidelidade', icon: 'bi-puzzle', route: '/fidelidade', visible: true, isDefault: true, click: vm.goToFidelidade },
+            { label: 'Registrar compra', icon: 'bi-receipt', route: '/register-purchase', visible: true, isDefault: true, click: vm.goToRegisterPurchase },
+            { label: 'Loja', icon: 'bi-shop', route: '/virtual-goods', visible: true, isDefault: true, click: vm.goToStore },
+            { label: 'Rede Social', icon: 'bi-hash', route: '/social', visible: true, isDefault: true, click: vm.goToSocial },
+            { label: 'Quiz - Teste seu conhecimento!', icon: 'bi-chat-dots', route: '/quiz', visible: true, isDefault: true, click: vm.goToQuiz }
+        ];
+        function mergeDashboardButtons() {
+            var stored = JSON.parse(localStorage.getItem('admin_dashboardButtons') || '[]');
+            var all = defaultDashboardButtons.map(function(def) {
+                var found = stored.find(function(btn) { return btn.route === def.route && btn.isDefault; });
+                if (found) {
+                    return Object.assign({}, def, found);
+                }
+                // If not found, check for visibility override
+                var vis = stored.find(function(btn) { return btn.route === def.route && btn.isDefault && btn.visible === false; });
+                if (vis) return Object.assign({}, def, { visible: false });
+                return def;
+            });
+            // Add custom buttons (not default)
+            stored.forEach(function(btn) {
+                if (!btn.isDefault) all.push(btn);
+            });
+            return all.filter(function(btn) { return btn.visible !== false; });
+        }
+        vm.dashboardButtons = mergeDashboardButtons();
+        vm.handleDashboardButton = function(btn) {
+            if (btn.isDefault && typeof btn.click === 'function') {
+                btn.click();
+            } else if (btn.route) {
+                $location.path(btn.route);
+            }
+        };
     }
 })(); 

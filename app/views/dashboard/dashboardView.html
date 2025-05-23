@@ -302,29 +302,9 @@
   </div>
   <!-- Menu Buttons -->
   <div class="dashboard-menu">
-    <button class="dashboard-menu-btn" ng-click="vm.goToEvents()">
-      <i class="bi bi-calendar-event dashboard-menu-icon"></i>
-      Próximos eventos
-    </button>
-    <button class="dashboard-menu-btn fidelidade-btn" ng-click="vm.goToFidelidade()">
-      <i class="bi bi-puzzle dashboard-menu-icon" style="color:#ff2e93;"></i>
-      Fidelidade
-    </button>
-    <button class="dashboard-menu-btn" ng-click="vm.goToRegisterPurchase()">
-      <i class="bi bi-receipt dashboard-menu-icon"></i>
-      Registrar compra
-    </button>
-    <button class="dashboard-menu-btn" ng-click="vm.goToStore()">
-      <i class="bi bi-shop dashboard-menu-icon"></i>
-      Loja
-    </button>
-    <button class="dashboard-menu-btn" ng-click="vm.goToSocial()">
-      <i class="bi bi-hash dashboard-menu-icon"></i>
-      Rede Social
-    </button>
-    <button class="dashboard-menu-btn" ng-click="vm.goToQuiz()">
-      <i class="bi bi-chat-dots dashboard-menu-icon"></i>
-      Quiz - Teste seu conhecimento!
+    <button class="dashboard-menu-btn" ng-repeat="btn in vm.dashboardButtons" ng-click="vm.handleDashboardButton(btn)">
+      <i class="bi {{btn.icon}} dashboard-menu-icon" ng-style="{'color': btn.icon === 'bi-puzzle' ? '#ff2e93' : ''}"></i>
+      {{btn.label}}
     </button>
   </div>
   <!-- Accordion for QR Code, Challenges, and Purchases -->

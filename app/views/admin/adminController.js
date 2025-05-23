@@ -34,6 +34,25 @@
     vm.createActionLog = createActionLog;
     vm.onLogoFileChange = onLogoFileChange;
     vm.addButtonFromFields = addButtonFromFields;
+    vm.saveAllButtons = saveAllButtons;
+    vm.iconOptions = [
+      'bi-calendar-event',
+      'bi-puzzle',
+      'bi-receipt',
+      'bi-shop',
+      'bi-hash',
+      'bi-chat-dots',
+      'bi-star',
+      'bi-star-fill',
+      'bi-coin',
+      'bi-gear',
+      'bi-box-arrow-right',
+      'bi-arrow-left',
+      'bi-upload',
+      'bi-clock-history',
+      'bi-patch-check',
+      'bi-check-circle-fill'
+    ];
     // --- Auth ---
     function login() {
       if(vm.user === 'admin' && vm.pass === 'P0rquinh@') {
@@ -210,6 +229,23 @@
       vm.newButtonLabel = '';
       vm.newButtonIcon = '';
       vm.newButtonRoute = '';
+      vm.dashboardButtons = mergeDashboardButtons();
+    }
+    function saveAllButtons() {
+      // Only store custom buttons and visibility overrides for defaults
+      var stored = [];
+      vm.dashboardButtons.forEach(function(btn) {
+        if (btn.isDefault) {
+          // Only store if visibility changed from default (true)
+          if (btn.visible === false) {
+            stored.push({ route: btn.route, visible: false, isDefault: true });
+          }
+        } else {
+          stored.push(btn);
+        }
+      });
+      localStorage.setItem('admin_dashboardButtons', JSON.stringify(stored));
+      alert('Botões salvos!');
       vm.dashboardButtons = mergeDashboardButtons();
     }
     // Load theme config from Funifier on controller init
