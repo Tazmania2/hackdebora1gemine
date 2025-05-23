@@ -68,4 +68,8 @@ angular.module('app').controller('LoginController', function($scope, $location, 
                 vm.isRequestingReset = false;
             });
     };
+
+    vm.goToRegister = function() {
+        $location.path('/register');
+    };
 });
