@@ -1,3 +1,96 @@
-<div style="background: #181828; min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #ff2e93; font-size: 2rem; font-weight: bold;">
-  Eventos - Em construção
+<style>
+.events-header {
+  width: 100%;
+  background: #ff2e93;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 0 0 0 0;
+  min-height: 90px;
+  height: 90px;
+  border-radius: 0 0 0 0;
+  position: relative;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  font-size: 2.2rem;
+}
+.events-back {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  background: #a0004d;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 2rem;
+  border: none;
+  color: #fff;
+  z-index: 2;
+}
+.events-header-icon {
+  font-size: 3.2rem;
+  margin-left: 80px;
+  margin-right: 18px;
+  color: #fff;
+}
+.events-title {
+  font-size: 2.1rem;
+  font-weight: bold;
+  color: #fff;
+  margin-left: 12px;
+  letter-spacing: 1px;
+}
+.event-card {
+  background: #232323;
+  border-radius: 16px;
+  margin: 24px 0 0 0;
+  padding: 18px 18px 18px 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.event-img {
+  width: 90px;
+  height: 90px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #fff;
+}
+.event-info {
+  color: #fff;
+  font-size: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+</style>
+<div class="dashboard-viewport" ng-controller="EventsController">
+  <div class="events-header">
+    <button class="events-back" ng-click="goBack()" aria-label="Voltar">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <i class="bi bi-calendar-event events-header-icon"></i>
+    <span class="events-title">Próximos eventos</span>
+  </div>
+  <div ng-if="loading" class="events-loading">Carregando eventos...</div>
+  <div ng-if="error" class="events-error">{{error}}</div>
+  <div ng-if="!loading && !error">
+    <div class="event-card" ng-repeat="event in events">
+      <img class="event-img" ng-src="{{event.image}}" alt="Logo do evento">
+      <div class="event-info">
+        <div><b>Evento:</b> {{event.title}}</div>
+        <div><b>Data:</b> {{event.date | date:'dd/MM/yyyy'}}</div>
+        <div><b>Local:</b> {{event.location}}</div>
+        <div><b>Horário:</b> {{event.time}}</div>
+        <div><b>Pontos:</b> {{event.points}}</div>
+      </div>
+    </div>
+  </div>
 </div> 
