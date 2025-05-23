@@ -52,15 +52,21 @@ angular.module('app').controller('QuizController', function($scope, $location, $
                 vm.loading = false;
                 return;
             }
-            QuizService.startQuiz(quizId, playerId).then(function(resp) {
+            // Start the quiz and only finish loading when quizLogId is set
+            return QuizService.startQuiz(quizId, playerId).then(function(resp) {
                 vm.quizLogId = resp.data._id || resp.data.quiz_log || resp.data.quizLogId;
+                console.log('Quiz started, quizLogId:', vm.quizLogId, resp.data);
+                if (!vm.quizLogId) {
+                    vm.error = 'Quiz não pôde ser iniciado (quizLogId ausente).';
+                }
             }).catch(function(err) {
                 vm.error = 'Erro ao iniciar quiz.';
-            }).finally(function() {
-                vm.loading = false;
+                console.error('Erro ao iniciar quiz:', err);
             });
         }).catch(function(err) {
             vm.error = 'Erro ao carregar perguntas do quiz.';
+            console.error('Erro ao carregar perguntas:', err);
+        }).finally(function() {
             vm.loading = false;
         });
     }
@@ -76,6 +82,7 @@ angular.module('app').controller('QuizController', function($scope, $location, $
     function submitQuiz() {
         if (!vm.quizLogId) {
             vm.error = 'Quiz não iniciado corretamente.';
+            console.error('submitQuiz called but quizLogId is missing');
             return;
         }
         var player = PlayerService.getCurrentPlayer();
@@ -90,6 +97,7 @@ angular.module('app').controller('QuizController', function($scope, $location, $
             };
         });
         vm.loading = true;
+        console.log('Submitting answers for quizLogId:', vm.quizLogId, bulkAnswers);
         QuizService.submitAnswers(bulkAnswers).then(function() {
             return QuizService.finishQuiz(vm.quizLogId);
         }).then(function(resp) {
@@ -97,6 +105,7 @@ angular.module('app').controller('QuizController', function($scope, $location, $
             $location.path('/dashboard');
         }).catch(function(err) {
             vm.error = 'Erro ao enviar respostas.';
+            console.error('Erro ao enviar respostas:', err);
         }).finally(function() {
             vm.loading = false;
         });
