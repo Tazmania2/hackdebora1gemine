@@ -78,6 +78,21 @@
 .dashboard-header-gear .bi {
   color: #fff !important;
 }
+.dashboard-header-logout {
+  font-size: 2.2rem;
+  color: #fff;
+  cursor: pointer;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 0 0 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dashboard-header-logout .bi {
+  color: #fff !important;
+}
 .saldo-cards {
   display: flex;
   gap: 12px;
@@ -250,6 +265,9 @@
       <button class="dashboard-header-gear" ng-click="vm.goToProfile()" aria-label="Editar Perfil">
         <i class="bi bi-gear"></i>
       </button>
+      <button class="dashboard-header-logout" ng-click="vm.logout()" aria-label="Sair" title="Sair">
+        <i class="bi bi-box-arrow-right"></i>
+      </button>
     </div>
   </div>
   <!-- Saldo Cards -->
@@ -305,6 +323,7 @@
     <uib-accordion close-others="true">
       <!-- QR Code Accordion -->
       <div uib-accordion-group heading="QR Code" is-open="status.open1" class="saldo-card" style="margin-bottom: 12px;">
+        <div class="dashboard-card-title">QR Code</div>
         <div style="display: flex; flex-direction: column; align-items: center;">
           <div class="saldo-label" style="margin-bottom: 8px;">QR Code</div>
           <img ng-if="vm.qrReady" ng-src="{{vm.qrImgUrl}}" width="180" height="180" alt="QR Code" style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.10);">
@@ -313,6 +332,7 @@
       </div>
       <!-- Completed Challenges Accordion -->
       <div uib-accordion-group heading="Desafios Concluídos" is-open="true" class="saldo-card" style="margin-bottom: 12px;">
+        <div class="dashboard-card-title">Desafios Concluídos</div>
         <ul style="list-style: none; padding: 0; margin: 0; color: #fff;">
           <li class="dashboard-card" ng-repeat="challenge in vm.completedChallengesDisplay | limitTo:5" ng-click="vm.goToChallenge(challenge)">
             <div class="dashboard-card-title">{{challenge.name}}</div>
@@ -330,6 +350,7 @@
       </div>
       <!-- Purchase History Accordion -->
       <div uib-accordion-group heading="Histórico de Compras" is-open="status.open3" class="saldo-card">
+        <div class="dashboard-card-title">Histórico de Compras</div>
         <div ng-if="vm.purchaseHistoryDisplay.length">
           <ul style="list-style: none; padding: 0; margin: 0; color: #fff;">
             <li class="dashboard-card" ng-repeat="item in vm.purchaseHistoryDisplay | limitTo:5" ng-click="vm.goToPurchase(item)">

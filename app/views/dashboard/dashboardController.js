@@ -47,6 +47,10 @@
         vm.goToQuiz = function() {
             $location.path('/quiz');
         };
+        vm.logout = function() {
+            AuthService.logout();
+            $location.path('/login');
+        };
 
         // Initialize
         activate();
@@ -255,5 +259,7 @@
                     console.error('Error registering for event:', error);
                 });
         }
+
+        $scope.status = $scope.status || { open1: false, open3: false };
     }
 })(); 
