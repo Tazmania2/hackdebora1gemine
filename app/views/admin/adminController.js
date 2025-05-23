@@ -32,6 +32,7 @@
     vm.saveChallenge = saveChallenge;
     vm.addChallenge = addChallenge;
     vm.createActionLog = createActionLog;
+    vm.onLogoFileChange = onLogoFileChange;
     // --- Auth ---
     function login() {
       if(vm.user === 'admin' && vm.pass === 'P0rquinh@') {
@@ -47,7 +48,9 @@
       ThemeConfigService.saveConfig(vm.themeConfig).then(function() {
         ThemeConfigService.applyConfig(vm.themeConfig);
         vm.loadingTheme = false;
-        alert('Cores salvas!');
+        // Broadcast logo change so all views update
+        $scope.$root.$broadcast('theme-logo-updated', vm.themeConfig.logo);
+        alert('Cores e logo salvos!');
         $scope.$applyAsync();
       });
     }
@@ -119,6 +122,35 @@
       var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
       $http.post('https://service2.funifier.com/v3/activities', { action: vm.actionType, player: vm.actionPlayerId }, { headers: { Authorization: basicAuth } })
         .then(function() { alert('Log criado!'); });
+    }
+    function onLogoFileChange(input) {
+      var file = input.files[0];
+      if (!file) return;
+      vm.loadingTheme = true;
+      var formData = new FormData();
+      formData.append('file', file);
+      formData.append('extra', JSON.stringify({ session: 'images', transform: [{ stage: 'size', width: 350, height: 350 }] }));
+      $http({
+        method: 'POST',
+        url: 'https://service2.funifier.com/v3/upload/image',
+        headers: {
+          'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
+          'Content-Type': undefined
+        },
+        data: formData,
+        transformRequest: angular.identity
+      }).then(function(response) {
+        if (response.data && response.data.uploads && response.data.uploads[0] && response.data.uploads[0].url) {
+          vm.themeConfig.logo = response.data.uploads[0].url;
+        } else {
+          alert('Erro ao obter URL da imagem enviada.');
+        }
+      }).catch(function() {
+        alert('Erro ao enviar imagem.');
+      }).finally(function() {
+        vm.loadingTheme = false;
+        $scope.$applyAsync();
+      });
     }
     // Load theme config from Funifier on controller init
     ThemeConfigService.getConfig().then(function(cfg) {

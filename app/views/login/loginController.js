@@ -1,5 +1,5 @@
 // app/views/login/loginController.js
-angular.module('app').controller('LoginController', function($scope, $location, AuthService, FUNIFIER_API_CONFIG) {
+angular.module('app').controller('LoginController', function($scope, $location, AuthService, FUNIFIER_API_CONFIG, ThemeConfigService) {
     var vm = this; // vm (ViewModel) é uma prática comum para 'this' em controladores
 
     vm.loading = false;
@@ -8,6 +8,20 @@ angular.module('app').controller('LoginController', function($scope, $location, 
         email: '',
         password: ''
     };
+    vm.themeLogo = null;
+    vm.showStudioLogo = true;
+
+    // Load logo and showStudioLogo from theme config
+    ThemeConfigService.getConfig().then(function(cfg) {
+        vm.themeLogo = cfg.logo || null;
+        vm.showStudioLogo = (typeof cfg.showStudioLogo === 'undefined') ? true : !!cfg.showStudioLogo;
+        $scope.$applyAsync();
+    });
+    // Listen for logo updates
+    $scope.$on('theme-logo-updated', function(e, logo) {
+        vm.themeLogo = logo;
+        $scope.$applyAsync();
+    });
 
     vm.resetEmail = '';
     vm.resetMessage = '';
