@@ -43,7 +43,7 @@
             $location.path('/virtual-goods');
         };
         vm.goToFidelidade = function() {
-            $location.path('/register-purchase');
+            $location.path('/fidelidade');
         };
         vm.goToQuiz = function() {
             $location.path('/quiz');

@@ -251,6 +251,20 @@
 .points-pill {
   justify-self: end;
 }
+.fidelidade-btn {
+  background: #181818 !important;
+  color: #ff2e93 !important;
+  font-size: 1.25rem !important;
+  font-weight: 500 !important;
+  border-radius: 16px !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 18px 0 10px 0 !important;
+  margin-bottom: 0 !important;
+  margin-top: 0 !important;
+  text-align: center !important;
+  letter-spacing: 0.5px;
+}
 </style>
 <div class="dashboard-viewport">
   <!-- Header -->
@@ -297,10 +311,10 @@
       <i class="bi bi-calendar-event dashboard-menu-icon"></i>
       Próximos eventos
     </button>
-    <button class="dashboard-menu-btn" ng-click="vm.goToFidelidade()">
-      <i class="bi bi-patch-check dashboard-menu-icon"></i>
-      Registre sua compra
+    <button class="dashboard-menu-btn fidelidade-btn" ng-click="vm.goToFidelidade()">
+      Fidelidade
     </button>
+    <button class="dashboard-menu-btn" ng-click="vm.goToFidelidade()" style="display:none"></button>
     <button class="dashboard-menu-btn" ng-click="vm.goToStore()">
       <i class="bi bi-shop dashboard-menu-icon"></i>
       Loja

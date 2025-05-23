@@ -126,6 +126,16 @@
                     }]
                 }
             })
+            .when('/fidelidade', {
+                templateUrl: 'app/views/fidelidade/fidelidadeView.html',
+                controller: 'FidelidadeController',
+                controllerAs: 'vm',
+                resolve: {
+                    auth: ['AuthService', function(AuthService) {
+                        return AuthService.isAuthenticated();
+                    }]
+                }
+            })
             .otherwise({ redirectTo: '/login' });
 
         $locationProvider.html5Mode(true);

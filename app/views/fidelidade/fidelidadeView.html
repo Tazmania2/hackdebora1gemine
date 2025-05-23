@@ -1,3 +1,132 @@
-<div style="background: #181828; min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #ff2e93; font-size: 2rem; font-weight: bold;">
-  Fidelidade - Em construção
+<style>
+.fidelidade-viewport {
+  background: #181828;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  color: #fff;
+  padding: 0;
+}
+.fidelidade-header {
+  width: 100vw;
+  max-width: 430px;
+  background: #ec0677;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  min-height: 80px;
+  height: 80px;
+  border-radius: 0 0 32px 32px;
+  position: relative;
+  justify-content: center;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.fidelidade-back {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  background: #a0004d;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 2rem;
+  border: none;
+  color: #fff;
+  z-index: 2;
+}
+.fidelidade-title {
+  font-size: 2.1rem;
+  font-weight: bold;
+  color: #fff;
+  margin: 0 auto;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.fidelidade-title-icon {
+  font-size: 2.2rem;
+  color: #fff;
+  margin-right: 8px;
+}
+.fidelidade-msg {
+  margin: 32px 0 18px 0;
+  font-size: 1.25rem;
+  text-align: center;
+  color: #fff;
+}
+.fidelidade-msg .highlight {
+  color: #ff2e93;
+  font-weight: bold;
+}
+.fidelidade-puzzle-container {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  margin: 0 auto;
+  margin-top: 18px;
+}
+.fidelidade-pig-base {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  position: absolute;
+  left: 0; top: 0;
+  z-index: 1;
+}
+.fidelidade-piece {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0; top: 0;
+  z-index: 2;
+  opacity: 0;
+  transform: scale(0.7) rotate(-180deg);
+  transition: opacity 0.3s, transform 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+}
+.fidelidade-piece.animated {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+.fidelidade-piece.nose.animated {
+  animation: fidelidade-bounce 0.7s 1;
+}
+@keyframes fidelidade-bounce {
+  0% { transform: scale(1) rotate(0deg); }
+  60% { transform: scale(1.15) rotate(0deg); }
+  80% { transform: scale(0.95) rotate(0deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+</style>
+<div class="fidelidade-viewport">
+  <div class="fidelidade-header">
+    <button class="fidelidade-back" ng-click="vm.goBack()" aria-label="Voltar">&#8617;</button>
+    <span class="fidelidade-title">
+      <i class="bi bi-patch-check fidelidade-title-icon"></i>
+      Fidelidade
+    </span>
+  </div>
+  <div class="fidelidade-msg">
+    Consiga mais <span class="highlight">{{vm.piecesMissing}}</span> peça<span ng-if="vm.piecesMissing !== 1">s</span> e troque por um <span class="highlight">Produto!</span>
+  </div>
+  <div class="fidelidade-puzzle-container">
+    <img class="fidelidade-pig-base" src="https://imagizer.imageshack.com/img923/7573/ahA25c.png" alt="Pig Puzzle Base" />
+    <img ng-repeat="piece in vm.pieces track by $index"
+         ng-if="piece.owned"
+         ng-class="['fidelidade-piece', piece.pos, {animated: piece.anim}, {nose: piece.pos === 'nose'}]"
+         ng-style="{
+           'z-index': piece.pos === 'nose' ? 3 : 2
+         }"
+         ng-src="{{piece.img}}"
+         alt="Puzzle Piece" />
+  </div>
 </div> 
