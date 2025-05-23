@@ -2,11 +2,11 @@ angular.module('app').controller('FidelidadeController', function($scope, $timeo
     var vm = this;
     // Piece definitions
     var pieces = [
-        { id: 'EV2jc1P', img: 'https://imagizer.imageshack.com/img924/3846/4avJnI.png', pos: 'top-left' },
-        { id: 'EVVEcSj', img: 'https://imagizer.imageshack.com/img922/2356/4cuiBX.png', pos: 'top-right' },
-        { id: 'EVVEtaF', img: 'https://imagizer.imageshack.com/img923/6262/63eQCV.png', pos: 'bottom-left' },
-        { id: 'EVXvM7O', img: 'https://imagizer.imageshack.com/img923/7351/vvdWNF.png', pos: 'bottom-right' },
-        { id: 'EVXyNFP', img: 'https://imagizer.imageshack.com/img923/9439/5Y4Rph.png', pos: 'nose' }
+        { id: 'EV2jc1P', img: 'https://imagizer.imageshack.com/img922/5794/1yRFPp.png', pos: 'top-left' },
+        { id: 'EVVEcSj', img: 'https://imagizer.imageshack.com/img923/81/oloTZ2.png', pos: 'top-right' },
+        { id: 'EVVEtaF', img: 'https://imagizer.imageshack.com/img923/6366/ODpOcj.png', pos: 'bottom-left' },
+        { id: 'EVXvM7O', img: 'https://imagizer.imageshack.com/img924/7681/RmGJMs.png', pos: 'bottom-right' },
+        { id: 'EVXyNFP', img: 'https://imagizer.imageshack.com/img922/816/UDeQ85.png', pos: 'nose' }
     ];
     vm.pieces = pieces.map(function(p) { return Object.assign({}, p, { owned: false, anim: false }); });
     vm.loading = true;
