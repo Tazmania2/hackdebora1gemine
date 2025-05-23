@@ -24,7 +24,6 @@
     vm.saveColors = saveColors;
     vm.resetToDefault = resetToDefault;
     vm.saveLogo = saveLogo;
-    vm.saveButton = saveButton;
     vm.deleteButton = deleteButton;
     vm.addButton = addButton;
     vm.saveSuccessMessage = saveSuccessMessage;
