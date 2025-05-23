@@ -164,7 +164,6 @@
     function saveAllButtons() {
       console.log('saveAllButtons called', vm.dashboardButtons);
       vm.loadingButtons = true;
-      // Only store custom buttons and visibility overrides for defaults
       var toStore = [];
       vm.dashboardButtons.forEach(function(btn) {
         if (btn.isDefault) {
@@ -175,14 +174,17 @@
           toStore.push(btn);
         }
       });
+      console.log('About to PUT to Funifier:', toStore);
       $http.put(FUNIFIER_API, { value: toStore }, { headers: { Authorization: basicAuth } })
-        .then(function() {
+        .then(function(resp) {
+          console.log('Funifier PUT success', resp);
           alert('Botões salvos no Funifier!');
-          loadDashboardButtons(); // Always fetch latest after save
+          loadDashboardButtons();
         })
-        .catch(function() {
+        .catch(function(e) {
+          console.error('Funifier PUT error', e);
           alert('Erro ao salvar botões no Funifier.');
-          loadDashboardButtons(); // Also fetch on error to stay in sync
+          loadDashboardButtons();
         })
         .finally(function() {
           vm.loadingButtons = false;
