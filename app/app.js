@@ -97,7 +97,7 @@
                 }
             })
             .when('/quiz', {
-                templateUrl: 'views/quiz/quizView.html',
+                templateUrl: 'app/views/quiz/quizView.html',
                 controller: 'QuizController',
                 controllerAs: 'vm',
                 resolve: {
@@ -107,7 +107,7 @@
                 }
             })
             .when('/quiz/:quizId', {
-                templateUrl: 'views/quiz/quizView.html',
+                templateUrl: 'app/views/quiz/quizView.html',
                 controller: 'QuizController',
                 controllerAs: 'vm',
                 resolve: {
