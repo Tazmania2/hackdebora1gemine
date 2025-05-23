@@ -354,5 +354,40 @@
     };
     // Load on init
     vm.loadSuccessMessages();
+    // --- Statistics Modal Logic ---
+    vm.statModalOpen = false;
+    vm.statModalKey = null;
+    vm.statModalTitle = '';
+    vm.statModalData = [];
+    vm.statModalLoading = false;
+    vm.openStatModal = function(statKey) {
+      vm.statModalKey = statKey;
+      vm.statModalOpen = true;
+      vm.statModalLoading = true;
+      if (statKey === 'purchases') {
+        vm.statModalTitle = 'Compras registradas';
+        $http.get('https://service2.funifier.com/v3/player/purchases', { headers: { Authorization: basicAuth } })
+          .then(function(resp) {
+            vm.statModalData = resp.data;
+          })
+          .finally(function() {
+            vm.statModalLoading = false;
+            $scope.$applyAsync();
+          });
+      }
+      // Add more statKey cases for other stats as needed
+    };
+    vm.closeStatModal = function() {
+      vm.statModalOpen = false;
+      vm.statModalKey = null;
+      vm.statModalData = [];
+    };
+    vm.exportStatCsv = function() {
+      if (vm.statModalKey === 'purchases') {
+        // Use Funifier's export endpoint for purchases
+        window.open('https://service2.funifier.com/v3/player/purchases/export/csv?Authorization=' + encodeURIComponent(basicAuth), '_blank');
+      }
+      // Add more statKey cases for other stats as needed
+    };
   }
 })(); 

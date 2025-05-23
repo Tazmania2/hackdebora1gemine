@@ -211,7 +211,7 @@
     </div>
     <div class="admin-section">
       <div class="admin-label">Estatísticas</div>
-      <div>Compras registradas: <b>{{vm.stats.purchases}}</b></div>
+      <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('purchases')">Compras registradas: <b>{{vm.stats.purchases}}</b></a></div>
       <div>Jogadores ativos: <b>{{vm.stats.activePlayers}}</b></div>
       <div>Cashback distribuído: <b>{{vm.stats.cashbackDistributed}}</b></div>
       <div>Cashback perdido: <b>{{vm.stats.cashbackLost}}</b></div>
@@ -219,6 +219,34 @@
       <div>Pontos ganhos: <b>{{vm.stats.pointsGained}}</b></div>
       <div>Pontos usados: <b>{{vm.stats.pointsUsed}}</b></div>
       <button class="admin-btn" ng-click="vm.refreshStats()">Atualizar Estatísticas</button>
+    </div>
+    <!-- Statistics Modal -->
+    <div ng-if="vm.statModalOpen" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
+      <div style="background:#232323;padding:32px 24px;border-radius:16px;max-width:600px;max-height:80vh;overflow:auto;box-shadow:0 4px 24px rgba(0,0,0,0.18);color:#fff;">
+        <div style="font-weight:bold;font-size:1.2em;margin-bottom:18px;">{{vm.statModalTitle}}</div>
+        <div ng-if="vm.statModalLoading" style="margin:24px 0;text-align:center;">Carregando...</div>
+        <div ng-if="!vm.statModalLoading">
+          <div ng-if="vm.statModalData.length === 0" style="color:#aaa;">Nenhum dado encontrado.</div>
+          <table ng-if="vm.statModalData.length > 0" style="width:100%;margin-bottom:18px;">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Valor</th>
+                <th>Data</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="purchase in vm.statModalData">
+                <td>{{purchase.player}}</td>
+                <td>{{purchase.value | currency:'R$ '}}</td>
+                <td>{{purchase.createdAt | date:'dd/MM/yyyy HH:mm'}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="admin-btn" ng-click="vm.exportStatCsv()">Exportar CSV</button>
+          <button class="admin-btn" ng-click="vm.closeStatModal()" style="background:#888;margin-left:8px;">Fechar</button>
+        </div>
+      </div>
     </div>
     <div class="admin-section">
       <div class="admin-label">Desafios</div>
