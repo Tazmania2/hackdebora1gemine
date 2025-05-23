@@ -55,6 +55,9 @@
         vm.toggleAccordion = function(idx) {
             vm.accordionOpen = (vm.accordionOpen === idx) ? -1 : idx;
         };
+        vm.goToRegisterPurchase = function() {
+            $location.path('/register-purchase');
+        };
 
         // Initialize
         activate();
