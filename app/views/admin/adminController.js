@@ -162,6 +162,7 @@
     loadDashboardButtons();
     // Save to Funifier
     function saveAllButtons() {
+      console.log('saveAllButtons called', vm.dashboardButtons);
       vm.loadingButtons = true;
       // Only store custom buttons and visibility overrides for defaults
       var toStore = [];

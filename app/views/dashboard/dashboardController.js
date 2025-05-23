@@ -282,6 +282,7 @@
         function checkAndLogLoginAction() {
             ActivityService.getByType('logar').then(function(response) {
                 var logs = response.data || [];
+                if (!Array.isArray(logs)) logs = [];
                 var today = new Date();
                 var found = logs.some(function(log) {
                     var logDate = new Date(log.createdAt || log.date || log.timestamp);
