@@ -299,39 +299,53 @@
             });
         }
 
-        // --- Dashboard Buttons ---
+        // --- Dashboard Buttons (Funifier sync) ---
+        var FUNIFIER_API = 'https://service2.funifier.com/v3/collection/dashboard_buttons__c';
+        var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
         var defaultDashboardButtons = [
-            { label: 'Próximos eventos', icon: 'bi-calendar-event', route: '/events', visible: true, isDefault: true, click: vm.goToEvents },
-            { label: 'Fidelidade', icon: 'bi-puzzle', route: '/fidelidade', visible: true, isDefault: true, click: vm.goToFidelidade },
-            { label: 'Registrar compra', icon: 'bi-receipt', route: '/register-purchase', visible: true, isDefault: true, click: vm.goToRegisterPurchase },
-            { label: 'Loja', icon: 'bi-shop', route: '/virtual-goods', visible: true, isDefault: true, click: vm.goToStore },
-            { label: 'Rede Social', icon: 'bi-hash', route: '/social', visible: true, isDefault: true, click: vm.goToSocial },
-            { label: 'Quiz - Teste seu conhecimento!', icon: 'bi-chat-dots', route: '/quiz', visible: true, isDefault: true, click: vm.goToQuiz }
+            { id: 'default-events', label: 'Próximos eventos', icon: 'bi-calendar-event', route: '/events', visible: true, isDefault: true, click: vm.goToEvents },
+            { id: 'default-fidelidade', label: 'Fidelidade', icon: 'bi-puzzle', route: '/fidelidade', visible: true, isDefault: true, click: vm.goToFidelidade },
+            { id: 'default-register', label: 'Registrar compra', icon: 'bi-receipt', route: '/register-purchase', visible: true, isDefault: true, click: vm.goToRegisterPurchase },
+            { id: 'default-store', label: 'Loja', icon: 'bi-shop', route: '/virtual-goods', visible: true, isDefault: true, click: vm.goToStore },
+            { id: 'default-social', label: 'Rede Social', icon: 'bi-hash', route: '/social', visible: true, isDefault: true, click: vm.goToSocial },
+            { id: 'default-quiz', label: 'Quiz - Teste seu conhecimento!', icon: 'bi-chat-dots', route: '/quiz', visible: true, isDefault: true, click: vm.goToQuiz }
         ];
-        function mergeDashboardButtons() {
-            var stored = JSON.parse(localStorage.getItem('admin_dashboardButtons') || '[]');
-            var all = defaultDashboardButtons.map(function(def) {
-                var found = stored.find(function(btn) { return btn.route === def.route && btn.isDefault; });
-                if (found) {
-                    return Object.assign({}, def, found);
-                }
-                // If not found, check for visibility override
-                var vis = stored.find(function(btn) { return btn.route === def.route && btn.isDefault && btn.visible === false; });
-                if (vis) return Object.assign({}, def, { visible: false });
-                return def;
-            });
-            // Add custom buttons (not default)
-            stored.forEach(function(btn) {
-                if (!btn.isDefault) all.push(btn);
-            });
-            return all.filter(function(btn) { return btn.visible !== false; });
+        function loadDashboardButtons() {
+            $http.get(FUNIFIER_API, { headers: { Authorization: basicAuth } })
+                .then(function(resp) {
+                    var data = (resp.data && resp.data.value) ? resp.data.value : [];
+                    // Merge defaults: use override if present, else visible: true
+                    var all = defaultDashboardButtons.map(function(def) {
+                        var found = data.find(function(btn) { return btn.id === def.id; });
+                        if (found && typeof found.visible !== 'undefined') {
+                            return Object.assign({}, def, { visible: found.visible });
+                        }
+                        return def;
+                    });
+                    // Add all custom buttons (not default)
+                    data.forEach(function(btn) {
+                        if (!btn.isDefault) all.push(btn);
+                    });
+                    vm.dashboardButtons = all.filter(function(btn) { return btn.visible !== false; });
+                })
+                .catch(function() {
+                    // Fallback to defaults
+                    vm.dashboardButtons = defaultDashboardButtons.filter(function(btn) { return btn.visible !== false; });
+                });
         }
-        vm.dashboardButtons = mergeDashboardButtons();
+        loadDashboardButtons();
         vm.handleDashboardButton = function(btn) {
             if (btn.isDefault && typeof btn.click === 'function') {
                 btn.click();
             } else if (btn.route) {
-                $location.path(btn.route);
+                // External link if not internal route
+                if (/^(https?:)?\/\//.test(btn.route) || btn.route.indexOf('/') !== 0) {
+                    var url = btn.route;
+                    if (!/^https?:\/\//.test(url)) url = 'https://' + url;
+                    window.open(url, '_blank');
+                } else {
+                    $location.path(btn.route);
+                }
             }
         };
     }
