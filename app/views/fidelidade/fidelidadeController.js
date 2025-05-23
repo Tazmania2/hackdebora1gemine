@@ -2,11 +2,11 @@ angular.module('app').controller('FidelidadeController', function($scope, $timeo
     var vm = this;
     // Piece definitions
     var pieces = [
-        { id: 'EV2jc1P', img: 'https://s3.amazonaws.com/funifier/games/68252a212327f74f3a3d100d/images/682bcb302327f74f3a3e623a_original_1_pea_obtd.png', pos: 'top-left' },
-        { id: 'EVVEcSj', img: 'https://s3.amazonaws.com/funifier/games/68252a212327f74f3a3d100d/images/682bcb442327f74f3a3e623c_original_2_pea_obtd.png', pos: 'top-right' },
-        { id: 'EVVEtaF', img: 'https://s3.amazonaws.com/funifier/games/68252a212327f74f3a3d100d/images/682bcb5c2327f74f3a3e623e_original_3_pea_obtd.png', pos: 'bottom-left' },
-        { id: 'EVXvM7O', img: 'https://s3.amazonaws.com/funifier/games/68252a212327f74f3a3d100d/images/682bcb762327f74f3a3e627b_original_4_pea_otbd.png', pos: 'bottom-right' },
-        { id: 'EVXyNFP', img: 'https://s3.amazonaws.com/funifier/games/68252a212327f74f3a3d100d/images/682bcb8a2327f74f3a3e627d_original_5_pea_obtd.png', pos: 'nose' }
+        { id: 'EV2jc1P', img: 'https://imagizer.imageshack.com/img924/3846/4avJnI.png', pos: 'top-left' },
+        { id: 'EVVEcSj', img: 'https://imagizer.imageshack.com/img922/2356/4cuiBX.png', pos: 'top-right' },
+        { id: 'EVVEtaF', img: 'https://imagizer.imageshack.com/img923/6262/63eQCV.png', pos: 'bottom-left' },
+        { id: 'EVXvM7O', img: 'https://imagizer.imageshack.com/img923/7351/vvdWNF.png', pos: 'bottom-right' },
+        { id: 'EVXyNFP', img: 'https://imagizer.imageshack.com/img923/9439/5Y4Rph.png', pos: 'nose' }
     ];
     vm.pieces = pieces.map(function(p) { return Object.assign({}, p, { owned: false, anim: false }); });
     vm.loading = true;
