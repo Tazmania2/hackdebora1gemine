@@ -54,7 +54,7 @@ angular.module('app').controller('QuizController', function($scope, $location, $
             }
             // Start the quiz and only finish loading when quizLogId is set
             return QuizService.startQuiz(quizId, playerId).then(function(resp) {
-                vm.quizLogId = resp.data._id || resp.data.quiz_log || resp.data.quizLogId;
+                vm.quizLogId = (resp.data.log && resp.data.log._id) || resp.data._id || resp.data.quiz_log || resp.data.quizLogId;
                 console.log('Quiz started, quizLogId:', vm.quizLogId, resp.data);
                 if (!vm.quizLogId) {
                     vm.error = 'Quiz não pôde ser iniciado (quizLogId ausente).';
