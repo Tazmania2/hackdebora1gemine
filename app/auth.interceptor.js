@@ -5,8 +5,8 @@ angular.module('app')
         var cfg   = $injector.get('FUNIFIER_API_CONFIG');
         var Auth  = $injector.get('AuthService');
         var token = Auth.getToken();
-        if (token) {
-          config.headers = config.headers || {};
+        config.headers = config.headers || {};
+        if (token && !config.headers.Authorization) {
           config.headers.Authorization = 'Bearer ' + token;
         }
         return config;

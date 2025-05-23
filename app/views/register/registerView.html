@@ -232,7 +232,7 @@ body, html {
         <div class="register-checkbox-row">
             <input type="checkbox" id="termsAccept" ng-model="vm.user.acceptTerms" required class="register-checkbox">
             <label for="termsAccept" class="register-terms">
-                Eu li e aceitos os <a href="#!/terms" style="color: #fff; text-decoration: underline;">termos de uso</a>
+                Eu li e aceitos os <a href="" ng-click="vm.showTerms($event)" style="color: #fff; text-decoration: underline;">termos de uso</a>
             </label>
         </div>
         <button type="submit" class="register-btn" ng-disabled="vm.loading">
