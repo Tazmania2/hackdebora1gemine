@@ -30,7 +30,6 @@
     vm.saveSuccessMessage = saveSuccessMessage;
     vm.refreshStats = refreshStats;
     vm.saveChallenge = saveChallenge;
-    vm.createActionLog = createActionLog;
     vm.onLogoFileChange = onLogoFileChange;
     vm.saveAllButtons = saveAllButtons;
     vm.iconOptions = [
@@ -303,7 +302,6 @@
     vm.loadChallenges = loadChallenges;
     vm.openChallengeModal = openChallengeModal;
     vm.closeChallengeModal = closeChallengeModal;
-    vm.saveChallenge = saveChallenge;
     vm.toggleActive = toggleActive;
     vm.restoreChallengesToDefault = restoreChallengesToDefault;
 
@@ -444,17 +442,6 @@
       }
     };
     // Enhanced createActionLog
-    vm.createActionLog = function() {
-      if (!vm.selectedPlayer || !vm.selectedAction) return;
-      var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
-      var payload = {
-        actionId: vm.selectedAction,
-        userId: vm.selectedPlayer,
-        attributes: angular.copy(vm.actionAttributes)
-      };
-      $http.post('https://service2.funifier.com/v3/action/log', payload, { headers: { Authorization: basicAuth } })
-        .then(function() { alert(SuccessMessageService.get('log_created')); });
-    };
     function onLogoFileChange(input) {
       var file = input.files[0];
       if (!file) return;
