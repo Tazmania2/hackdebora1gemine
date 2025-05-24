@@ -291,16 +291,102 @@
         $scope.$applyAsync && $scope.$applyAsync();
       });
     }
-    // --- Challenges ---
-    function saveChallenge(challenge) {
-      var idx = vm.challenges.indexOf(challenge);
-      if(idx === -1) vm.challenges.push(challenge);
-      localStorage.setItem('admin_challenges', JSON.stringify(vm.challenges));
-      alert(SuccessMessageService.get('challenge_saved'));
+    // --- Challenges (Funifier API) ---
+    var CHALLENGE_API = 'https://service2.funifier.com/v3/challenge';
+    vm.challenges = [];
+    vm.challengeModalOpen = false;
+    vm.challengeModalData = null;
+    vm.challengeModalIsNew = false;
+    vm.loadingChallenges = false;
+
+    function loadChallenges() {
+      vm.loadingChallenges = true;
+      $http.get(CHALLENGE_API, { headers: { Authorization: basicAuth } })
+        .then(function(resp) {
+          vm.challenges = resp.data || [];
+        })
+        .finally(function() {
+          vm.loadingChallenges = false;
+          $scope.$applyAsync && $scope.$applyAsync();
+        });
     }
-    function addChallenge() {
-      vm.challenges.push({ name: '', points: 0 });
-    }
+    loadChallenges();
+
+    vm.openChallengeModal = function(challenge) {
+      vm.challengeModalIsNew = !challenge;
+      vm.challengeModalData = challenge ? angular.copy(challenge) : {
+        challenge: '',
+        description: '',
+        active: true,
+        rules: [{ actionId: '', operator: 1, total: 1 }],
+        points: [{ total: 0, category: '', operation: 0 }],
+        techniques: [],
+        badge: null
+      };
+      vm.challengeModalOpen = true;
+    };
+    vm.closeChallengeModal = function() {
+      vm.challengeModalOpen = false;
+      vm.challengeModalData = null;
+    };
+    vm.saveChallenge = function() {
+      var data = angular.copy(vm.challengeModalData);
+      $http.post(CHALLENGE_API, data, { headers: { Authorization: basicAuth } })
+        .then(function() {
+          alert(SuccessMessageService.get('challenge_saved') || 'Desafio salvo!');
+          vm.closeChallengeModal();
+          loadChallenges();
+        });
+    };
+    vm.toggleActive = function(challenge) {
+      var updated = angular.copy(challenge);
+      updated.active = !updated.active;
+      $http.post(CHALLENGE_API, updated, { headers: { Authorization: basicAuth } })
+        .then(function() { loadChallenges(); });
+    };
+    vm.restoreChallengesToDefault = function() {
+      if (!confirm('Tem certeza que deseja restaurar os desafios para o padrão? Todos os desafios atuais serão desativados, exceto os padrões.')) return;
+      var defaults = [
+        {
+          challenge: 'Venda 10 salsichas',
+          description: 'Venda 10 salsichas para ganhar 25 pontos MissCoins',
+          active: true,
+          rules: [{ actionId: 'comprar', operator: 1, total: 10 }],
+          points: [{ total: 25, category: 'misscoins', operation: 0 }],
+          techniques: ['GT35'],
+          badge: null
+        }
+        // Adicione outros desafios padrão aqui
+      ];
+      // Step 1: Fetch all current challenges
+      $http.get(CHALLENGE_API, { headers: { Authorization: basicAuth } }).then(function(resp) {
+        var current = resp.data || [];
+        var defaultNames = defaults.map(function(d) { return d.challenge; });
+        var reqs = [];
+        // Step 2: Deactivate all non-defaults
+        current.forEach(function(ch) {
+          if (!defaultNames.includes(ch.challenge) && ch.active) {
+            var updated = angular.copy(ch);
+            updated.active = false;
+            reqs.push($http.post(CHALLENGE_API, updated, { headers: { Authorization: basicAuth } }));
+          }
+        });
+        // Step 3: Upsert defaults (activate/update or create)
+        defaults.forEach(function(def) {
+          var found = current.find(function(ch) { return ch.challenge === def.challenge; });
+          if (found) {
+            var updated = Object.assign({}, found, def, { active: true });
+            reqs.push($http.post(CHALLENGE_API, updated, { headers: { Authorization: basicAuth } }));
+          } else {
+            reqs.push($http.post(CHALLENGE_API, def, { headers: { Authorization: basicAuth } }));
+          }
+        });
+        Promise.all(reqs).then(function() {
+          alert('Desafios restaurados para o padrão!');
+          loadChallenges();
+        });
+      });
+    };
     // --- Action Log ---
     function createActionLog() {
       var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';

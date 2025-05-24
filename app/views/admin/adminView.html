@@ -245,12 +245,68 @@
     </div>
     <div class="admin-section">
       <div class="admin-label">Desafios</div>
-      <div ng-repeat="challenge in vm.challenges">
-        <input class="admin-input" ng-model="challenge.name" placeholder="Nome do desafio">
-        <input class="admin-input" ng-model="challenge.points" placeholder="Pontos">
-        <button class="admin-btn" ng-click="vm.saveChallenge(challenge)">Salvar</button>
+      <div ng-if="vm.loadingChallenges" style="color:#aaa;">Carregando desafios...</div>
+      <table ng-if="!vm.loadingChallenges && vm.challenges.length > 0" style="width:100%;margin-bottom:12px;">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>Ativo</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="challenge in vm.challenges">
+            <td>{{challenge.challenge}}</td>
+            <td>{{challenge.description}}</td>
+            <td>
+              <span ng-if="challenge.active" style="color:#0f0;">Sim</span>
+              <span ng-if="!challenge.active" style="color:#f44;">Não</span>
+            </td>
+            <td>
+              <button class="admin-btn" ng-click="vm.openChallengeModal(challenge)">Editar</button>
+              <button class="admin-btn" ng-click="vm.toggleActive(challenge)" style="background:#888;margin-left:8px;">{{challenge.active ? 'Desativar' : 'Ativar'}}</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div ng-if="!vm.loadingChallenges && vm.challenges.length === 0" style="color:#aaa;">Nenhum desafio encontrado.</div>
+      <button class="admin-btn" ng-click="vm.openChallengeModal()">Adicionar Desafio</button>
+      <button class="admin-btn" ng-click="vm.restoreChallengesToDefault()" style="background:#888;margin-left:8px;">Restaurar padrão</button>
+      <!-- Challenge Modal -->
+      <div ng-if="vm.challengeModalOpen" class="modal-backdrop" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
+        <div class="modal-content" style="background:#232323;padding:32px 24px;border-radius:16px;max-width:500px;max-height:80vh;overflow:auto;">
+          <div style="font-weight:bold;font-size:1.2em;margin-bottom:18px;">{{vm.challengeModalIsNew ? 'Adicionar Desafio' : 'Editar Desafio'}}</div>
+          <label class="admin-label">Nome</label>
+          <input class="admin-input" ng-model="vm.challengeModalData.challenge" placeholder="Nome do desafio">
+          <label class="admin-label">Descrição</label>
+          <textarea class="admin-textarea" ng-model="vm.challengeModalData.description" placeholder="Descrição"></textarea>
+          <label class="admin-label">Ativo</label>
+          <input type="checkbox" ng-model="vm.challengeModalData.active"> <span style="color:#aaa;">Desmarque para desativar</span>
+          <div style="margin-top:12px;">
+            <label class="admin-label">Regras</label>
+            <div ng-repeat="rule in vm.challengeModalData.rules track by $index" style="margin-bottom:8px;">
+              <input class="admin-input" ng-model="rule.actionId" placeholder="Ação (actionId)">
+              <input class="admin-input" ng-model="rule.total" type="number" placeholder="Total">
+              <button class="admin-btn" ng-click="vm.challengeModalData.rules.splice($index,1)" style="background:#888;" ng-if="vm.challengeModalData.rules.length > 1">Remover</button>
+            </div>
+            <button class="admin-btn" ng-click="vm.challengeModalData.rules.push({actionId:'',operator:1,total:1})" style="margin-top:4px;">Adicionar Regra</button>
+          </div>
+          <div style="margin-top:12px;">
+            <label class="admin-label">Pontos</label>
+            <div ng-repeat="point in vm.challengeModalData.points track by $index" style="margin-bottom:8px;">
+              <input class="admin-input" ng-model="point.total" type="number" placeholder="Total de pontos">
+              <input class="admin-input" ng-model="point.category" placeholder="Categoria (ex: misscoins, xp)">
+              <button class="admin-btn" ng-click="vm.challengeModalData.points.splice($index,1)" style="background:#888;" ng-if="vm.challengeModalData.points.length > 1">Remover</button>
+            </div>
+            <button class="admin-btn" ng-click="vm.challengeModalData.points.push({total:0,category:'',operation:0})" style="margin-top:4px;">Adicionar Pontuação</button>
+          </div>
+          <div style="margin-top:18px;display:flex;gap:12px;">
+            <button class="admin-btn" ng-click="vm.saveChallenge()">Salvar</button>
+            <button class="admin-btn" ng-click="vm.closeChallengeModal()" style="background:#888;">Cancelar</button>
+          </div>
+        </div>
       </div>
-      <button class="admin-btn" ng-click="vm.addChallenge()">Adicionar Desafio</button>
     </div>
     <div class="admin-section">
       <div class="admin-label">Criar Log de Ação para Jogador</div>
