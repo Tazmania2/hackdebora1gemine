@@ -360,63 +360,55 @@
       <div ng-if="vm.loadingActions" style="color:#aaa;">Carregando ações...</div>
       <div ng-if="!vm.loadingActions">
         <button class="admin-btn" ng-click="vm.startAddAction()" ng-if="!vm.editingAction">Adicionar Nova Ação</button>
-        <!-- Action Edit/Add Modal -->
-        <div ng-if="vm.editingAction" style="background:#23232e;border-radius:18px;padding:18px 22px;box-shadow:0 2px 10px rgba(0,0,0,0.10);margin-bottom:18px;margin-top:12px;">
-          <label class="admin-label">Nome da Ação</label>
-          <input class="admin-input" ng-model="vm.editingAction.action" placeholder="Nome da ação (ex: Comprar)">
-          <label class="admin-label">ID da Ação (único, ex: comprar)</label>
-          <input class="admin-input" ng-model="vm.editingAction._id" placeholder="ID único (ex: comprar)">
-          <label class="admin-label">Ativa</label>
-          <label style="display:inline-flex;align-items:center;gap:10px;cursor:pointer;user-select:none;">
-            <span style="font-size:1.08em;font-weight:600;color:{{vm.editingAction.active ? '#0f0' : '#f44'}};min-width:60px;display:inline-block;">{{vm.editingAction.active ? 'Ativa' : 'Inativa'}}</span>
-            <span class="toggle-switch">
-              <input type="checkbox" ng-model="vm.editingAction.active">
-              <span class="toggle-slider" ng-style="{'background': vm.editingAction.active ? '#ff2e93' : '#888'}">
-                <span class="toggle-knob" ng-style="{'transform': vm.editingAction.active ? 'translateX(20px)' : 'none'}"></span>
-              </span>
-            </span>
-          </label>
-          <div style="margin-top:12px;">
-            <label class="admin-label">Atributos</label>
-            <div ng-repeat="attr in vm.editingAction.attributes track by $index" style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
-              <input class="admin-input" ng-model="attr.name" placeholder="Nome do atributo">
-              <select class="admin-input" ng-model="attr.type" ng-options="t for t in vm.actionTypes"></select>
-              <button class="admin-btn" style="background:#888;padding:4px 10px;" ng-click="vm.removeAttributeFromAction($index)">Remover</button>
-            </div>
-            <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
-              <input class="admin-input" ng-model="vm.newAttribute.name" placeholder="Novo atributo">
-              <select class="admin-input" ng-model="vm.newAttribute.type" ng-options="t for t in vm.actionTypes"></select>
-              <button class="admin-btn" style="padding:4px 10px;" ng-click="vm.addAttributeToAction()">Adicionar</button>
-            </div>
-          </div>
-          <div style="margin-top:18px;display:flex;gap:12px;">
-            <button class="admin-btn" ng-click="vm.saveAction()">Salvar</button>
-            <button class="admin-btn" ng-click="vm.cancelEditAction()" style="background:#888;">Cancelar</button>
-          </div>
-        </div>
-        <!-- Actions List -->
+        <!-- Actions List (clickable) -->
         <div ng-if="vm.actions.length === 0 && !vm.editingAction" style="color:#aaa;">Nenhuma ação cadastrada.</div>
         <div ng-if="vm.actions.length > 0 && !vm.editingAction" style="display:flex;flex-direction:column;gap:14px;">
-          <div ng-repeat="action in vm.actions" style="background:#23232e;border-radius:18px;padding:18px 22px;box-shadow:0 2px 10px rgba(0,0,0,0.10);display:flex;flex-direction:column;gap:6px;">
-            <div style="display:flex;align-items:center;justify-content:space-between;">
-              <div>
-                <span style="font-weight:600;font-size:1.13em;color:#fff;">{{action.action}}</span>
-                <span style="color:#aaa;font-size:0.98em;margin-left:8px;">ID: <b>{{action._id}}</b></span>
+          <div ng-repeat="action in vm.actions" ng-click="vm.startEditAction(action)" style="background:#23232e;border-radius:18px;padding:18px 22px;box-shadow:0 2px 10px rgba(0,0,0,0.10);display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:box-shadow 0.18s,background 0.18s;gap:18px;min-height:54px; border:1.5px solid #29293a;">
+            <div style="display:flex;flex-direction:column;gap:2px;">
+              <span style="font-weight:600;font-size:1.13em;color:#fff;">{{action.action}}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span ng-if="action.active" style="color:#0f0;font-weight:600;font-size:1.08em;">Ativa</span>
+              <span ng-if="!action.active" style="color:#f44;font-weight:600;font-size:1.08em;">Inativa</span>
+              <i class="bi bi-chevron-right" style="color:#ff2e93;font-size:1.3em;"></i>
+            </div>
+          </div>
+        </div>
+        <!-- Action Edit/Add Modal -->
+        <div ng-if="vm.editingAction" class="modal-backdrop" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
+          <div class="modal-content" style="background:#232323;padding:32px 24px;border-radius:16px;max-width:500px;max-height:80vh;overflow:auto;">
+            <div style="font-weight:bold;font-size:1.2em;margin-bottom:18px;">{{vm.isEditingExistingAction ? 'Editar Ação' : 'Adicionar Ação'}}</div>
+            <label class="admin-label">Nome da Ação</label>
+            <input class="admin-input" ng-model="vm.editingAction.action" placeholder="Nome da ação (ex: Comprar)">
+            <label class="admin-label">ID da Ação (único, ex: comprar)</label>
+            <input class="admin-input" ng-model="vm.editingAction._id" placeholder="ID único (ex: comprar)">
+            <label class="admin-label">Ativa</label>
+            <label style="display:inline-flex;align-items:center;gap:10px;cursor:pointer;user-select:none;">
+              <span style="font-size:1.08em;font-weight:600;color:{{vm.editingAction.active ? '#0f0' : '#f44'}};min-width:60px;display:inline-block;">{{vm.editingAction.active ? 'Ativa' : 'Inativa'}}</span>
+              <span class="toggle-switch">
+                <input type="checkbox" ng-model="vm.editingAction.active">
+                <span class="toggle-slider" ng-style="{'background': vm.editingAction.active ? '#ff2e93' : '#888'}">
+                  <span class="toggle-knob" ng-style="{'transform': vm.editingAction.active ? 'translateX(20px)' : 'none'}"></span>
+                </span>
+              </span>
+            </label>
+            <div style="margin-top:12px;">
+              <label class="admin-label">Atributos</label>
+              <div ng-repeat="attr in vm.editingAction.attributes track by $index" style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+                <input class="admin-input" ng-model="attr.name" placeholder="Nome do atributo">
+                <select class="admin-input" ng-model="attr.type" ng-options="t for t in vm.actionTypes"></select>
+                <button class="admin-btn" style="background:#888;padding:4px 10px;" ng-click="vm.removeAttributeFromAction($index)">Remover</button>
               </div>
-              <div style="display:flex;align-items:center;gap:10px;">
-                <span ng-if="action.active" style="color:#0f0;font-weight:600;font-size:1.08em;">Ativa</span>
-                <span ng-if="!action.active" style="color:#f44;font-weight:600;font-size:1.08em;">Inativa</span>
-                <button class="admin-btn" style="background:#888;padding:4px 10px;" ng-click="vm.toggleActionActive(action)">{{action.active ? 'Desativar' : 'Ativar'}}</button>
-                <button class="admin-btn" style="padding:4px 10px;" ng-click="vm.startEditAction(action)">Editar</button>
-                <button class="admin-btn" style="background:#888;padding:4px 10px;" ng-click="vm.deleteAction(action)">Excluir</button>
+              <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+                <input class="admin-input" ng-model="vm.newAttribute.name" placeholder="Novo atributo">
+                <select class="admin-input" ng-model="vm.newAttribute.type" ng-options="t for t in vm.actionTypes"></select>
+                <button class="admin-btn" style="padding:4px 10px;" ng-click="vm.addAttributeToAction()">Adicionar</button>
               </div>
             </div>
-            <div ng-if="action.attributes && action.attributes.length > 0" style="margin-top:4px;">
-              <span style="color:#aaa;font-size:0.98em;">Atributos:</span>
-              <span ng-repeat="attr in action.attributes" style="margin-left:8px;color:#fff;">
-                <b>{{attr.name}}</b> <span style="color:#ff2e93;">({{attr.type}})</span>
-                <span ng-if="!$last">,</span>
-              </span>
+            <div style="margin-top:18px;display:flex;gap:12px;">
+              <button class="admin-btn" ng-click="vm.saveAction()">Salvar</button>
+              <button class="admin-btn" ng-click="vm.cancelEditAction()" style="background:#888;">Cancelar</button>
+              <button class="admin-btn" ng-if="vm.isEditingExistingAction" style="background:#888;" ng-click="vm.deleteAction(vm.editingAction)">Excluir</button>
             </div>
           </div>
         </div>
