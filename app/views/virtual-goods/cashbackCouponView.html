@@ -1,6 +1,6 @@
 <!-- Cashback Coupon Store View -->
 <style>
-.cashback-coupon-viewport {
+.viewport {
   background: var(--background-dark, #232323);
   min-height: 100vh;
   min-width: 100vw;
@@ -15,6 +15,20 @@
   max-width: 430px;
   margin: 0 auto;
   overflow: hidden;
+}
+@media (min-width: 431px) {
+  .viewport {
+    width: 430px;
+    min-width: 430px;
+    max-width: 430px;
+    min-height: 900px;
+    max-height: none;
+    margin: 32px auto;
+    border-radius: 32px 32px 32px 32px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    position: relative;
+    left: 0; right: 0;
+  }
 }
 .cashback-header {
   width: 100%;
@@ -175,7 +189,7 @@
   background: #b8005a;
 }
 </style>
-<div class="cashback-coupon-viewport" ng-controller="CashbackCouponController as vm">
+<div class="viewport" ng-controller="CashbackCouponController as vm">
   <div class="cashback-header">
     <button class="cashback-header-back" ng-click="window.history.back()" aria-label="Voltar">
       <i class="bi bi-arrow-left"></i>
@@ -202,7 +216,7 @@
     <div ng-repeat="coupon in vm.coupons" class="coupon-card">
       <div class="coupon-id">Cupom: {{coupon.code}}</div>
       <div class="coupon-value">Valor: R$ {{coupon.value | number:2}}</div>
-      <div class="coupon-date">Gerado em: {{coupon.createdAt | date:'dd/MM/yyyy HH:mm'}}</div>
+      <div class="coupon-date">Gerado em: {{coupon.createdAt | date:'dd/MM/yyyy HH:mm'}} </div>
       <div class="coupon-expiry">Expira em: {{coupon.expiry | date:'dd/MM/yyyy HH:mm'}}</div>
       <button class="coupon-download-btn" ng-click="vm.downloadCoupon(coupon)"><i class="bi bi-download"></i> Baixar Cupom</button>
       <button class="coupon-download-btn" style="background:#888;margin-left:8px;" ng-click="vm.copyCoupon(coupon)"><i class="bi bi-clipboard"></i> Copiar Código</button>

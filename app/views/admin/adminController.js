@@ -1333,4 +1333,40 @@ angular.module('app').controller('AdminRegisterController', function($scope, $ht
             regVm.loading = false;
         });
     };
+});
+
+// --- Admin Cashback Coupons Controller ---
+angular.module('app').controller('AdminCashbackCouponsController', function($scope, $http, FUNIFIER_API_CONFIG) {
+    var couponsVm = this;
+    couponsVm.coupons = [];
+    couponsVm.filterPlayer = '';
+    couponsVm.filterCode = '';
+    var COUPON_COLLECTION = 'cashback_coupons__c';
+    var COUPON_API = FUNIFIER_API_CONFIG.baseUrl + '/database/' + COUPON_COLLECTION;
+    var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
+
+    couponsVm.loadCoupons = function() {
+        $http.get(COUPON_API, { headers: { Authorization: basicAuth } }).then(function(resp) {
+            couponsVm.coupons = (resp.data || []).map(function(c) {
+                c.createdAt = new Date(c.createdAt);
+                c.expiry = new Date(c.expiry);
+                return c;
+            });
+            $scope.$applyAsync && $scope.$applyAsync();
+        });
+    };
+    couponsVm.couponFilter = function(coupon) {
+        var playerMatch = true, codeMatch = true;
+        if (couponsVm.filterPlayer) {
+            var filter = couponsVm.filterPlayer.toLowerCase();
+            playerMatch = (coupon.playerId && coupon.playerId.toLowerCase().indexOf(filter) !== -1);
+        }
+        if (couponsVm.filterCode) {
+            var code = couponsVm.filterCode.toLowerCase();
+            codeMatch = (coupon.code && coupon.code.toLowerCase().indexOf(code) !== -1);
+        }
+        return playerMatch && codeMatch;
+    };
+    // Initial load
+    couponsVm.loadCoupons();
 }); 
