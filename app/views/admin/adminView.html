@@ -340,10 +340,10 @@
       <div class="admin-label">Criar Log de Ação para Jogador</div>
       <!-- Player Dropdown with Search (ui-select) -->
       <ui-select ng-model="vm.selectedPlayerObj" theme="bootstrap" style="width:100%;" search-enabled="true">
-        <ui-select-match placeholder="Buscar jogador...">{{$select.selected.name}} <span style='color:#aaa'>({{$select.selected.email}})</span></ui-select-match>
+        <ui-select-match placeholder="Buscar jogador...">{{$select.selected.name}} <span style='color:#aaa'>({{$select.selected._id}})</span></ui-select-match>
         <ui-select-choices repeat="player in vm.availablePlayers | filter: $select.search track by player._id">
           <div ng-bind-html="player.name | highlight: $select.search"></div>
-          <small ng-bind-html="player.email | highlight: $select.search"></small>
+          <small ng-bind-html="player._id | highlight: $select.search"></small>
         </ui-select-choices>
       </ui-select>
       <!-- Action Dropdown with Search (ui-select) -->
