@@ -2,7 +2,6 @@
 angular.module('app')
 .service('AuthService', function($http, $q, FUNIFIER_API_CONFIG) {
     var currentPlayer = null;
-    var self = this; // Capture service context
 
     // Login with password authentication
     this.login = function(email, password) {
@@ -27,7 +26,7 @@ angular.module('app')
             if (response.data && response.data.access_token) {
                 // Store only the raw token (no 'Bearer ' prefix)
                 localStorage.setItem('token', response.data.access_token);
-                return self.getPlayerInfo();
+                return this.getPlayerInfo();
             }
             return $q.reject('Token não encontrado na resposta');
         }).catch(function(error) {
