@@ -278,8 +278,8 @@
         var achievements = resp.data || [];
         // Cashback distribuído: sum of positive total for item 'cashback'
         vm.stats.cashbackDistributed = achievements.filter(function(a) { return a.type === 0 && a.item === 'cashback' && a.total > 0; }).reduce(function(sum, a) { return sum + a.total; }, 0);
-        // Cashback perdido: sum of negative total for item 'cashback'
-        vm.stats.cashbackLost = achievements.filter(function(a) { return a.type === 0 && a.item === 'cashback' && a.total < 0; }).reduce(function(sum, a) { return sum + a.total; }, 0);
+        // Cashback usado: sum of negative total for item 'cashback'
+        vm.stats.cashbackUsed = achievements.filter(function(a) { return a.type === 0 && a.item === 'cashback' && a.total < 0; }).reduce(function(sum, a) { return sum + a.total; }, 0);
         // Pontos ganhos: sum of positive total for item 'misscoins'
         vm.stats.pointsGained = achievements.filter(function(a) { return a.type === 0 && a.item === 'misscoins' && a.total > 0; }).reduce(function(sum, a) { return sum + a.total; }, 0);
         // Pontos usados: sum of negative total for item 'misscoins'
@@ -561,6 +561,21 @@
           vm.statModalLoading = false;
           $scope.$applyAsync();
         });
+      } else if (statKey === 'cashbackUsed') {
+        vm.statModalTitle = 'Cashback usado';
+        var bearerToken = 'Bearer eyJhbGciOiJIUzUxMiIsImNhbGciOiJHWklQIn0.H4sIAAAAAAAAAE2MwQrCMBAFf0X23EOymybBs5569yrb7BYqpS1Ni4r470YK4m14zJsX8Nw3-oQj-Ig1MlokDF1wHTGJNUaggpymWYuyKMuVh6E63Jd-1R1FB_0xr9xy1vLhlKZtXPewk1rbv3ASbL_SlnUpxvkynoK_laHn8rDBRUMmkqtAH_M-eKo9ufcH5U20dbEAAAA.2VIg4wWv9vx_9laMfAhSd9Nea8N0yMew_c2ng-AQOCv7N_ELrN_SIswFz9mB4dEk-PyMOTx5uzJb48zcPONbwA';
+        $http({
+          method: 'GET',
+          url: 'https://service2.funifier.com/v3/achievement',
+          headers: { 'Authorization': bearerToken, 'Content-Type': 'application/json' }
+        }).then(function(resp) {
+          var achievements = (resp.data || []).filter(function(a) { return a.type === 0 && a.item === 'cashback' && a.total < 0; });
+          vm.statModalData = achievements;
+          vm.statModalAttrKeys = ['player', 'total', 'time'];
+          vm.stats.cashbackUsed = achievements.reduce(function(sum, a) { return sum + a.total; }, 0);
+          vm.statModalLoading = false;
+          $scope.$applyAsync();
+        });
       }
     };
     vm.closeStatModal = function() {
@@ -599,7 +614,8 @@
         vm.statModalKey === 'cashbackDistributed' ||
         vm.statModalKey === 'cashbackLost' ||
         vm.statModalKey === 'pointsGained' ||
-        vm.statModalKey === 'pointsUsed'
+        vm.statModalKey === 'pointsUsed' ||
+        vm.statModalKey === 'cashbackUsed'
       ) {
         // Build CSV from achievement data
         var rows = [];
