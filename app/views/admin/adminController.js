@@ -419,6 +419,7 @@
         });
     }
     fetchAllPlayers();
+    fetchAvailableActionsAndPoints();
     // When an action is selected, update attribute fields
     vm.onActionSelected = function(actionObj) {
       if (!actionObj) {
