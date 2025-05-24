@@ -152,20 +152,6 @@
 }
 </style>
 <div class="admin-viewport" ng-controller="AdminController as vm">
-  <div class="admin-header">
-    <span>Painel Administrativo</span>
-    <nav class="admin-header-menu">
-      <a ng-click="vm.scrollToSection('theme')">Cores do Tema</a>
-      <a ng-click="vm.scrollToSection('logo')">Logo</a>
-      <a ng-click="vm.scrollToSection('dashboard')">Botões</a>
-      <a ng-click="vm.scrollToSection('success')">Mensagens</a>
-      <a ng-click="vm.scrollToSection('stats')">Estatísticas</a>
-      <a ng-click="vm.scrollToSection('challenges')">Desafios</a>
-      <a ng-click="vm.scrollToSection('log')">Criar Log</a>
-      <a ng-click="vm.scrollToSection('actions')">Ações</a>
-      <button class="admin-header-saveall" ng-click="vm.saveAllSections()">Salvar Tudo</button>
-    </nav>
-  </div>
   <div ng-if="!vm.loggedIn" class="admin-login-box">
     <div class="admin-login-title">Acesso Restrito</div>
     <form ng-submit="vm.login()" autocomplete="off" style="width:100%">
@@ -178,6 +164,20 @@
     </form>
   </div>
   <div ng-if="vm.loggedIn">
+    <div class="admin-header">
+      <span>Painel Administrativo</span>
+      <nav class="admin-header-menu">
+        <a ng-click="vm.scrollToSection('theme')">Cores do Tema</a>
+        <a ng-click="vm.scrollToSection('logo')">Logo</a>
+        <a ng-click="vm.scrollToSection('dashboard')">Botões</a>
+        <a ng-click="vm.scrollToSection('success')">Mensagens</a>
+        <a ng-click="vm.scrollToSection('stats')">Estatísticas</a>
+        <a ng-click="vm.scrollToSection('challenges')">Desafios</a>
+        <a ng-click="vm.scrollToSection('log')">Criar Log</a>
+        <a ng-click="vm.scrollToSection('actions')">Ações</a>
+        <button class="admin-header-saveall" ng-click="vm.saveAllSections()">Salvar Tudo</button>
+      </nav>
+    </div>
     <div class="admin-section" id="theme">
       <div class="admin-label">Cores do Tema</div>
       <label>Cor de fundo do site (body): <input type="color" ng-model="vm.themeConfig.background_color"></label>
