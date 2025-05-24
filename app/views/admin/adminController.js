@@ -1,8 +1,8 @@
 (function() {
   'use strict';
   angular.module('app').controller('AdminController', AdminController);
-  AdminController.$inject = ['$scope', '$http', '$window', 'ThemeConfigService', 'SuccessMessageService', 'AuthService'];
-  function AdminController($scope, $http, $window, ThemeConfigService, SuccessMessageService, AuthService) {
+  AdminController.$inject = ['$scope', '$http', '$window', 'ThemeConfigService', 'SuccessMessageService', 'AuthService', 'CashbackExpiryService'];
+  function AdminController($scope, $http, $window, ThemeConfigService, SuccessMessageService, AuthService, CashbackExpiryService) {
     var vm = this;
     vm.loggedIn = false;
     vm.user = '';
@@ -1031,42 +1031,106 @@
       vm.cashbackExpiryDays = 90;
       vm.saveCashbackExpiryDays();
     };
-    // Bulk Expiry for All Players
+    // Bulk Expiry for All Players (single aggregate approach)
     vm.bulkExpiryLoading = false;
     vm.bulkExpireCashbackForAllPlayers = function() {
       if (!confirm('Tem certeza que deseja rodar a expiração de cashback para TODOS os jogadores?')) return;
       vm.bulkExpiryLoading = true;
-      $http.get('https://service2.funifier.com/v3/player/status', { headers: { Authorization: basicAuth } })
+      // Expert choice: single aggregate for all cashback achievements
+      $http.post('https://service2.funifier.com/v3/database/achievement/aggregate?strict=true', [
+        { "$match": { item: "cashback" } }
+      ], { headers: { Authorization: basicAuth, 'Content-Type': 'application/json' } })
         .then(function(resp) {
-          var players = resp.data || [];
-          var total = players.length;
-          var done = 0;
-          if (!total) {
-            vm.bulkExpiryLoading = false;
-            alert('Nenhum jogador encontrado.');
-            return;
-          }
-          var errors = [];
-          players.forEach(function(player) {
-            var playerId = player._id || player.playerId || player.name;
-            if (!playerId) return;
-            window.CashbackExpiryService.expireOldCashbackForPlayer(playerId)
-              .catch(function(e) { errors.push(playerId); })
-              .finally(function() {
-                done++;
-                if (done === total) {
-                  vm.bulkExpiryLoading = false;
-                  if (errors.length) {
-                    alert('Expiração concluída com erros para alguns jogadores. Veja o console.');
-                    console.error('Erros de expiração para jogadores:', errors);
-                  } else {
-                    alert('Expiração em massa concluída para todos os jogadores!');
-                  }
-                  $scope.$applyAsync && $scope.$applyAsync();
-                }
-              });
+          var achievements = resp.data || [];
+          // Group by player
+          var byPlayer = {};
+          achievements.forEach(function(a) {
+            var pid = a.player;
+            if (!byPlayer[pid]) byPlayer[pid] = [];
+            byPlayer[pid].push(a);
           });
+          var playerIds = Object.keys(byPlayer);
+          var now = Date.now();
+          var errors = [];
+          var done = 0;
+          // Fetch expiry days from Funifier
+          $http.get('https://service2.funifier.com/v3/database/cashback_expiry_config__c?q=_id:\'cashback_expiry_days\'', { headers: { Authorization: basicAuth } })
+            .then(function(cfgResp) {
+              var days = 90;
+              if (cfgResp.data && cfgResp.data[0] && cfgResp.data[0].days) {
+                days = cfgResp.data[0].days;
+              }
+              var expiryMs = days * 24 * 60 * 60 * 1000;
+              var fiveDaysMs = 5 * 24 * 60 * 60 * 1000;
+              // For each player, process expiry
+              playerIds.forEach(function(pid) {
+                var playerAchievements = byPlayer[pid];
+                var expired = playerAchievements.filter(function(a) {
+                  var timeMs = (typeof a.time === 'object' && a.time.$date)
+                    ? new Date(a.time.$date).getTime()
+                    : a.time;
+                  return now - timeMs > expiryMs;
+                });
+                var expiringSoon = playerAchievements.filter(function(a) {
+                  var timeMs = (typeof a.time === 'object' && a.time.$date)
+                    ? new Date(a.time.$date).getTime()
+                    : a.time;
+                  return now - timeMs > (expiryMs - fiveDaysMs) && now - timeMs < expiryMs;
+                });
+                // Send SMS for expiring soon
+                if (expiringSoon.length) {
+                  $http.get('https://service2.funifier.com/v3/player/' + encodeURIComponent(pid), { headers: { Authorization: basicAuth } }).then(function(resp) {
+                    var player = resp.data;
+                    var phone = player.extra && player.extra.phone;
+                    if (phone) {
+                      phone = phone.replace(/\D/g, '');
+                      if (!phone.startsWith('55')) phone = '55' + phone;
+                      phone = '+' + phone;
+                      expiringSoon.forEach(function() {
+                        // Use ActivityService if available
+                        if (typeof ActivityService !== 'undefined' && ActivityService.sendSmsNotification) {
+                          ActivityService.sendSmsNotification(phone, 'Seus pontos/cashback vão expirar em 5 dias!');
+                        }
+                      });
+                    }
+                  });
+                }
+                // Expire old cashback
+                var actions = expired.map(function(a) {
+                  // a) Log 'expired_cashback' achievement (Basic Auth)
+                  var logExpired = $http.post('https://service2.funifier.com/v3/database/achievement', {
+                    player: pid,
+                    item: 'expired_cashback',
+                    time: now,
+                    type: 0,
+                    total: a.total,
+                    extra: { original_achievement_id: a._id }
+                  }, {
+                    headers: { 'Authorization': basicAuth, 'Content-Type': 'application/json' }
+                  });
+                  // b) Delete the old cashback achievement (Basic Auth)
+                  var deleteOld = $http.delete('https://service2.funifier.com/v3/database/achievement?q=' + encodeURIComponent("_id:'" + a._id + "'"), {
+                    headers: { 'Authorization': basicAuth, 'Content-Type': 'application/json' }
+                  });
+                  return Promise.all([logExpired, deleteOld]);
+                });
+                Promise.all(actions).catch(function(e) { errors.push(pid); }).finally(function() {
+                  done++;
+                  if (done === playerIds.length) {
+                    vm.bulkExpiryLoading = false;
+                    if (errors.length) {
+                      alert('Expiração concluída com erros para alguns jogadores. Veja o console.');
+                      console.error('Erros de expiração para jogadores:', errors);
+                    } else {
+                      alert('Expiração em massa concluída para todos os jogadores!');
+                    }
+                    $scope.$applyAsync && $scope.$applyAsync();
+                  }
+                });
+              });
+            });
         });
+      // NOTE: For very large user bases, switch to batching or per-player queries to avoid memory/timeouts.
     };
     // Google Calendar Config Admin Section (Funifier)
     var CALENDAR_CONFIG_API = 'https://service2.funifier.com/v3/database/calendar_config__c';
