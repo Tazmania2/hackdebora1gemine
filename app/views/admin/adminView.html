@@ -17,20 +17,46 @@
   overflow: hidden;
 }
 .admin-header {
-  width: 100%;
-  padding: 24px 0 12px 0;
-  text-align: center;
-  color: #fff;
-  font-size: 2rem;
-  font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 100;
   background: #6a0033;
-  border-radius: 0;
-  margin-bottom: 12px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  position: relative;
-  box-sizing: border-box;
+  justify-content: space-between;
+  padding: 24px 18px 12px 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+.admin-header-menu {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+.admin-header-menu a {
+  color: #fff;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background 0.18s;
+  cursor: pointer;
+}
+.admin-header-menu a:hover {
+  background: #ff2e93;
+}
+.admin-header-saveall {
+  background: #ff2e93;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 18px;
+  margin-left: 18px;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.admin-header-saveall:active, .admin-header-saveall:focus {
+  background: #b8005a;
 }
 .admin-section {
   background: #232323;
@@ -126,7 +152,20 @@
 }
 </style>
 <div class="admin-viewport" ng-controller="AdminController as vm">
-  <div class="admin-header">Painel Administrativo</div>
+  <div class="admin-header">
+    <span>Painel Administrativo</span>
+    <nav class="admin-header-menu">
+      <a ng-click="vm.scrollToSection('theme')">Cores do Tema</a>
+      <a ng-click="vm.scrollToSection('logo')">Logo</a>
+      <a ng-click="vm.scrollToSection('dashboard')">Botões</a>
+      <a ng-click="vm.scrollToSection('success')">Mensagens</a>
+      <a ng-click="vm.scrollToSection('stats')">Estatísticas</a>
+      <a ng-click="vm.scrollToSection('challenges')">Desafios</a>
+      <a ng-click="vm.scrollToSection('log')">Criar Log</a>
+      <a ng-click="vm.scrollToSection('actions')">Ações</a>
+      <button class="admin-header-saveall" ng-click="vm.saveAllSections()">Salvar Tudo</button>
+    </nav>
+  </div>
   <div ng-if="!vm.loggedIn" class="admin-login-box">
     <div class="admin-login-title">Acesso Restrito</div>
     <form ng-submit="vm.login()" autocomplete="off" style="width:100%">
@@ -139,7 +178,7 @@
     </form>
   </div>
   <div ng-if="vm.loggedIn">
-    <div class="admin-section">
+    <div class="admin-section" id="theme">
       <div class="admin-label">Cores do Tema</div>
       <label>Cor de fundo do site (body): <input type="color" ng-model="vm.themeConfig.background_color"></label>
       <span class="admin-label" style="font-size:0.95em;color:#aaa;">Fundo atrás do painel</span>
@@ -158,7 +197,7 @@
       <button class="admin-btn" ng-click="vm.saveColors()" ng-disabled="vm.loadingTheme">Salvar Cores</button>
       <button class="admin-btn" ng-click="vm.resetToDefault()" ng-disabled="vm.loadingTheme" style="background:#888;margin-left:8px;">Restaurar padrão</button>
     </div>
-    <div class="admin-section">
+    <div class="admin-section" id="logo">
       <div class="admin-label">Logo</div>
       <label>URL da logo:
         <input class="admin-input" ng-model="vm.themeConfig.logo" placeholder="URL da logo">
@@ -174,7 +213,7 @@
       <span class="admin-label" style="font-size:0.95em;color:#aaa;">Se desmarcado, a logo do Studio não aparecerá na tela de login.</span>
       <button class="admin-btn" ng-click="vm.saveColors()" ng-disabled="vm.loadingTheme">Salvar Logo</button>
     </div>
-    <div class="admin-section">
+    <div class="admin-section" id="dashboard">
       <div class="admin-label">Botões do Dashboard</div>
       <div ng-repeat="btn in vm.dashboardButtons track by btn.id">
         <div ng-if="btn.isDefault">
@@ -228,7 +267,7 @@
         </div>
       </div>
     </div>
-    <div class="admin-section">
+    <div class="admin-section" id="success">
       <div class="admin-label">Mensagens de Sucesso</div>
       <div ng-repeat="(key, msg) in vm.successMessages" style="margin-bottom:18px;">
         <div style="font-size:0.98em;color:#aaa;margin-bottom:4px;">{{key}}</div>
@@ -237,7 +276,7 @@
       <button class="admin-btn" ng-click="vm.saveAllSuccessMessages()">Salvar Todas</button>
       <button class="admin-btn" ng-click="vm.restoreSuccessMessagesToDefault()" style="background:#888;margin-left:8px;">Restaurar padrão</button>
     </div>
-    <div class="admin-section">
+    <div class="admin-section" id="stats">
       <div class="admin-label">Estatísticas</div>
       <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('purchases')">Compras registradas: <b>{{vm.stats.purchases}}</b></a></div>
       <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('activePlayers')">Jogadores ativos: <b>{{vm.stats.activePlayers}}</b></a></div>
@@ -271,7 +310,7 @@
         </div>
       </div>
     </div>
-    <div class="admin-section">
+    <div class="admin-section" id="challenges">
       <div class="admin-label">Desafios</div>
       <div ng-if="vm.loadingChallenges" style="color:#aaa;">Carregando desafios...</div>
       <div ng-if="!vm.loadingChallenges && vm.challenges.length > 0" style="display:flex;flex-direction:column;gap:14px;margin-bottom:12px;">
@@ -336,7 +375,7 @@
         </div>
       </div>
     </div>
-    <div class="admin-section">
+    <div class="admin-section" id="log">
       <div class="admin-label">Criar Log de Ação para Jogador</div>
       <!-- Player Dropdown with Native Select -->
       <select ng-model="vm.selectedPlayerObj" ng-options="player as player.name for player in vm.availablePlayers track by player._id" class="admin-input">
@@ -355,7 +394,7 @@
       </div>
       <button class="admin-btn" ng-click="vm.createActionLog()" ng-disabled="!vm.selectedPlayerObj || !vm.selectedActionObj || (vm.actionAttributeDefs.length && (vm.actionAttributeDefs | someEmpty:vm.actionAttributes))">Criar Log</button>
     </div>
-    <div class="admin-section">
+    <div class="admin-section" id="actions">
       <div class="admin-label">Ações</div>
       <div ng-if="vm.loadingActions" style="color:#aaa;">Carregando ações...</div>
       <div ng-if="!vm.loadingActions">
@@ -374,6 +413,7 @@
           </div>
         </div>
         <button class="admin-btn" ng-click="vm.startAddAction()" ng-if="!vm.editingAction" style="margin-top:14px;">Adicionar Nova Ação</button>
+        <button class="admin-btn" ng-click="vm.restoreActionsToDefault()" ng-if="!vm.editingAction" style="background:#888;margin-left:8px;margin-top:8px;">Restaurar padrão</button>
         <!-- Action Edit/Add Modal -->
         <div ng-if="vm.editingAction" class="modal-backdrop" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
           <div class="modal-content" style="background:#232323;padding:32px 24px;border-radius:16px;max-width:500px;max-height:80vh;overflow:auto;">

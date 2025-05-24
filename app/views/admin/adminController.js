@@ -877,5 +877,98 @@
         .then(function() { vm.loadActions(); })
         .catch(function(err) { alert('Erro ao excluir ação.'); });
     };
+    vm.restoreActionsToDefault = function() {
+      if (!confirm('Tem certeza que deseja restaurar as ações para o padrão? Isso irá sobrescrever todas as ações atuais.')) return;
+      vm.loadingActions = true;
+      // Updated default actions to match current database state
+      var defaultActions = [
+        {
+          "action": "Compartilhar",
+          "attributes": [],
+          "points": [],
+          "notifications": [],
+          "active": true,
+          "extra": {},
+          "_id": "compartilhar"
+        },
+        {
+          "action": "Comprar",
+          "attributes": [
+            { "name": "produto", "type": "String" },
+            { "name": "valor", "type": "Number" }
+          ],
+          "points": [],
+          "notifications": [],
+          "image": {
+            "small": { "url": "https://img.icons8.com/?size=100&id=bkfXMM2Up4Aw&format=png&color=000000", "size": 0, "width": 0, "height": 0, "depth": 0 },
+            "medium": { "url": "https://img.icons8.com/?size=100&id=bkfXMM2Up4Aw&format=png&color=000000", "size": 0, "width": 0, "height": 0, "depth": 0 },
+            "original": { "url": "https://img.icons8.com/?size=100&id=bkfXMM2Up4Aw&format=png&color=000000", "size": 0, "width": 0, "height": 0, "depth": 0 }
+          },
+          "active": true,
+          "extra": {},
+          "_id": "comprar"
+        },
+        {
+          "action": "Convidar",
+          "attributes": [],
+          "points": [],
+          "notifications": [],
+          "active": true,
+          "extra": {},
+          "_id": "convidar"
+        },
+        {
+          "action": "Logar",
+          "attributes": [],
+          "points": [],
+          "notifications": [],
+          "image": {
+            "small": { "url": "https://img.icons8.com/?size=100&id=AESKWmYDw4t6&format=png&color=000000", "size": 0, "width": 0, "height": 0, "depth": 0 },
+            "medium": { "url": "https://img.icons8.com/?size=100&id=AESKWmYDw4t6&format=png&color=000000", "size": 0, "width": 0, "height": 0, "depth": 0 },
+            "original": { "url": "https://img.icons8.com/?size=100&id=AESKWmYDw4t6&format=png&color=000000", "size": 0, "width": 0, "height": 0, "depth": 0 }
+          },
+          "active": true,
+          "extra": {},
+          "_id": "logar"
+        },
+        {
+          "action": "Registrar",
+          "attributes": [],
+          "points": [],
+          "notifications": [],
+          "active": true,
+          "extra": {},
+          "_id": "registrar"
+        },
+        {
+          "action": "Responder",
+          "attributes": [ { "name": "", "type": "" } ],
+          "points": [ { "total": 10, "category": "misscoins", "operation": 0, "perPlayer": false } ],
+          "notifications": [],
+          "active": true,
+          "extra": {},
+          "_id": "responder"
+        }
+      ];
+      var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
+      var ACTION_API = 'https://service2.funifier.com/v3/action';
+      // Delete all current actions, then POST defaults
+      $http.get(ACTION_API, { headers: { Authorization: basicAuth } })
+        .then(function(resp) {
+          var actions = resp.data || [];
+          var deletePromises = actions.map(function(a) {
+            return $http.delete(ACTION_API + '/' + a._id, { headers: { Authorization: basicAuth } });
+          });
+          Promise.all(deletePromises).then(function() {
+            var createPromises = defaultActions.map(function(a) {
+              return $http.post(ACTION_API, a, { headers: { Authorization: basicAuth } });
+            });
+            Promise.all(createPromises).then(function() {
+              vm.loadActions();
+              vm.loadingActions = false;
+            });
+          });
+        });
+    };
   }
 })(); 
