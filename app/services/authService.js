@@ -21,7 +21,7 @@ angular.module('app')
             }
         };
 
-        return $http(req).then(function(response) {
+        return $http(req).then((response) => {
             console.log('Login response:', response.data);
             if (response.data && response.data.access_token) {
                 // Store only the raw token (no 'Bearer ' prefix)
