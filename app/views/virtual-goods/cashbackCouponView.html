@@ -1,2 +1,211 @@
-<!-- Cashback Coupon Store View (Cloned from Loja) -->
-// ... (content will be filled in next step, starting from virtualGoodsView.html) ... 
+<!-- Cashback Coupon Store View -->
+<style>
+.cashback-coupon-viewport {
+  background: var(--background-dark, #232323);
+  min-height: 100vh;
+  min-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+  height: auto;
+  padding-bottom: 32px;
+  border-radius: 32px 32px 32px 32px;
+  max-width: 430px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.cashback-header {
+  width: 100%;
+  padding: 24px 0 12px 0;
+  text-align: center;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: bold;
+  background: var(--primary-color, #ec0677);
+  border-radius: 0;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+}
+.cashback-header-back {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.7rem;
+  cursor: pointer;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 40px;
+}
+.cashback-header-title {
+  flex: 1;
+  text-align: center;
+}
+.points-pill-balance {
+  background: #181818;
+  border: 1.5px solid #ec0677;
+  color: #fff;
+  font-size: 1.13em;
+  margin-bottom: 0;
+  margin-top: 0;
+  min-width: 110px;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 8px 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.cashback-convert-section {
+  background: #232323;
+  border-radius: 16px;
+  margin: 18px 0 0 0;
+  padding: 18px 18px 18px 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  width: 100%;
+  max-width: 370px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.cashback-convert-input {
+  width: 100%;
+  max-width: 180px;
+  background: #181818;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1.1rem;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  outline: none;
+  text-align: center;
+}
+.cashback-convert-btn {
+  background: #ff2e93;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 24px;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: background 0.18s;
+  font-size: 1.1em;
+}
+.cashback-convert-btn:active, .cashback-convert-btn:focus {
+  background: #b8005a;
+}
+.cashback-error {
+  color: #ff2e93;
+  font-size: 1.1em;
+  margin-bottom: 8px;
+  text-align: center;
+}
+.cashback-success {
+  color: #0f0;
+  font-size: 1.1em;
+  margin-bottom: 8px;
+  text-align: center;
+}
+.coupon-list-section {
+  background: #232323;
+  border-radius: 16px;
+  margin: 18px 0 0 0;
+  padding: 18px 18px 18px 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  width: 100%;
+  max-width: 370px;
+  color: #fff;
+}
+.coupon-card {
+  background: #181818;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+.coupon-id {
+  font-family: monospace;
+  color: #ff2e93;
+  font-size: 1.05em;
+}
+.coupon-value {
+  font-weight: bold;
+  color: #fff;
+  font-size: 1.15em;
+}
+.coupon-date {
+  color: #aaa;
+  font-size: 0.98em;
+}
+.coupon-expiry {
+  color: #f44;
+  font-size: 0.98em;
+}
+.coupon-download-btn {
+  background: #ff2e93;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 16px;
+  font-size: 1em;
+  cursor: pointer;
+  margin-top: 6px;
+  align-self: flex-end;
+}
+.coupon-download-btn:active, .coupon-download-btn:focus {
+  background: #b8005a;
+}
+</style>
+<div class="cashback-coupon-viewport" ng-controller="CashbackCouponController as vm">
+  <div class="cashback-header">
+    <button class="cashback-header-back" ng-click="window.history.back()" aria-label="Voltar">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <span class="cashback-header-title">Converter Cashback em Cupom</span>
+  </div>
+  <div style="width:100%; display:flex; justify-content:center; margin-bottom: 10px;">
+    <div class="points-pill-balance">
+      <i class="bi bi-cash-coin"></i> Saldo Cashback: R$ {{vm.cashbackBalance | number:2}}
+    </div>
+  </div>
+  <div class="cashback-convert-section">
+    <div style="font-size:1.1em;margin-bottom:8px;">Escolha quanto cashback deseja converter em cupom:</div>
+    <input type="number" min="0.05" step="0.05" max="{{vm.cashbackBalance}}" class="cashback-convert-input" ng-model="vm.amountToConvert" placeholder="Valor em R$" />
+    <button class="cashback-convert-btn" ng-click="vm.generateCoupon()" ng-disabled="!vm.amountToConvert || vm.amountToConvert < 0.05 || vm.amountToConvert > vm.cashbackBalance || vm.loading">
+      Converter em Cupom
+    </button>
+    <div class="cashback-error" ng-if="vm.error">{{vm.error}}</div>
+    <div class="cashback-success" ng-if="vm.success">{{vm.success}}</div>
+  </div>
+  <div class="coupon-list-section">
+    <div style="font-size:1.15em;font-weight:bold;margin-bottom:10px;">Meus Cupons Gerados</div>
+    <div ng-if="!vm.coupons.length" style="color:#aaa;text-align:center;">Nenhum cupom gerado ainda.</div>
+    <div ng-repeat="coupon in vm.coupons" class="coupon-card">
+      <div class="coupon-id">Cupom: {{coupon.code}}</div>
+      <div class="coupon-value">Valor: R$ {{coupon.value | number:2}}</div>
+      <div class="coupon-date">Gerado em: {{coupon.createdAt | date:'dd/MM/yyyy HH:mm'}}</div>
+      <div class="coupon-expiry">Expira em: {{coupon.expiry | date:'dd/MM/yyyy HH:mm'}}</div>
+      <button class="coupon-download-btn" ng-click="vm.downloadCoupon(coupon)"><i class="bi bi-download"></i> Baixar Cupom</button>
+      <button class="coupon-download-btn" style="background:#888;margin-left:8px;" ng-click="vm.copyCoupon(coupon)"><i class="bi bi-clipboard"></i> Copiar Código</button>
+    </div>
+  </div>
+</div> 
