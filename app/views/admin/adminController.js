@@ -405,12 +405,56 @@
         });
       });
     }
-    // --- Action Log ---
-    function createActionLog() {
+    // --- Action Log (Enhanced) ---
+    vm.availablePlayers = [];
+    vm.selectedPlayer = null;
+    vm.selectedAction = null;
+    vm.actionAttributes = {};
+    vm.actionAttributeDefs = [];
+    vm.actionPlayerSearch = '';
+    vm.actionSearch = '';
+    
+    // Fetch all players on admin load
+    function fetchAllPlayers() {
       var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
-      $http.post('https://service2.funifier.com/v3/activities', { action: vm.actionType, player: vm.actionPlayerId }, { headers: { Authorization: basicAuth } })
-        .then(function() { alert(SuccessMessageService.get('log_created')); });
+      $http.get('https://service2.funifier.com/v3/player/status', { headers: { Authorization: basicAuth } })
+        .then(function(resp) {
+          vm.availablePlayers = resp.data || [];
+          $scope.$applyAsync && $scope.$applyAsync();
+        });
     }
+    fetchAllPlayers();
+    // Use availableActions (already fetched for challenges)
+    // When an action is selected, update attribute fields
+    vm.onActionSelected = function() {
+      if (!vm.selectedAction) {
+        vm.actionAttributes = {};
+        vm.actionAttributeDefs = [];
+        return;
+      }
+      var action = vm.availableActions.find(function(a) { return a._id === vm.selectedAction; });
+      if (action && Array.isArray(action.attributes)) {
+        vm.actionAttributeDefs = action.attributes;
+        var attrs = {};
+        action.attributes.forEach(function(attr) { attrs[attr] = ''; });
+        vm.actionAttributes = attrs;
+      } else {
+        vm.actionAttributeDefs = [];
+        vm.actionAttributes = {};
+      }
+    };
+    // Enhanced createActionLog
+    vm.createActionLog = function() {
+      if (!vm.selectedPlayer || !vm.selectedAction) return;
+      var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
+      var payload = {
+        actionId: vm.selectedAction,
+        userId: vm.selectedPlayer,
+        attributes: angular.copy(vm.actionAttributes)
+      };
+      $http.post('https://service2.funifier.com/v3/action/log', payload, { headers: { Authorization: basicAuth } })
+        .then(function() { alert(SuccessMessageService.get('log_created')); });
+    };
     function onLogoFileChange(input) {
       var file = input.files[0];
       if (!file) return;

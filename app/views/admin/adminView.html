@@ -338,9 +338,24 @@
     </div>
     <div class="admin-section">
       <div class="admin-label">Criar Log de Ação para Jogador</div>
-      <input class="admin-input" ng-model="vm.actionPlayerId" placeholder="ID do Jogador">
-      <input class="admin-input" ng-model="vm.actionType" placeholder="Ação">
-      <button class="admin-btn" ng-click="vm.createActionLog()">Criar Log</button>
+      <!-- Player Dropdown with Search -->
+      <input class="admin-input" type="text" ng-model="vm.actionPlayerSearch" placeholder="Buscar jogador por nome ou email...">
+      <select class="admin-input" ng-model="vm.selectedPlayer" ng-options="p._id as (p.name + ' (' + p.email + ')') for p in (vm.availablePlayers | filter:vm.actionPlayerSearch) track by p._id">
+        <option value="">Selecione um jogador</option>
+      </select>
+      <!-- Action Dropdown with Search -->
+      <input class="admin-input" type="text" ng-model="vm.actionSearch" placeholder="Buscar ação...">
+      <select class="admin-input" ng-model="vm.selectedAction" ng-options="a._id as a.action for a in (vm.availableActions | filter:vm.actionSearch) track by a._id" ng-change="vm.onActionSelected()">
+        <option value="">Selecione uma ação</option>
+      </select>
+      <!-- Dynamic Attribute Fields -->
+      <div ng-if="vm.actionAttributeDefs.length">
+        <div ng-repeat="attr in vm.actionAttributeDefs">
+          <label class="admin-label">{{attr}}</label>
+          <input class="admin-input" ng-model="vm.actionAttributes[attr]" placeholder="{{attr}}">
+        </div>
+      </div>
+      <button class="admin-btn" ng-click="vm.createActionLog()" ng-disabled="!vm.selectedPlayer || !vm.selectedAction || (vm.actionAttributeDefs.length && (vm.actionAttributeDefs | someEmpty:vm.actionAttributes))">Criar Log</button>
     </div>
   </div>
 </div>
@@ -349,6 +364,14 @@ angular.module('app').filter('sumPoints', function() {
   return function(pointsArr) {
     if (!Array.isArray(pointsArr)) return 0;
     return pointsArr.reduce(function(sum, p) { return sum + (parseFloat(p.total) || 0); }, 0);
+  };
+});
+
+// Angular filter to check if any attribute is empty
+angular.module('app').filter('someEmpty', function() {
+  return function(attrs, values) {
+    if (!Array.isArray(attrs)) return false;
+    return attrs.some(function(attr) { return !values[attr]; });
   };
 });
 </script> 
