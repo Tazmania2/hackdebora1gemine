@@ -503,6 +503,17 @@ body, html {
           </div>
         </form>
       </div>
+      <div class="admin-section" id="sms-notification">
+        <div class="admin-label">Enviar SMS</div>
+        <label class="admin-label" for="smsPhone">Telefone (E.164, ex: +5511999999999):</label>
+        <input class="admin-input" id="smsPhone" ng-model="vm.smsPhone" placeholder="+5511999999999">
+        <label class="admin-label" for="smsMessage">Mensagem:</label>
+        <textarea class="admin-textarea" id="smsMessage" ng-model="vm.smsMessage" placeholder="Digite a mensagem..."></textarea>
+        <button class="admin-btn" ng-click="vm.sendSmsNotification()" ng-disabled="vm.smsSending">
+          <span ng-if="!vm.smsSending">Enviar SMS</span>
+          <span ng-if="vm.smsSending">Enviando...</span>
+        </button>
+      </div>
     </div>
   </div>
 </div> 

@@ -1,8 +1,8 @@
 (function() {
   'use strict';
   angular.module('app').controller('AdminController', AdminController);
-  AdminController.$inject = ['$scope', '$http', '$window', 'ThemeConfigService', 'SuccessMessageService', 'AuthService', 'CashbackExpiryService'];
-  function AdminController($scope, $http, $window, ThemeConfigService, SuccessMessageService, AuthService, CashbackExpiryService) {
+  AdminController.$inject = ['$scope', '$http', '$window', 'ThemeConfigService', 'SuccessMessageService', 'AuthService', 'CashbackExpiryService', 'ActivityService'];
+  function AdminController($scope, $http, $window, ThemeConfigService, SuccessMessageService, AuthService, CashbackExpiryService, ActivityService) {
     var vm = this;
     vm.loggedIn = false;
     vm.user = '';
@@ -1177,6 +1177,28 @@
       vm.restoreActionsToDefault && vm.restoreActionsToDefault();
       vm.restoreCalendarConfigDefault && vm.restoreCalendarConfigDefault();
       alert('Todos os valores foram restaurados para o padrão!');
+    };
+    // --- SMS Notification ---
+    vm.smsPhone = '';
+    vm.smsMessage = '';
+    vm.smsSending = false;
+    vm.sendSmsNotification = function() {
+      if (!vm.smsPhone || !vm.smsMessage) {
+        alert('Preencha o telefone e a mensagem.');
+        return;
+      }
+      vm.smsSending = true;
+      ActivityService.sendSmsNotification(vm.smsPhone, vm.smsMessage)
+        .then(function() {
+          alert('SMS enviado com sucesso!');
+        })
+        .catch(function(err) {
+          alert('Erro ao enviar SMS: ' + (err && err.data && err.data.error ? err.data.error : err));
+        })
+        .finally(function() {
+          vm.smsSending = false;
+          $scope.$applyAsync && $scope.$applyAsync();
+        });
     };
   }
 })();
