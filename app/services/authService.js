@@ -44,7 +44,7 @@ angular.module('app')
             headers: {
                 'Authorization': localStorage.getItem('token')
             }
-        }).then(function(response) {
+        }).then((response) => {
             console.log('Player info received:', response.data);
             this.storePlayerData(response.data);
             return response.data;
