@@ -64,6 +64,10 @@
       // Step 1: Upload image (Basic token)
       var formData = new FormData();
       formData.append('file', vm.purchaseProof);
+      formData.append('extra', JSON.stringify({
+        session: 'images',
+        transform: [{ stage: 'size', width: 350, height: 350 }]
+      }));
       $http({
         method: 'POST',
         url: 'https://service2.funifier.com/v3/upload/image',
