@@ -1,8 +1,8 @@
 (function() {
   'use strict';
   angular.module('app').controller('AdminController', AdminController);
-  AdminController.$inject = ['$scope', '$http', '$window', 'ThemeConfigService', 'SuccessMessageService'];
-  function AdminController($scope, $http, $window, ThemeConfigService, SuccessMessageService) {
+  AdminController.$inject = ['$scope', '$http', '$window', 'ThemeConfigService', 'SuccessMessageService', 'AuthService'];
+  function AdminController($scope, $http, $window, ThemeConfigService, SuccessMessageService, AuthService) {
     var vm = this;
     vm.loggedIn = false;
     vm.user = '';
@@ -74,12 +74,26 @@
     };
     // --- Auth ---
     function login() {
-      if(vm.user === 'admin' && vm.pass === 'P0rquinh@') {
-        vm.loggedIn = true;
-        vm.error = '';
-      } else {
-        vm.error = 'Usuário ou senha incorretos';
+      vm.error = '';
+      if (!vm.user || !vm.pass) {
+        vm.error = 'Por favor, preencha todos os campos.';
+        return;
       }
+      AuthService.login(vm.user, vm.pass)
+        .then(function(player) {
+          if (player && player.extra && player.extra.role === 'admin') {
+            vm.loggedIn = true;
+            vm.error = '';
+          } else {
+            vm.error = 'Acesso restrito: você não é um administrador.';
+            AuthService.logout();
+          }
+          $scope.$applyAsync();
+        })
+        .catch(function(error) {
+          vm.error = 'Usuário ou senha incorretos.';
+          $scope.$applyAsync();
+        });
     }
     // --- Theme Colors ---
     function saveColors() {
@@ -1020,6 +1034,7 @@
     // Google Calendar Config Admin Section (Funifier)
     var CALENDAR_CONFIG_API = 'https://service2.funifier.com/v3/database/calendar_config__c';
     var CALENDAR_CONFIG_ID = 'google_calendar_config';
+    var CALENDAR_CONFIG_DEFAULTS_ID = 'google_calendar_config_defaults';
     vm.googleApiKey = '';
     vm.googleCalendarId = '';
     // Fetch from Funifier on init
@@ -1038,9 +1053,18 @@
         });
     };
     vm.restoreCalendarConfigDefault = function() {
-      vm.googleApiKey = '';
-      vm.googleCalendarId = '';
-      vm.saveCalendarConfig();
+      // Fetch defaults from Funifier
+      $http.get(CALENDAR_CONFIG_API + "?q=_id:'" + CALENDAR_CONFIG_DEFAULTS_ID + "'", { headers: { Authorization: basicAuth } })
+        .then(function(resp) {
+          if (resp.data && resp.data[0]) {
+            vm.googleApiKey = resp.data[0].apiKey || '';
+            vm.googleCalendarId = resp.data[0].calendarId || '';
+          } else {
+            vm.googleApiKey = '';
+            vm.googleCalendarId = '';
+          }
+          vm.saveCalendarConfig();
+        });
     };
     vm.restoreAllDefaults = function() {
       if (!confirm('Tem certeza que deseja restaurar TODOS os valores para o padrão? Esta ação não pode ser desfeita.')) return;
