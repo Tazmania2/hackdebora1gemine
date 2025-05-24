@@ -96,6 +96,34 @@
   margin-bottom: 8px;
   text-align: center;
 }
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #888;
+  transition: .2s;
+  border-radius: 24px;
+}
+.toggle-knob {
+  position: absolute;
+  left: 3px; top: 3px;
+  width: 18px; height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  transition: .2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+}
 </style>
 <div class="admin-viewport" ng-controller="AdminController as vm">
   <div class="admin-header">Painel Administrativo</div>
@@ -246,25 +274,20 @@
     <div class="admin-section">
       <div class="admin-label">Desafios</div>
       <div ng-if="vm.loadingChallenges" style="color:#aaa;">Carregando desafios...</div>
-      <table ng-if="!vm.loadingChallenges && vm.challenges.length > 0" style="width:100%;margin-bottom:12px;">
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Pontos</th>
-            <th>Ativo</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="challenge in vm.challenges" ng-click="vm.openChallengeModal(challenge)" style="cursor:pointer;">
-            <td>{{challenge.challenge}}</td>
-            <td>{{challenge.points && challenge.points.length ? (challenge.points | sumPoints) : 0}}</td>
-            <td>
-              <span ng-if="challenge.active" style="color:#0f0;">Sim</span>
-              <span ng-if="!challenge.active" style="color:#f44;">Não</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div ng-if="!vm.loadingChallenges && vm.challenges.length > 0" style="display:flex;flex-direction:column;gap:14px;margin-bottom:12px;">
+        <div ng-repeat="challenge in vm.challenges" ng-click="vm.openChallengeModal(challenge)" style="background:#23232e;border-radius:18px;padding:18px 22px;box-shadow:0 2px 10px rgba(0,0,0,0.10);display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:box-shadow 0.18s,background 0.18s;position:relative;gap:18px;min-height:54px; border:1.5px solid #29293a;">
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <span style="font-weight:600;font-size:1.13em;color:#fff;">{{challenge.challenge}}</span>
+            <span style="font-size:0.98em;color:#aaa;">Pontos: <b style="color:#ff2e93;">{{challenge.points && challenge.points.length ? (challenge.points | sumPoints) : 0}}</b></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span ng-if="challenge.active" style="color:#0f0;font-weight:600;font-size:1.08em;">Ativo</span>
+            <span ng-if="!challenge.active" style="color:#f44;font-weight:600;font-size:1.08em;">Inativo</span>
+            <i class="bi bi-chevron-right" style="color:#ff2e93;font-size:1.3em;"></i>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:-7px;height:7px;background:linear-gradient(90deg,rgba(255,46,147,0.08),rgba(255,46,147,0.18),rgba(255,46,147,0.08));border-radius:0 0 18px 18px;"></div>
+        </div>
+      </div>
       <div ng-if="!vm.loadingChallenges && vm.challenges.length === 0" style="color:#aaa;">Nenhum desafio encontrado.</div>
       <button class="admin-btn" ng-click="vm.openChallengeModal()">Adicionar Desafio</button>
       <button class="admin-btn" ng-click="vm.restoreChallengesToDefault()" style="background:#888;margin-left:8px;">Restaurar padrão</button>
@@ -275,10 +298,17 @@
           <label class="admin-label">Nome</label>
           <input class="admin-input" ng-model="vm.challengeModalData.challenge" placeholder="Nome do desafio">
           <label class="admin-label">Descrição</label>
-          <textarea class="admin-textarea" ng-model="vm.challengeModalData.description" placeholder="Descrição" style="min-height:3em;"></textarea>
+          <textarea class="admin-textarea" ng-model="vm.challengeModalData.description" placeholder="Descrição" style="min-height:6em;"></textarea>
           <label class="admin-label">Ativo</label>
-          <input type="checkbox" ng-model="vm.challengeModalData.active"> <span style="color:#aaa;">Desmarque para desativar</span>
-          <button class="admin-btn" ng-click="vm.challengeModalData.active = !vm.challengeModalData.active" style="margin-left:12px;">{{vm.challengeModalData.active ? 'Desativar' : 'Ativar'}}</button>
+          <label style="display:inline-flex;align-items:center;gap:10px;cursor:pointer;user-select:none;">
+            <span style="font-size:1.08em;font-weight:600;color:{{vm.challengeModalData.active ? '#0f0' : '#f44'}};min-width:60px;display:inline-block;">{{vm.challengeModalData.active ? 'Ativo' : 'Inativo'}}</span>
+            <span class="toggle-switch">
+              <input type="checkbox" ng-model="vm.challengeModalData.active">
+              <span class="toggle-slider" ng-style="{'background': vm.challengeModalData.active ? '#ff2e93' : '#888'}">
+                <span class="toggle-knob" ng-style="{'transform': vm.challengeModalData.active ? 'translateX(20px)' : 'none'}"></span>
+              </span>
+            </span>
+          </label>
           <div style="margin-top:12px;">
             <label class="admin-label">Regras</label>
             <div ng-repeat="rule in vm.challengeModalData.rules track by $index" style="margin-bottom:8px;">
