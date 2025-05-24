@@ -141,8 +141,8 @@
         function setReferralQrUrl() {
             var code = (playerStatus.extra && playerStatus.extra.mycode) ? playerStatus.extra.mycode : 'N0c()63';
             vm.referralCode = code;
-            var baseUrl = window.location.origin + window.location.pathname;
-            var url = baseUrl + 'register?referral=' + encodeURIComponent(code);
+            // Always use the production domain for the QR code
+            var url = 'https://hackdebora1gemine.vercel.app/register?referral=' + encodeURIComponent(code);
             vm.qrUrl = url;
             // Generate QR code as data URL
             var qr = window.qrcode(4, 'L');
@@ -150,7 +150,7 @@
             qr.make();
             // Get the data URL from the generated QR code
             var qrImg = qr.createImgTag(8); // 8 = pixel size
-            // Extract src from <img src="...">
+            // Extract src from <img src=...>
             var match = qrImg.match(/src=['\"]([^'\"]+)['\"]/);
             vm.qrImgUrl = match ? match[1] : '';
             vm.qrReady = true;
