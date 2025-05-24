@@ -18,12 +18,16 @@
     function expireOldCashback(playerName) {
       var now = Date.now();
       var ninetyDays = 90 * 24 * 60 * 60 * 1000;
-      // 1. Fetch player status (Bearer token)
-      return PlayerService.getStatus().then(function(response) {
-        var status = response.data;
-        var expired = (status.achievements || []).filter(function(a) {
-          return a.item === 'cashback' && (now - a.time > ninetyDays);
+      // 1. Fetch cashback achievements for the player (Basic Auth)
+      var query = encodeURIComponent(JSON.stringify({ player: playerName, item: 'cashback' }));
+      return $http.get(apiUrl + '?q=' + query, {
+        headers: { 'Authorization': basicAuth, 'Content-Type': 'application/json' }
+      }).then(function(response) {
+        var achievements = response.data || [];
+        var expired = achievements.filter(function(a) {
+          return now - a.time > ninetyDays;
         });
+        console.log('[CashbackExpiryService] Expired cashback achievements:', expired);
         // 2. For each expired cashback achievement:
         var actions = expired.map(function(a) {
           // a) Log 'expired_cashback' achievement (Basic Auth)
