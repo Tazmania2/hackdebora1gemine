@@ -1,19 +1,209 @@
-<div class="social-container" ng-controller="SocialController as vm">
-  <div class="admin-section">
-    <div class="admin-label">Rede Social</div>
-    <p>Para participar, faça uma postagem em sua rede social com a hashtag <b>#MissLinguiça</b>, tire um print da postagem e envie aqui junto com seu @handle.</p>
-    <form name="socialForm" ng-submit="vm.submit()" novalidate>
-      <label class="admin-label">Seu @handle</label>
-      <input class="admin-input" type="text" ng-model="vm.handle" placeholder="@seuusuario" required>
-      <label class="admin-label">Print da postagem</label>
-      <input class="admin-input" type="file" accept="image/*" onchange="angular.element(this).scope().vm.onFileChange(this)" required>
-      <div ng-if="vm.printPreview" style="margin:12px 0;text-align:center;">
-        <img ng-src="{{vm.printPreview}}" alt="Print Preview" style="max-width:220px;max-height:180px;display:inline-block;border-radius:8px;background:#fff;padding:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-      </div>
-      <div class="admin-error" ng-if="vm.error">{{vm.error}}</div>
-      <div class="admin-success" ng-if="vm.success">{{vm.success}}</div>
-      <button class="admin-btn" type="submit" ng-disabled="vm.loading">Enviar</button>
-      <button class="admin-btn" type="button" ng-click="vm.goBack()" style="background:#888;margin-left:8px;">Voltar</button>
-    </form>
+<!-- Rede Social View -->
+<style>
+.dashboard-viewport {
+  background: var(--background-dark, #232323);
+  min-height: 100vh;
+  min-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+  height: auto;
+  padding-bottom: 32px;
+  border-radius: 32px 32px 32px 32px;
+  max-width: 430px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+@media (min-width: 431px) {
+  .dashboard-viewport {
+    width: 430px;
+    min-width: 430px;
+    max-width: 430px;
+    min-height: 900px;
+    max-height: none;
+    margin: 32px auto;
+    border-radius: 32px 32px 32px 32px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    position: relative;
+    left: 0; right: 0;
+  }
+}
+.rp-header {
+  width: 100%;
+  padding: 24px 0 12px 0;
+  text-align: center;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: bold;
+  background: var(--primary-color, #ec0677);
+  border-radius: 0;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+}
+.rp-header-back {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.7rem;
+  cursor: pointer;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 40px;
+}
+.rp-header-back i {
+  color: #fff !important;
+}
+.rp-header-title {
+  flex: 1;
+  text-align: center;
+}
+.rp-form {
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+.rp-form-label {
+  color: #fff;
+  font-size: 1.08rem;
+  margin-bottom: 4px;
+  text-align: left;
+  width: 100%;
+}
+.rp-input {
+  width: 100%;
+  background: #181818;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1.15rem;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  outline: none;
+}
+.rp-input:focus {
+  border: 2px solid #ec0677;
+}
+.rp-upload-box {
+  width: 100%;
+  background: #181818;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 0 10px 0;
+  margin-bottom: 8px;
+  cursor: pointer;
+  border: 2px dashed #ec0677;
+  color: #ec0677;
+  font-size: 1.7rem;
+  transition: border 0.18s;
+}
+.rp-upload-box:hover, .rp-upload-box:focus {
+  border: 2px solid #ec0677;
+}
+.rp-upload-icon {
+  font-size: 2.2rem;
+  color: #ec0677;
+}
+.rp-img-preview {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  background: #ddd;
+  border-radius: 10px;
+  margin: 0 auto 10px auto;
+  display: block;
+}
+.rp-submit-btn {
+  width: 100%;
+  background: #ec0677;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 16px;
+  padding: 12px 0;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.rp-submit-btn:active, .rp-submit-btn:focus {
+  background: #b8005a;
+}
+.rp-error {
+  color: #ec0677;
+  font-size: 1.1em;
+  margin-top: 8px;
+  text-align: center;
+}
+.rp-success {
+  color: #fff;
+  font-size: 1.2em;
+  margin-top: 8px;
+  text-align: center;
+}
+.rp-anim {
+  color: #fff;
+  font-size: 1.3em;
+  margin-top: 18px;
+  text-align: center;
+  animation: pop 1.2s cubic-bezier(.4,2,.6,1) 1;
+}
+@keyframes pop {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.18); }
+  60% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+.rp-info {
+  color: #ec0677;
+  font-size: 1.05em;
+  margin-top: 10px;
+  text-align: center;
+}
+</style>
+<div class="dashboard-viewport" ng-controller="SocialController as vm">
+  <div class="rp-header">
+    <button class="rp-header-back" ng-click="vm.goBack()" aria-label="Voltar">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <span class="rp-header-title">Rede Social</span>
   </div>
+  <form name="socialForm" class="rp-form" ng-submit="vm.submit()" novalidate autocomplete="off">
+    <div style="width:100%;text-align:center;margin-bottom:10px;">
+      <i class="bi bi-hash" style="font-size:3.2rem;color:#fff;"></i>
+    </div>
+    <div class="rp-info">Para participar, faça uma postagem em sua rede social com a hashtag <b>#MissLinguiça</b>, tire um print da postagem e envie aqui junto com seu @handle.</div>
+    <label class="rp-form-label" for="handle">Seu @handle</label>
+    <input class="rp-input" id="handle" name="handle" type="text" ng-model="vm.handle" placeholder="@seuusuario" required autocomplete="off">
+    <label class="rp-form-label" for="print">Upload do print da postagem</label>
+    <div class="rp-upload-box" tabindex="0" onclick="document.getElementById('socialPrint').click()">
+      <i class="bi bi-upload rp-upload-icon"></i>
+    </div>
+    <input id="socialPrint" name="socialPrint" type="file" accept="image/*" style="display:none" required onchange="angular.element(this).scope().vm.onFileChange(this)">
+    <img ng-if="vm.printPreview" ng-src="{{vm.printPreview}}" alt="Print Preview" class="rp-img-preview">
+    <div class="rp-error" ng-if="vm.error">{{vm.error}}</div>
+    <div class="rp-success" ng-if="vm.success">{{vm.success}}</div>
+    <div class="rp-anim" ng-if="vm.animating">Enviando...</div>
+    <button class="rp-submit-btn" type="submit" ng-disabled="vm.loading">Enviar</button>
+    <button class="rp-submit-btn" type="button" ng-click="vm.goBack()" style="background:#888;margin-left:8px;">Voltar</button>
+  </form>
 </div> 
