@@ -12,22 +12,9 @@ body, html {
   min-width: 100vw;
   background: #181828;
   display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.admin-viewport {
-  background: #232323;
-  min-height: 90vh;
-  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 0 0 32px 0;
-  border-radius: 32px;
-  max-width: 430px;
-  width: 100%;
-  margin: 40px auto;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
 }
 .admin-header {
   position: sticky;
@@ -41,6 +28,8 @@ body, html {
   box-shadow: 0 2px 8px rgba(0,0,0,0.10);
   border-radius: 32px 32px 0 0;
   width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
 }
 .admin-header-menu {
   display: flex;
@@ -72,6 +61,21 @@ body, html {
 }
 .admin-header-saveall:active, .admin-header-saveall:focus {
   background: #b8005a;
+}
+.admin-viewport {
+  background: #232323;
+  min-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 0 32px 0;
+  border-radius: 32px;
+  max-width: 430px;
+  width: 100%;
+  margin: 40px auto 0 auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  margin-top: 32px;
 }
 .admin-section {
   background: #232323;
@@ -169,6 +173,20 @@ body, html {
 }
 </style>
 <div class="admin-bg">
+  <div class="admin-header" ng-if="vm.loggedIn">
+    <span>Painel Administrativo</span>
+    <nav class="admin-header-menu">
+      <a ng-click="vm.scrollToSection('theme')">Cores do Tema</a>
+      <a ng-click="vm.scrollToSection('logo')">Logo</a>
+      <a ng-click="vm.scrollToSection('dashboard')">Botões</a>
+      <a ng-click="vm.scrollToSection('success')">Mensagens</a>
+      <a ng-click="vm.scrollToSection('stats')">Estatísticas</a>
+      <a ng-click="vm.scrollToSection('challenges')">Desafios</a>
+      <a ng-click="vm.scrollToSection('log')">Criar Log</a>
+      <a ng-click="vm.scrollToSection('actions')">Ações</a>
+    </nav>
+    <button class="admin-header-saveall" ng-click="vm.saveAllSections()">Salvar Tudo</button>
+  </div>
   <div class="admin-viewport" ng-controller="AdminController as vm">
     <div ng-if="!vm.loggedIn" class="admin-login-box">
       <div class="admin-login-title">Acesso Restrito</div>
@@ -182,20 +200,6 @@ body, html {
       </form>
     </div>
     <div ng-if="vm.loggedIn">
-      <div class="admin-header">
-        <span>Painel Administrativo</span>
-        <nav class="admin-header-menu">
-          <a ng-click="vm.scrollToSection('theme')">Cores do Tema</a>
-          <a ng-click="vm.scrollToSection('logo')">Logo</a>
-          <a ng-click="vm.scrollToSection('dashboard')">Botões</a>
-          <a ng-click="vm.scrollToSection('success')">Mensagens</a>
-          <a ng-click="vm.scrollToSection('stats')">Estatísticas</a>
-          <a ng-click="vm.scrollToSection('challenges')">Desafios</a>
-          <a ng-click="vm.scrollToSection('log')">Criar Log</a>
-          <a ng-click="vm.scrollToSection('actions')">Ações</a>
-          <button class="admin-header-saveall" ng-click="vm.saveAllSections()">Salvar Tudo</button>
-        </nav>
-      </div>
       <div class="admin-section" id="theme">
         <div class="admin-label">Cores do Tema</div>
         <label>Cor de fundo do site (body): <input type="color" ng-model="vm.themeConfig.background_color"></label>
