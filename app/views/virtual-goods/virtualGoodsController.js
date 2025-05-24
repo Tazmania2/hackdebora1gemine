@@ -55,7 +55,8 @@
                 vm.catalogItems = response.data.filter(function(item) {
                     return item.catalogId === 'recompensas';
                 }).map(function(item) {
-                    item.canExchange = Array.isArray(item.requires) && item.requires.length > 0 && item.requires[0].item === 'misscoins';
+                    // Use 'xp' instead of 'misscoins' for backend logic
+                    item.canExchange = Array.isArray(item.requires) && item.requires.length > 0 && item.requires[0].item === 'xp';
                     item.missingReason = !item.canExchange ? 'Este item não está disponível para troca no momento.' : '';
                     // Add canAfford flag for UI
                     var misscoins = item.requires && item.requires[0] && item.requires[0].total ? item.requires[0].total : 0;
@@ -100,7 +101,7 @@
 
         function getMisscoins(item) {
             if (item.requires && Array.isArray(item.requires)) {
-                var req = item.requires.find(function(r) { return r.item === 'misscoins'; });
+                var req = item.requires.find(function(r) { return r.item === 'xp'; });
                 return req ? req.total : 0;
             }
             return 0;
@@ -112,8 +113,8 @@
                 vm.playerStatus = player;
                 // Set playerMisscoins for UI reference (fixed to use pointCategories)
                 vm.playerMisscoins =
-                    (player.pointCategories && player.pointCategories.misscoins) ||
-                    (player.point_categories && player.point_categories.misscoins) ||
+                    (player.pointCategories && player.pointCategories.xp) ||
+                    (player.point_categories && player.point_categories.xp) ||
                     0;
                 var playerId = player._id || player.name;
                 // Fetch all catalog items for joining
