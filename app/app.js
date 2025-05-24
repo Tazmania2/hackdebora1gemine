@@ -137,6 +137,16 @@
                     }]
                 }
             })
+            .when('/cashback-coupon', {
+                templateUrl: 'app/views/virtual-goods/cashbackCouponView.html',
+                controller: 'CashbackCouponController',
+                controllerAs: 'vm',
+                resolve: {
+                    auth: ['AuthService', function(AuthService) {
+                        return AuthService.isAuthenticated();
+                    }]
+                }
+            })
             .otherwise({ redirectTo: '/login' });
 
         $locationProvider.html5Mode(true);
