@@ -516,4 +516,28 @@ body, html {
       </div>
     </div>
   </div>
+  <!-- Estatísticas Modal -->
+  <div ng-if="vm.statModalOpen" class="modal-backdrop" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
+    <div class="modal-content" style="background:#232323;padding:32px 24px;border-radius:16px;max-width:600px;max-height:80vh;overflow:auto;">
+      <div style="font-weight:bold;font-size:1.2em;margin-bottom:18px;">{{vm.statModalTitle}}</div>
+      <div ng-if="vm.statModalLoading" style="color:#ff2e93;text-align:center;font-size:1.1em;">Carregando...</div>
+      <div ng-if="!vm.statModalLoading">
+        <table class="admin-table" ng-if="vm.statModalData.length">
+          <thead>
+            <tr>
+              <th ng-repeat="col in vm.statModalAttrKeys">{{col}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="row in vm.statModalData">
+              <td ng-repeat="col in vm.statModalAttrKeys">{{row[col]}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div ng-if="!vm.statModalData.length" style="color:#aaa;text-align:center;">Nenhum dado encontrado.</div>
+        <button class="admin-btn" ng-click="vm.exportStatCsv()" style="margin-top:18px;">Exportar CSV</button>
+        <button class="admin-btn" ng-click="vm.closeStatModal()" style="background:#888;margin-left:8px;">Fechar</button>
+      </div>
+    </div>
+  </div>
 </div> 
