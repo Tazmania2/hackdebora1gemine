@@ -443,15 +443,26 @@
     };
     // Enhanced createActionLog
     vm.createActionLog = function() {
-      if (!vm.selectedPlayerObj || !vm.selectedActionObj) return;
+      if (!vm.selectedPlayerObj || !vm.selectedActionObj) {
+        console.warn('[Admin] createActionLog: Missing player or action', vm.selectedPlayerObj, vm.selectedActionObj);
+        return;
+      }
       var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
       var payload = {
         actionId: vm.selectedActionObj._id,
         userId: vm.selectedPlayerObj._id,
         attributes: angular.copy(vm.actionAttributes)
       };
+      console.log('[Admin] Creating action log, payload:', payload);
       $http.post('https://service2.funifier.com/v3/action/log', payload, { headers: { Authorization: basicAuth } })
-        .then(function() { alert(SuccessMessageService.get('log_created')); });
+        .then(function(response) {
+          console.log('[Admin] Action log created, response:', response);
+          alert(SuccessMessageService.get('log_created'));
+        })
+        .catch(function(error) {
+          console.error('[Admin] Failed to create action log:', error);
+          alert('Erro ao criar log de ação. Veja o console para detalhes.');
+        });
     };
     // Load theme config from Funifier on controller init
     ThemeConfigService.getConfig().then(function(cfg) {
