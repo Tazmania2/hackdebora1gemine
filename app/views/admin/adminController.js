@@ -1017,6 +1017,31 @@
       vm.cashbackExpiryDays = 90;
       vm.saveCashbackExpiryDays();
     };
+    // Google Calendar Config Admin Section (Funifier)
+    var CALENDAR_CONFIG_API = 'https://service2.funifier.com/v3/database/calendar_config__c';
+    var CALENDAR_CONFIG_ID = 'google_calendar_config';
+    vm.googleApiKey = '';
+    vm.googleCalendarId = '';
+    // Fetch from Funifier on init
+    $http.get(CALENDAR_CONFIG_API + "?q=_id:'" + CALENDAR_CONFIG_ID + "'", { headers: { Authorization: basicAuth } })
+      .then(function(resp) {
+        if (resp.data && resp.data[0]) {
+          vm.googleApiKey = resp.data[0].apiKey || '';
+          vm.googleCalendarId = resp.data[0].calendarId || '';
+        }
+      });
+    vm.saveCalendarConfig = function() {
+      var payload = { _id: CALENDAR_CONFIG_ID, apiKey: vm.googleApiKey, calendarId: vm.googleCalendarId };
+      $http.put(CALENDAR_CONFIG_API, payload, { headers: { Authorization: basicAuth } })
+        .then(function() {
+          alert('Configuração do Google Agenda salva!');
+        });
+    };
+    vm.restoreCalendarConfigDefault = function() {
+      vm.googleApiKey = '';
+      vm.googleCalendarId = '';
+      vm.saveCalendarConfig();
+    };
     vm.restoreAllDefaults = function() {
       if (!confirm('Tem certeza que deseja restaurar TODOS os valores para o padrão? Esta ação não pode ser desfeita.')) return;
       vm.resetToDefault && vm.resetToDefault();
@@ -1024,6 +1049,8 @@
       vm.restoreSuccessMessagesToDefault && vm.restoreSuccessMessagesToDefault();
       vm.restoreChallengesToDefault && vm.restoreChallengesToDefault();
       vm.restoreCashbackExpiryDefault && vm.restoreCashbackExpiryDefault();
+      vm.restoreActionsToDefault && vm.restoreActionsToDefault();
+      vm.restoreCalendarConfigDefault && vm.restoreCalendarConfigDefault();
       alert('Todos os valores foram restaurados para o padrão!');
     };
   }

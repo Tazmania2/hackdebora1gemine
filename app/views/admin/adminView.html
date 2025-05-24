@@ -178,6 +178,7 @@ body, html {
     <nav class="admin-header-menu" ng-if="vm.loggedIn">
       <a ng-click="vm.scrollToSection('theme')">Cores do Tema</a>
       <a ng-click="vm.scrollToSection('logo')">Logo</a>
+      <a ng-click="vm.scrollToSection('calendar-config')">Google Agenda</a>
       <a ng-click="vm.scrollToSection('dashboard')">Botões</a>
       <a ng-click="vm.scrollToSection('success')">Mensagens</a>
       <a ng-click="vm.scrollToSection('stats')">Estatísticas</a>
@@ -236,6 +237,16 @@ body, html {
         </label>
         <span class="admin-label" style="font-size:0.95em;color:#aaa;">Se desmarcado, a logo do Studio não aparecerá na tela de login.</span>
         <button class="admin-btn" ng-click="vm.saveColors()" ng-disabled="vm.loadingTheme">Salvar Logo</button>
+      </div>
+      <div class="admin-section" id="calendar-config">
+        <div class="admin-label">Configuração do Google Agenda</div>
+        <div style="color:#aaa;font-size:0.98em;margin-bottom:10px;">Configure a chave da API do Google e o ID do calendário para o painel de Próximos Eventos.</div>
+        <label class="admin-label" for="googleApiKey">Google API Key:</label>
+        <input class="admin-input" id="googleApiKey" ng-model="vm.googleApiKey" placeholder="Sua Google API Key">
+        <label class="admin-label" for="googleCalendarId">Calendar ID:</label>
+        <input class="admin-input" id="googleCalendarId" ng-model="vm.googleCalendarId" placeholder="Seu Calendar ID">
+        <button class="admin-btn" ng-click="vm.saveCalendarConfig()">Salvar</button>
+        <button class="admin-btn" ng-click="vm.restoreCalendarConfigDefault()" style="background:#888;margin-left:8px;">Restaurar padrão</button>
       </div>
       <div class="admin-section" id="dashboard">
         <div class="admin-label">Botões do Dashboard</div>
