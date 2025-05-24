@@ -759,5 +759,35 @@
         document.body.removeChild(link);
       }
     };
+    // Logo file change handler for logo upload
+    function onLogoFileChange(input) {
+      var file = input.files[0];
+      if (!file) return;
+      vm.loadingTheme = true;
+      var formData = new FormData();
+      formData.append('file', file);
+      formData.append('extra', JSON.stringify({ session: 'images', transform: [{ stage: 'size', width: 350, height: 350 }] }));
+      $http({
+        method: 'POST',
+        url: 'https://service2.funifier.com/v3/upload/image',
+        headers: {
+          'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
+          'Content-Type': undefined
+        },
+        data: formData,
+        transformRequest: angular.identity
+      }).then(function(response) {
+        if (response.data && response.data.uploads && response.data.uploads[0] && response.data.uploads[0].url) {
+          vm.themeConfig.logo = response.data.uploads[0].url;
+        } else {
+          alert('Erro ao obter URL da imagem enviada.');
+        }
+      }).catch(function() {
+        alert('Erro ao enviar imagem.');
+      }).finally(function() {
+        vm.loadingTheme = false;
+        $scope.$applyAsync();
+      });
+    }
   }
 })(); 
