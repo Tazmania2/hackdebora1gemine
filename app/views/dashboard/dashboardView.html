@@ -320,6 +320,9 @@
         <div class="saldo-label" style="margin-bottom: 8px;">QR Code</div>
         <img ng-if="vm.qrReady" ng-src="{{vm.qrImgUrl}}" width="180" height="180" alt="QR Code" style="background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.10);">
         <div style="color: #aaa; font-size: 0.95em; margin-top: 8px;">Escaneie para acessar</div>
+        <div ng-if="vm.referralCode" style="color: #ff2e93; font-size: 0.95em; margin-top: 4px; word-break: break-all;">
+          Código de indicação: <span style="font-family: monospace;">{{vm.referralCode}}</span>
+        </div>
       </div>
     </div>
     <!-- Completed Challenges Section -->

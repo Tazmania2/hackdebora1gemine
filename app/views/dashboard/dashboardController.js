@@ -27,6 +27,7 @@
         vm.successMessage = null;
         vm.dailyLoginMessage = '';
         vm.daysToCashbackExpiry = null;
+        vm.referralCode = '';
 
         // Methods
         vm.goToProfile = goToProfile;
@@ -139,8 +140,9 @@
 
         function setReferralQrUrl() {
             var code = (playerStatus.extra && playerStatus.extra.mycode) ? playerStatus.extra.mycode : 'N0c()63';
+            vm.referralCode = code;
             var baseUrl = window.location.origin + window.location.pathname;
-            var url = baseUrl + '#!/register?referral=' + encodeURIComponent(code);
+            var url = baseUrl + 'register?referral=' + encodeURIComponent(code);
             vm.qrUrl = url;
             // Generate QR code as data URL
             var qr = window.qrcode(4, 'L');
