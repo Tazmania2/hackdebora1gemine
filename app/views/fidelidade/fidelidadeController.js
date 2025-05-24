@@ -1,4 +1,4 @@
-angular.module('app').controller('FidelidadeController', function($scope, $timeout, PlayerService, $location) {
+angular.module('app').controller('FidelidadeController', function($scope, $timeout, PlayerService, $location, $http) {
     var vm = this;
     // Piece definitions
     var pieces = [
@@ -14,6 +14,7 @@ angular.module('app').controller('FidelidadeController', function($scope, $timeo
     vm.piecesOwned = 0;
     vm.piecesMissing = 5;
     vm.goBack = function() { $location.path('/dashboard'); };
+    vm.prize = null;
 
     PlayerService.getStatus().then(function(response) {
         var status = response.data;
@@ -44,5 +45,15 @@ angular.module('app').controller('FidelidadeController', function($scope, $timeo
         vm.error = 'Erro ao carregar status do jogador.';
     }).finally(function() {
         vm.loading = false;
+    });
+
+    // Fetch prize info
+    $http({
+        method: 'GET',
+        url: 'https://service2.funifier.com/v3/virtualgoods/item/EV2tJzk',
+        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' }
+    }).then(function(res) {
+        vm.prize = res.data;
+        $scope.$applyAsync && $scope.$applyAsync();
     });
 }); 

@@ -147,4 +147,14 @@
          ng-src="{{piece.img}}"
          alt="Puzzle Piece" />
   </div>
+  <!-- Prize Info Section -->
+  <div class="fidelidade-prize-section" style="margin:32px 0 0 0; text-align:center;">
+    <div style="font-size:1.15em; color:#ff2e93; font-weight:bold; margin-bottom:8px;">Prêmio ao completar o quebra-cabeça:</div>
+    <div ng-if="vm.prize">
+      <img ng-if="vm.prize.image && vm.prize.image.small && vm.prize.image.small.url" ng-src="{{vm.prize.image.small.url}}" alt="{{vm.prize.name}}" style="width:64px;height:64px;border-radius:12px;background:#fff;margin-bottom:8px;">
+      <div style="font-weight:bold; color:#fff; font-size:1.1em;">{{vm.prize.name}}</div>
+      <div style="color:#aaa; font-size:0.98em; margin-bottom:6px;">{{vm.prize.description}}</div>
+    </div>
+    <div style="color:#ff2e93; font-size:1em; margin-top:10px;">O prêmio será enviado junto com a sua próxima compra.</div>
+  </div>
 </div> 

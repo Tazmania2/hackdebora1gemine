@@ -294,6 +294,9 @@
       <i class="bi bi-coin"></i> {{vm.playerMisscoins}} Misscoins
     </div>
   </div>
+  <div class="vg-disclaimer" style="width:100%;display:flex;justify-content:center;margin-bottom:10px;">
+    <div style="background:#ff2e93;color:#fff;font-weight:bold;border-radius:999px;padding:8px 24px;font-size:1.08em;">Os prêmios serão enviados junto com a sua próxima compra.</div>
+  </div>
   <div class="vg-filters">
     <button class="vg-filter-btn" ng-class="{active: vm.sortType === 'value'}" ng-click="vm.setSort('value')">
       Valor <span ng-if="vm.sortType === 'value'">{{vm.sortOrder === 'asc' ? '↑' : '↓'}}</span>
