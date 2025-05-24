@@ -297,6 +297,8 @@
     vm.challengeModalData = null;
     vm.challengeModalIsNew = false;
     vm.loadingChallenges = false;
+    vm.availableActions = [];
+    vm.availablePointCategories = [];
 
     vm.loadChallenges = loadChallenges;
     vm.openChallengeModal = openChallengeModal;
@@ -318,7 +320,20 @@
     }
     loadChallenges();
 
+    function fetchAvailableActionsAndPoints() {
+      // Only fetch if not already loaded
+      if (!vm.availableActions.length) {
+        $http.get('https://service2.funifier.com/v3/action', { headers: { Authorization: basicAuth } })
+          .then(function(resp) { vm.availableActions = resp.data || []; });
+      }
+      if (!vm.availablePointCategories.length) {
+        $http.get('https://service2.funifier.com/v3/point', { headers: { Authorization: basicAuth } })
+          .then(function(resp) { vm.availablePointCategories = resp.data || []; });
+      }
+    }
+
     function openChallengeModal(challenge) {
+      fetchAvailableActionsAndPoints();
       vm.challengeModalIsNew = !challenge;
       vm.challengeModalData = challenge ? angular.copy(challenge) : {
         challenge: '',

@@ -250,22 +250,17 @@
         <thead>
           <tr>
             <th>Nome</th>
-            <th>Descrição</th>
+            <th>Pontos</th>
             <th>Ativo</th>
-            <th>Ações</th>
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="challenge in vm.challenges">
+          <tr ng-repeat="challenge in vm.challenges" ng-click="vm.openChallengeModal(challenge)" style="cursor:pointer;">
             <td>{{challenge.challenge}}</td>
-            <td>{{challenge.description}}</td>
+            <td>{{challenge.points && challenge.points.length ? (challenge.points | sumPoints) : 0}}</td>
             <td>
               <span ng-if="challenge.active" style="color:#0f0;">Sim</span>
               <span ng-if="!challenge.active" style="color:#f44;">Não</span>
-            </td>
-            <td>
-              <button class="admin-btn" ng-click="vm.openChallengeModal(challenge)">Editar</button>
-              <button class="admin-btn" ng-click="vm.toggleActive(challenge)" style="background:#888;margin-left:8px;">{{challenge.active ? 'Desativar' : 'Ativar'}}</button>
             </td>
           </tr>
         </tbody>
@@ -280,13 +275,15 @@
           <label class="admin-label">Nome</label>
           <input class="admin-input" ng-model="vm.challengeModalData.challenge" placeholder="Nome do desafio">
           <label class="admin-label">Descrição</label>
-          <textarea class="admin-textarea" ng-model="vm.challengeModalData.description" placeholder="Descrição"></textarea>
+          <textarea class="admin-textarea" ng-model="vm.challengeModalData.description" placeholder="Descrição" style="min-height:3em;"></textarea>
           <label class="admin-label">Ativo</label>
           <input type="checkbox" ng-model="vm.challengeModalData.active"> <span style="color:#aaa;">Desmarque para desativar</span>
+          <button class="admin-btn" ng-click="vm.challengeModalData.active = !vm.challengeModalData.active" style="margin-left:12px;">{{vm.challengeModalData.active ? 'Desativar' : 'Ativar'}}</button>
           <div style="margin-top:12px;">
             <label class="admin-label">Regras</label>
             <div ng-repeat="rule in vm.challengeModalData.rules track by $index" style="margin-bottom:8px;">
-              <input class="admin-input" ng-model="rule.actionId" placeholder="Ação (actionId)">
+              <select class="admin-input" ng-model="rule.actionId" ng-options="a._id as a.action for a in vm.availableActions" ng-if="vm.availableActions.length"></select>
+              <input class="admin-input" ng-model="rule.actionId" placeholder="Ação (actionId)" ng-if="!vm.availableActions.length">
               <input class="admin-input" ng-model="rule.total" type="number" placeholder="Total">
               <button class="admin-btn" ng-click="vm.challengeModalData.rules.splice($index,1)" style="background:#888;" ng-if="vm.challengeModalData.rules.length > 1">Remover</button>
             </div>
@@ -296,7 +293,8 @@
             <label class="admin-label">Pontos</label>
             <div ng-repeat="point in vm.challengeModalData.points track by $index" style="margin-bottom:8px;">
               <input class="admin-input" ng-model="point.total" type="number" placeholder="Total de pontos">
-              <input class="admin-input" ng-model="point.category" placeholder="Categoria (ex: misscoins, xp)">
+              <select class="admin-input" ng-model="point.category" ng-options="c._id as c.category for c in vm.availablePointCategories" ng-if="vm.availablePointCategories.length"></select>
+              <input class="admin-input" ng-model="point.category" placeholder="Categoria (ex: misscoins, xp)" ng-if="!vm.availablePointCategories.length">
               <button class="admin-btn" ng-click="vm.challengeModalData.points.splice($index,1)" style="background:#888;" ng-if="vm.challengeModalData.points.length > 1">Remover</button>
             </div>
             <button class="admin-btn" ng-click="vm.challengeModalData.points.push({total:0,category:'',operation:0})" style="margin-top:4px;">Adicionar Pontuação</button>
@@ -315,4 +313,12 @@
       <button class="admin-btn" ng-click="vm.createActionLog()">Criar Log</button>
     </div>
   </div>
-</div> 
+</div>
+<script>
+angular.module('app').filter('sumPoints', function() {
+  return function(pointsArr) {
+    if (!Array.isArray(pointsArr)) return 0;
+    return pointsArr.reduce(function(sum, p) { return sum + (parseFloat(p.total) || 0); }, 0);
+  };
+});
+</script> 
