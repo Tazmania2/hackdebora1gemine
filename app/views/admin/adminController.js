@@ -322,7 +322,10 @@
       // Only fetch if not already loaded
       if (!vm.availableActions.length) {
         $http.get('https://service2.funifier.com/v3/action', { headers: { Authorization: basicAuth } })
-          .then(function(resp) { vm.availableActions = resp.data || []; });
+          .then(function(resp) {
+            vm.availableActions = resp.data || [];
+            console.log('[Admin] Loaded actions:', vm.availableActions);
+          });
       }
       if (!vm.availablePointCategories.length) {
         $http.get('https://service2.funifier.com/v3/point', { headers: { Authorization: basicAuth } })
@@ -415,6 +418,7 @@
       $http.get('https://service2.funifier.com/v3/player/status', { headers: { Authorization: basicAuth } })
         .then(function(resp) {
           vm.availablePlayers = resp.data || [];
+          console.log('[Admin] Loaded players:', vm.availablePlayers);
           $scope.$applyAsync && $scope.$applyAsync();
         });
     }
