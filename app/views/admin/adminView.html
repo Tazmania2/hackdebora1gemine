@@ -359,7 +359,6 @@
       <div class="admin-label">Ações</div>
       <div ng-if="vm.loadingActions" style="color:#aaa;">Carregando ações...</div>
       <div ng-if="!vm.loadingActions">
-        <button class="admin-btn" ng-click="vm.startAddAction()" ng-if="!vm.editingAction">Adicionar Nova Ação</button>
         <!-- Actions List (clickable) -->
         <div ng-if="vm.actions.length === 0 && !vm.editingAction" style="color:#aaa;">Nenhuma ação cadastrada.</div>
         <div ng-if="vm.actions.length > 0 && !vm.editingAction" style="display:flex;flex-direction:column;gap:14px;">
@@ -374,6 +373,7 @@
             </div>
           </div>
         </div>
+        <button class="admin-btn" ng-click="vm.startAddAction()" ng-if="!vm.editingAction" style="margin-top:14px;">Adicionar Nova Ação</button>
         <!-- Action Edit/Add Modal -->
         <div ng-if="vm.editingAction" class="modal-backdrop" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
           <div class="modal-content" style="background:#232323;padding:32px 24px;border-radius:16px;max-width:500px;max-height:80vh;overflow:auto;">
