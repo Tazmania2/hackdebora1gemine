@@ -805,5 +805,77 @@
         $scope.$applyAsync();
       });
     }
+    // --- Actions Management ---
+    var ACTION_API = 'https://service2.funifier.com/v3/action';
+    vm.actions = [];
+    vm.loadingActions = false;
+    vm.editingAction = null; // {action, attributes, active, _id}
+    vm.isEditingExistingAction = false;
+    vm.newAttribute = { name: '', type: 'String' };
+    vm.actionTypes = ['String', 'Number'];
+
+    vm.loadActions = function() {
+      vm.loadingActions = true;
+      $http.get(ACTION_API, { headers: { Authorization: basicAuth } })
+        .then(function(resp) {
+          vm.actions = resp.data || [];
+          $scope.$applyAsync && $scope.$applyAsync();
+        })
+        .finally(function() { vm.loadingActions = false; });
+    };
+    vm.loadActions();
+
+    vm.startAddAction = function() {
+      vm.editingAction = { action: '', attributes: [], active: true, _id: '' };
+      vm.isEditingExistingAction = false;
+      vm.newAttribute = { name: '', type: 'String' };
+    };
+    vm.startEditAction = function(action) {
+      vm.editingAction = angular.copy(action);
+      vm.isEditingExistingAction = true;
+      vm.newAttribute = { name: '', type: 'String' };
+    };
+    vm.cancelEditAction = function() {
+      vm.editingAction = null;
+      vm.isEditingExistingAction = false;
+    };
+    vm.addAttributeToAction = function() {
+      if (!vm.newAttribute.name || !vm.newAttribute.type) return;
+      vm.editingAction.attributes = vm.editingAction.attributes || [];
+      vm.editingAction.attributes.push(angular.copy(vm.newAttribute));
+      vm.newAttribute = { name: '', type: 'String' };
+    };
+    vm.removeAttributeFromAction = function(idx) {
+      if (vm.editingAction && vm.editingAction.attributes) {
+        vm.editingAction.attributes.splice(idx, 1);
+      }
+    };
+    vm.saveAction = function() {
+      if (!vm.editingAction.action || !vm.editingAction._id) return;
+      var payload = angular.copy(vm.editingAction);
+      $http.post(ACTION_API, payload, { headers: { Authorization: basicAuth } })
+        .then(function(resp) {
+          alert(vm.isEditingExistingAction ? 'Ação atualizada!' : 'Ação criada!');
+          vm.loadActions();
+          vm.cancelEditAction();
+        })
+        .catch(function(err) {
+          alert('Erro ao salvar ação. Veja o console.');
+          console.error('[Admin] Erro ao salvar ação:', err);
+        });
+    };
+    vm.toggleActionActive = function(action) {
+      var updated = angular.copy(action);
+      updated.active = !updated.active;
+      $http.post(ACTION_API, updated, { headers: { Authorization: basicAuth } })
+        .then(function() { vm.loadActions(); })
+        .catch(function(err) { alert('Erro ao ativar/desativar ação.'); });
+    };
+    vm.deleteAction = function(action) {
+      if (!confirm('Tem certeza que deseja excluir esta ação?')) return;
+      $http.delete(ACTION_API + '/' + encodeURIComponent(action._id), { headers: { Authorization: basicAuth } })
+        .then(function() { vm.loadActions(); })
+        .catch(function(err) { alert('Erro ao excluir ação.'); });
+    };
   }
 })(); 
