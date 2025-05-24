@@ -28,6 +28,8 @@
         vm.dailyLoginMessage = '';
         vm.daysToCashbackExpiry = null;
         vm.referralCode = '';
+        vm.cashbackPoints = 0;
+        vm.cashbackReais = 0;
 
         // Methods
         vm.goToProfile = goToProfile;
@@ -123,6 +125,10 @@
                     data.point_categories = data.point_categories || data.pointCategories || {};
                     vm.playerStatus = data;
                     playerStatus = data;
+                    // Cashback points logic
+                    var points = (data.point_categories.cashback || data.pointCategories.cashback || 0);
+                    vm.cashbackPoints = points;
+                    vm.cashbackReais = points * 0.05;
                     setReferralQrUrl();
                     // Merge image from /player/me and assign a new object
                     return PlayerService.getPlayerProfile().then(function(resp) {

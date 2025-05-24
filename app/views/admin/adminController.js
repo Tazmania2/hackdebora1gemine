@@ -1188,17 +1188,17 @@
         return;
       }
       vm.smsSending = true;
-      ActivityService.sendSmsNotification(vm.smsPhone, vm.smsMessage)
-        .then(function() {
-          alert('SMS enviado com sucesso!');
-        })
-        .catch(function(err) {
-          alert('Erro ao enviar SMS: ' + (err && err.data && err.data.error ? err.data.error : err));
-        })
-        .finally(function() {
-          vm.smsSending = false;
-          $scope.$applyAsync && $scope.$applyAsync();
-        });
+      $http.post('/api/send-sms', {
+        to: vm.smsPhone,
+        message: vm.smsMessage
+      }).then(function() {
+        alert('SMS enviado com sucesso!');
+      }).catch(function(err) {
+        alert('Erro ao enviar SMS: ' + (err && err.data && err.data.error ? err.data.error : err));
+      }).finally(function() {
+        vm.smsSending = false;
+        $scope.$applyAsync && $scope.$applyAsync();
+      });
     };
   }
 })();

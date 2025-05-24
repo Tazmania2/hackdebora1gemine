@@ -34,10 +34,12 @@
             PlayerService.getStatus().then(function(response) {
                 var player = response.data;
                 vm.playerStatus = player;
-                vm.cashbackBalance =
-                    (player.pointCategories && player.pointCategories.cashback) ||
-                    (player.point_categories && player.point_categories.cashback) ||
-                    0;
+                // Cashback is stored as integer points; display as reais
+                var points = (player.pointCategories && player.pointCategories.cashback) ||
+                             (player.point_categories && player.point_categories.cashback) ||
+                             0;
+                vm.cashbackPoints = points;
+                vm.cashbackBalance = points * 0.05;
                 $scope.$applyAsync && $scope.$applyAsync();
             });
         }
@@ -68,35 +70,30 @@
                 vm.error = 'O valor mínimo para conversão é R$ 0,05.';
                 return;
             }
-            if (vm.amountToConvert > vm.cashbackBalance) {
+            // Convert reais to points
+            var pointsToDeduct = Math.floor(vm.amountToConvert / 0.05);
+            if (pointsToDeduct < 1) {
+                vm.error = 'O valor deve ser múltiplo de R$ 0,05.';
+                return;
+            }
+            if (pointsToDeduct > vm.cashbackPoints) {
                 vm.error = 'Você não possui cashback suficiente.';
                 return;
             }
             vm.loading = true;
-            // Step 1: Deduct cashback by making the required number of purchases
             PlayerService.getStatus().then(function(response) {
                 var player = response.data;
                 var playerId = player._id || player.name;
-                var cashbackToDeduct = parseFloat(vm.amountToConvert);
-                var unitValue = 0.05;
-                var numPurchases = Math.floor(cashbackToDeduct / unitValue);
-                var totalDeducted = numPurchases * unitValue;
-                if (totalDeducted <= 0) {
-                    vm.error = 'O valor deve ser múltiplo de R$ 0,05.';
-                    vm.loading = false;
-                    $scope.$applyAsync && $scope.$applyAsync();
-                    return;
-                }
                 // Confirm with user
-                if (!window.confirm('Converter R$ ' + totalDeducted.toFixed(2) + ' de cashback em cupom? Isso não poderá ser desfeito.')) {
+                var reaisToDeduct = pointsToDeduct * 0.05;
+                if (!window.confirm('Converter R$ ' + reaisToDeduct.toFixed(2) + ' de cashback em cupom? Isso não poderá ser desfeito.')) {
                     vm.loading = false;
                     return;
                 }
-                // Prepare purchase requests
                 var purchasePayload = {
                     player: playerId,
                     item: CASHBACK_ITEM_ID,
-                    total: numPurchases
+                    total: pointsToDeduct
                 };
                 $http({
                     method: 'POST',
@@ -107,13 +104,12 @@
                     },
                     data: purchasePayload
                 }).then(function(purchaseResp) {
-                    // Step 2: Generate coupon code and save to DB
                     var now = new Date();
                     var expiry = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
                     var code = generateCouponCode(10);
                     var coupon = {
                         code: code,
-                        value: totalDeducted,
+                        value: reaisToDeduct,
                         playerId: playerId,
                         createdAt: now.toISOString(),
                         expiry: expiry.toISOString(),
