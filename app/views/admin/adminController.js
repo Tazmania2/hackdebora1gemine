@@ -16,7 +16,8 @@
     vm.logoFile = null;
     vm.dashboardButtons = JSON.parse(localStorage.getItem('admin_dashboardButtons') || '[]');
     vm.successMessage = localStorage.getItem('admin_successMessage') || '';
-    vm.stats = { purchases: 0, activePlayers: 0, cashbackDistributed: 0, cashbackLost: 0, cashbackUsed: 0, pointsGained: 0, pointsUsed: 0 };
+    vm.stats = { purchases: null, activePlayers: null, cashbackDistributed: null, cashbackUsed: null, pointsGained: null, pointsUsed: null };
+    vm.achievements = [];
     vm.challenges = JSON.parse(localStorage.getItem('admin_challenges') || '[]');
     vm.actionPlayerId = '';
     vm.actionType = '';
@@ -224,7 +225,7 @@
       var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
       // Compras registradas: count action logs with actionId 'comprar'
       $http.get('https://service2.funifier.com/v3/action/log?actionId=comprar', { headers: { Authorization: 'Basic ' + basicAuth } })
-        .then(function(resp) { vm.stats.purchases = (resp.data || []).filter(function(log) { return log.actionId === 'comprar'; }).length; });
+        .then(function(resp) { vm.stats.purchases = (resp.data || []).filter(function(log) { return log.actionId === 'comprar'; }).length; $scope.$applyAsync && $scope.$applyAsync(); });
       // Active players: use /v3/player/status and 90-day rule
       $http.get('https://service2.funifier.com/v3/player/status', { headers: { Authorization: 'Basic ' + basicAuth } })
         .then(function(resp) {
@@ -276,14 +277,17 @@
         headers: { 'Authorization': bearerToken, 'Content-Type': 'application/json' }
       }).then(function(resp) {
         var achievements = resp.data || [];
+        vm.achievements = achievements;
         // Cashback distribuído: sum of positive total for item 'cashback'
         vm.stats.cashbackDistributed = achievements.filter(function(a) { return a.type === 0 && a.item === 'cashback' && a.total > 0; }).reduce(function(sum, a) { return sum + a.total; }, 0);
-        // Cashback usado: sum of negative total for item 'cashback'
-        vm.stats.cashbackUsed = achievements.filter(function(a) { return a.type === 0 && a.item === 'cashback' && a.total < 0; }).reduce(function(sum, a) { return sum + a.total; }, 0);
+        // Cashback usado: sum of negative total for item 'cashback', show as positive in stats
+        var cashbackUsedSum = achievements.filter(function(a) { return a.type === 0 && a.item === 'cashback' && a.total < 0; }).reduce(function(sum, a) { return sum + a.total; }, 0);
+        vm.stats.cashbackUsed = Math.abs(cashbackUsedSum);
         // Pontos ganhos: sum of positive total for item 'misscoins'
         vm.stats.pointsGained = achievements.filter(function(a) { return a.type === 0 && a.item === 'misscoins' && a.total > 0; }).reduce(function(sum, a) { return sum + a.total; }, 0);
-        // Pontos usados: sum of negative total for item 'misscoins'
-        vm.stats.pointsUsed = achievements.filter(function(a) { return a.type === 0 && a.item === 'misscoins' && a.total < 0; }).reduce(function(sum, a) { return sum + a.total; }, 0);
+        // Pontos usados: sum of negative total for item 'misscoins', show as positive in stats
+        var pointsUsedSum = achievements.filter(function(a) { return a.type === 0 && a.item === 'misscoins' && a.total < 0; }).reduce(function(sum, a) { return sum + a.total; }, 0);
+        vm.stats.pointsUsed = Math.abs(pointsUsedSum);
         $scope.$applyAsync && $scope.$applyAsync();
       });
     }
@@ -557,7 +561,7 @@
           var achievements = (resp.data || []).filter(function(a) { return a.type === 0 && a.item === 'misscoins' && a.total < 0; });
           vm.statModalData = achievements;
           vm.statModalAttrKeys = ['player', 'total', 'time'];
-          vm.stats.pointsUsed = achievements.reduce(function(sum, a) { return sum + a.total; }, 0);
+          vm.stats.pointsUsed = Math.abs(achievements.reduce(function(sum, a) { return sum + a.total; }, 0));
           vm.statModalLoading = false;
           $scope.$applyAsync();
         });
@@ -572,7 +576,7 @@
           var achievements = (resp.data || []).filter(function(a) { return a.type === 0 && a.item === 'cashback' && a.total < 0; });
           vm.statModalData = achievements;
           vm.statModalAttrKeys = ['player', 'total', 'time'];
-          vm.stats.cashbackUsed = achievements.reduce(function(sum, a) { return sum + a.total; }, 0);
+          vm.stats.cashbackUsed = Math.abs(achievements.reduce(function(sum, a) { return sum + a.total; }, 0));
           vm.statModalLoading = false;
           $scope.$applyAsync();
         });
