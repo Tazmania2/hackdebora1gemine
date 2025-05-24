@@ -23,7 +23,7 @@
         { "$match": { player: playerName, item: "cashback" } }
       ];
       return $http.post(
-        apiUrl + '/aggregate?strict=true',
+        apiUrl + '/aggregate',
         aggregateBody,
         { headers: { 'Authorization': basicAuth, 'Content-Type': 'application/json' } }
       ).then(function(response) {
