@@ -5,9 +5,9 @@
         .module('app')
         .controller('DashboardController', DashboardController);
 
-    DashboardController.$inject = ['$scope', '$location', 'AuthService', 'PlayerService', 'EventService', 'ActivityService', '$http', 'FUNIFIER_API_CONFIG', '$timeout', '$rootScope', 'SuccessMessageService'];
+    DashboardController.$inject = ['$scope', '$location', 'AuthService', 'PlayerService', 'EventService', 'ActivityService', '$http', 'FUNIFIER_API_CONFIG', '$timeout', '$rootScope', 'SuccessMessageService', 'CashbackExpiryService'];
 
-    function DashboardController($scope, $location, AuthService, PlayerService, EventService, ActivityService, $http, FUNIFIER_API_CONFIG, $timeout, $rootScope, SuccessMessageService) {
+    function DashboardController($scope, $location, AuthService, PlayerService, EventService, ActivityService, $http, FUNIFIER_API_CONFIG, $timeout, $rootScope, SuccessMessageService, CashbackExpiryService) {
         var vm = this;
 
         // Properties
@@ -75,6 +75,18 @@
             ]).then(function() {
                 buildCompletedChallengesDisplay();
                 buildPurchaseHistoryDisplay();
+                // Run cashback expiry routine after player status is loaded
+                var player = PlayerService.getCurrentPlayer();
+                if (player && player.name) {
+                    CashbackExpiryService.expireOldCashback(player.name)
+                      .then(function() {
+                        // Reload player status after expiry routine
+                        return loadPlayerStatus();
+                      })
+                      .catch(function(err) {
+                        console.error('Erro ao expirar cashback:', err);
+                      });
+                }
                 checkAndLogLoginAction();
             });
             loadActivities();
