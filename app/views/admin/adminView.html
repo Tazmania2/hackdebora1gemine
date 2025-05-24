@@ -349,11 +349,9 @@
       <!-- Action Dropdown with Search (ui-select) -->
       <ui-select ng-model="vm.selectedActionObj" theme="bootstrap" style="width:100%;" search-enabled="true" on-select="vm.onActionSelected($item)">
         <ui-select-match placeholder="Buscar ação...">
-          <span ng-if="$select.selected.image && $select.selected.image.small && $select.selected.image.small.url"><img ng-src="{{$select.selected.image.small.url}}" style="height:18px;width:18px;margin-right:6px;vertical-align:middle;border-radius:3px;" /></span>
           {{$select.selected.action}}
         </ui-select-match>
         <ui-select-choices repeat="action in vm.availableActions | filter: $select.search track by action._id">
-          <span ng-if="action.image && action.image.small && action.image.small.url"><img ng-src="{{action.image.small.url}}" style="height:18px;width:18px;margin-right:6px;vertical-align:middle;border-radius:3px;" /></span>
           <span ng-bind-html="action.action | highlight: $select.search"></span>
         </ui-select-choices>
       </ui-select>
