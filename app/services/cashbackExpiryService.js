@@ -22,11 +22,12 @@
       var aggregateBody = [
         { "$match": { player: playerName, item: "cashback" } }
       ];
-      return $http.post(
-        apiUrl + '/aggregate?strict=true',
-        aggregateBody,
-        { headers: { 'Authorization': basicAuth, 'Content-Type': 'application/json' } }
-      ).then(function(response) {
+      return $http({
+        method: 'POST',
+        url: apiUrl + '/aggregate?strict=true',
+        headers: { 'Authorization': basicAuth, 'Content-Type': 'application/json' },
+        data: aggregateBody
+      }).then(function(response) {
         var achievements = response.data || [];
         var expired = achievements.filter(function(a) {
           var timeMs = (typeof a.time === 'object' && a.time.$date)
