@@ -172,7 +172,7 @@ body, html {
   box-shadow: 0 1px 4px rgba(0,0,0,0.12);
 }
 </style>
-<div class="admin-bg">
+<div class="admin-bg" ng-controller="AdminController as vm">
   <div class="admin-header">
     <span>Painel Administrativo</span>
     <nav class="admin-header-menu" ng-if="vm.loggedIn">
@@ -187,7 +187,7 @@ body, html {
     </nav>
     <button class="admin-header-saveall" ng-if="vm.loggedIn" ng-click="vm.saveAllSections()">Salvar Tudo</button>
   </div>
-  <div class="admin-viewport" ng-controller="AdminController as vm">
+  <div class="admin-viewport">
     <div ng-if="!vm.loggedIn" class="admin-login-box">
       <div class="admin-login-title">Acesso Restrito</div>
       <form ng-submit="vm.login()" autocomplete="off" style="width:100%">
