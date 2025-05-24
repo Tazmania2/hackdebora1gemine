@@ -30,7 +30,6 @@
     vm.saveSuccessMessage = saveSuccessMessage;
     vm.refreshStats = refreshStats;
     vm.saveChallenge = saveChallenge;
-    vm.addChallenge = addChallenge;
     vm.createActionLog = createActionLog;
     vm.onLogoFileChange = onLogoFileChange;
     vm.saveAllButtons = saveAllButtons;
