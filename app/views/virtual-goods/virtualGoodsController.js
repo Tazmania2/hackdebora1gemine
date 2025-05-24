@@ -172,7 +172,12 @@
                 showResultModal('Misscoins insuficientes', 'Você não possui misscoins suficientes para trocar por este item.', false);
                 return;
             }
-            // Use $uibModal if available, else fallback to custom overlay
+            // TEMP: Always use fallback confirm dialog for now
+            if (window.confirm('Tem certeza que deseja trocar ' + (item.requires[0] && item.requires[0].total) + ' misscoins por ' + item.name + '?')) {
+                confirmExchange(item);
+            }
+            // --- Modal code below is disabled for now ---
+            /*
             if (window.angular && angular.element(document.body).injector().has('$uibModal')) {
                 var $uibModal = angular.element(document.body).injector().get('$uibModal');
                 var modalInstance = $uibModal.open({
@@ -192,14 +197,12 @@
                     // No action needed
                 });
             } else {
-                // Fallback: custom overlay or browser confirm
-                if (window.confirm('Tem certeza que deseja trocar ' + (item.requires[0] && item.requires[0].total) + ' misscoins por ' + item.name + '?')) {
-                    confirmExchange(item);
-                }
+                // fallback
             }
+            */
         }
 
-        function confirmExchange(item, $uibModal) {
+        function confirmExchange(item) {
             var playerId = vm.playerStatus._id || (vm.playerStatus && vm.playerStatus.name);
             var payload = { player: playerId, item: item._id, total: 1 };
             $http({
@@ -209,7 +212,7 @@
                 data: payload
             }).then(function(response) {
                 if (response.data.status === 'OK') {
-                    showResultModal('Sucesso', SuccessMessageService.get('exchange_success'), true, $uibModal);
+                    showResultModal('Sucesso', SuccessMessageService.get('exchange_success'), true);
                     // Send SMS notification after exchange
                     var phone = vm.playerStatus.extra && vm.playerStatus.extra.phone;
                     if (phone) {
@@ -223,24 +226,17 @@
                     loadPlayerStatusAndHistory();
                 } else if (response.data.status === 'UNAUTHORIZED') {
                     var reasons = (response.data.restrictions || []).map(translateRestriction).join('<br>');
-                    showResultModal('Não autorizado', 'Não foi possível realizar a troca:<br>' + reasons, false, $uibModal);
+                    showResultModal('Não autorizado', 'Não foi possível realizar a troca:<br>' + reasons, false);
                 } else {
-                    showResultModal('Erro', 'Erro desconhecido ao realizar a troca.', false, $uibModal);
+                    showResultModal('Erro', 'Erro desconhecido ao realizar a troca.', false);
                 }
             }, function(err) {
-                showResultModal('Erro', 'Erro ao realizar a troca.', false, $uibModal);
+                showResultModal('Erro', 'Erro ao realizar a troca.', false);
             });
         }
 
-        function showResultModal(title, message, success, $uibModal) {
-            if ($uibModal) {
-                $uibModal.open({
-                    template: '<div style="padding:24px;text-align:center"><div style="font-size:2.2em;margin-bottom:8px;">' + (success ? '✅' : '❌') + '</div><div style="font-weight:bold;font-size:1.2em;margin-bottom:8px;">' + title + '</div><div style="color:#aaa;margin-bottom:12px;">' + message + '</div><button class="btn btn-primary" ng-click="$close()">OK</button></div>',
-                    size: 'sm'
-                });
-            } else {
-                alert(title + '\n' + message.replace(/<br>/g, '\n'));
-            }
+        function showResultModal(title, message, success) {
+            alert(title + '\n' + message.replace(/<br>/g, '\n'));
         }
 
         function translateRestriction(code) {
