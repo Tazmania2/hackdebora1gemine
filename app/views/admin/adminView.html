@@ -308,30 +308,15 @@ body, html {
         <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('pointsUsed')">Pontos usados: <b>{{vm.stats.pointsUsed}}</b></a></div>
         <button class="admin-btn" ng-click="vm.refreshStats()">Atualizar Estatísticas</button>
       </div>
-      <!-- Statistics Modal -->
-      <div ng-if="vm.statModalOpen" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
-        <div style="background:#232323;padding:32px 24px;border-radius:16px;max-width:600px;max-height:80vh;overflow:auto;box-shadow:0 4px 24px rgba(0,0,0,0.18);color:#fff;">
-          <div style="font-weight:bold;font-size:1.2em;margin-bottom:18px;">{{vm.statModalTitle}}</div>
-          <div ng-if="vm.statModalLoading" style="margin:24px 0;text-align:center;">Carregando...</div>
-          <div ng-if="!vm.statModalLoading">
-            <div ng-if="vm.statModalData.length === 0" style="color:#aaa;">Nenhum dado encontrado.</div>
-            <table ng-if="vm.statModalData.length > 0" style="width:100%;margin-bottom:18px;">
-              <thead>
-                <tr>
-                  <th ng-repeat="attr in vm.statModalAttrKeys">{{attr}}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr ng-repeat="row in vm.statModalData">
-                  <td ng-repeat="attr in vm.statModalAttrKeys">{{row[attr]}}</td>
-                </tr>
-              </tbody>
-            </table>
-            <button class="admin-btn" ng-click="vm.exportStatCsv()">Exportar CSV</button>
-            <button class="admin-btn" ng-click="vm.closeStatModal()" style="background:#888;margin-left:8px;">Fechar</button>
-          </div>
-        </div>
+      <!-- Cashback Expiry Section -->
+      <div class="admin-section" id="cashback-expiry">
+        <div class="admin-label">Expiração do Cashback</div>
+        <div style="color:#aaa;font-size:0.98em;margin-bottom:10px;">Defina em quantos dias o cashback expira após ser concedido ao jogador. O padrão é 90 dias.</div>
+        <label class="admin-label" for="cashbackExpiryDays">Dias para expirar o cashback:</label>
+        <input class="admin-input" id="cashbackExpiryDays" type="number" min="1" max="365" ng-model="vm.cashbackExpiryDays" style="max-width:120px;display:inline-block;">
+        <button class="admin-btn" ng-click="vm.saveCashbackExpiryDays()" style="margin-left:12px;">Salvar</button>
       </div>
+      <!-- End Cashback Expiry Section -->
       <div class="admin-section" id="challenges">
         <div class="admin-label">Desafios</div>
         <div ng-if="vm.loadingChallenges" style="color:#aaa;">Carregando desafios...</div>

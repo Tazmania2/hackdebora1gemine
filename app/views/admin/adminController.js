@@ -991,5 +991,27 @@
       }
       alert('Todas as seções foram salvas!');
     };
+    // Cashback Expiry Admin Section (Funifier)
+    var CASHBACK_EXPIRY_API = 'https://service2.funifier.com/v3/database/cashback_expiry_config__c';
+    var CASHBACK_EXPIRY_ID = 'cashback_expiry_days';
+    vm.cashbackExpiryDays = 90;
+    // Fetch from Funifier on init
+    $http.get(CASHBACK_EXPIRY_API + "?q=_id:'" + CASHBACK_EXPIRY_ID + "'", { headers: { Authorization: basicAuth } })
+      .then(function(resp) {
+        if (resp.data && resp.data[0] && resp.data[0].days) {
+          vm.cashbackExpiryDays = resp.data[0].days;
+        }
+      });
+    vm.saveCashbackExpiryDays = function() {
+      if (vm.cashbackExpiryDays < 1 || vm.cashbackExpiryDays > 365) {
+        alert('O valor deve ser entre 1 e 365 dias.');
+        return;
+      }
+      var payload = { _id: CASHBACK_EXPIRY_ID, days: vm.cashbackExpiryDays };
+      $http.put(CASHBACK_EXPIRY_API, payload, { headers: { Authorization: basicAuth } })
+        .then(function() {
+          alert('Dias de expiração do cashback salvos!');
+        });
+    };
   }
 })(); 
