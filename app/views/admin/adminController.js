@@ -405,13 +405,10 @@
     }
     // --- Action Log (Enhanced) ---
     vm.availablePlayers = [];
-    vm.selectedPlayer = null;
-    vm.selectedAction = null;
+    vm.selectedPlayerObj = null;
+    vm.selectedActionObj = null;
     vm.actionAttributes = {};
     vm.actionAttributeDefs = [];
-    vm.actionPlayerSearch = '';
-    vm.actionSearch = '';
-    
     // Fetch all players on admin load
     function fetchAllPlayers() {
       var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
@@ -422,19 +419,17 @@
         });
     }
     fetchAllPlayers();
-    // Use availableActions (already fetched for challenges)
     // When an action is selected, update attribute fields
-    vm.onActionSelected = function() {
-      if (!vm.selectedAction) {
-        vm.actionAttributes = {};
+    vm.onActionSelected = function(actionObj) {
+      if (!actionObj) {
         vm.actionAttributeDefs = [];
+        vm.actionAttributes = {};
         return;
       }
-      var action = vm.availableActions.find(function(a) { return a._id === vm.selectedAction; });
-      if (action && Array.isArray(action.attributes)) {
-        vm.actionAttributeDefs = action.attributes;
+      if (actionObj && Array.isArray(actionObj.attributes)) {
+        vm.actionAttributeDefs = actionObj.attributes;
         var attrs = {};
-        action.attributes.forEach(function(attr) { attrs[attr] = ''; });
+        actionObj.attributes.forEach(function(attr) { attrs[attr.name] = ''; });
         vm.actionAttributes = attrs;
       } else {
         vm.actionAttributeDefs = [];
@@ -442,35 +437,17 @@
       }
     };
     // Enhanced createActionLog
-    function onLogoFileChange(input) {
-      var file = input.files[0];
-      if (!file) return;
-      vm.loadingTheme = true;
-      var formData = new FormData();
-      formData.append('file', file);
-      formData.append('extra', JSON.stringify({ session: 'images', transform: [{ stage: 'size', width: 350, height: 350 }] }));
-      $http({
-        method: 'POST',
-        url: 'https://service2.funifier.com/v3/upload/image',
-        headers: {
-          'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
-          'Content-Type': undefined
-        },
-        data: formData,
-        transformRequest: angular.identity
-      }).then(function(response) {
-        if (response.data && response.data.uploads && response.data.uploads[0] && response.data.uploads[0].url) {
-          vm.themeConfig.logo = response.data.uploads[0].url;
-        } else {
-          alert('Erro ao obter URL da imagem enviada.');
-        }
-      }).catch(function() {
-        alert('Erro ao enviar imagem.');
-      }).finally(function() {
-        vm.loadingTheme = false;
-        $scope.$applyAsync();
-      });
-    }
+    vm.createActionLog = function() {
+      if (!vm.selectedPlayerObj || !vm.selectedActionObj) return;
+      var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
+      var payload = {
+        actionId: vm.selectedActionObj._id,
+        userId: vm.selectedPlayerObj._id,
+        attributes: angular.copy(vm.actionAttributes)
+      };
+      $http.post('https://service2.funifier.com/v3/action/log', payload, { headers: { Authorization: basicAuth } })
+        .then(function() { alert(SuccessMessageService.get('log_created')); });
+    };
     // Load theme config from Funifier on controller init
     ThemeConfigService.getConfig().then(function(cfg) {
       vm.themeConfig = angular.copy(cfg);

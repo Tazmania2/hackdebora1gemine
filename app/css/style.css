@@ -993,3 +993,38 @@ hr {
 .text-center { text-align: center; }
 .mt-2 { margin-top: 16px; }
 .mb-2 { margin-bottom: 16px; }
+
+/* --- UI-SELECT DARK THEME FIXES FOR ADMIN PANEL --- */
+.ui-select-bootstrap .ui-select-match, 
+.ui-select-bootstrap .ui-select-search, 
+.ui-select-bootstrap .ui-select-choices-row > a {
+  background: #232323 !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  border: 1px solid #444 !important;
+}
+
+.ui-select-bootstrap .ui-select-choices {
+  background: #232323 !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  border: 1px solid #444 !important;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.ui-select-bootstrap .ui-select-choices-row.active > a,
+.ui-select-bootstrap .ui-select-choices-row > a:hover {
+  background: #ff2e93 !important;
+  color: #fff !important;
+}
+
+.ui-select-bootstrap .ui-select-placeholder {
+  color: #aaa !important;
+  opacity: 1 !important;
+}
+
+.ui-select-bootstrap .ui-select-search {
+  font-size: 1.1rem;
+  padding: 10px 14px;
+}
