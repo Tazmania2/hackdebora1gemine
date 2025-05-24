@@ -65,6 +65,9 @@
         vm.goToEvents = function() {
             $location.path('/events');
         };
+        vm.goToCashbackCoupon = function() {
+            $location.path('/cashback-coupon');
+        };
 
         // Initialize
         activate();
