@@ -1,4 +1,4 @@
-angular.module('app', ['ui.select'])
+angular.module('app', ['ui.select', 'ngSanitize'])
   .run(['$rootScope', 'AuthService', '$location', '$log', function($rootScope, AuthService, $location, $log) {
     $log = $log || console;
     $log.debug && $log.debug('[app.module.js] run block executed');
