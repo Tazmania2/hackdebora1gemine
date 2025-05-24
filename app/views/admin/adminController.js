@@ -1179,4 +1179,136 @@
       alert('Todos os valores foram restaurados para o padrão!');
     };
   }
-})(); 
+})();
+
+// --- Admin Register Controller ---
+angular.module('app').controller('AdminRegisterController', function($scope, $http, FUNIFIER_API_CONFIG) {
+    var regVm = this;
+    regVm.loading = false;
+    regVm.error = null;
+    regVm.success = null;
+    regVm.user = {
+        name: '',
+        email: '',
+        phone: '',
+        birthdate: '',
+        cpf: '',
+        password: '',
+        confirmPassword: '',
+        referralCode: ''
+    };
+    regVm.register = function() {
+        regVm.error = null;
+        regVm.success = null;
+        if (regVm.user.password !== regVm.user.confirmPassword) {
+            regVm.error = 'As senhas não coincidem.';
+            return;
+        }
+        regVm.loading = true;
+        // Step 1: Fetch all players to ensure unique mycode
+        $http({
+            method: 'GET',
+            url: FUNIFIER_API_CONFIG.baseUrl + '/player',
+            headers: {
+                'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
+                'Content-Type': 'application/json'
+            }
+        }).then(function(allPlayersRes) {
+            var allPlayers = allPlayersRes.data || [];
+            function randomCode(length) {
+                var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+                var code = '';
+                for (var i = 0; i < length; i++) {
+                    code += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return code;
+            }
+            var existingCodes = new Set();
+            allPlayers.forEach(function(p) {
+                if (p.extra && p.extra.mycode) existingCodes.add(p.extra.mycode);
+            });
+            var mycode;
+            do {
+                mycode = randomCode(7);
+            } while (existingCodes.has(mycode));
+            var playerData = {
+                _id: regVm.user.email.toLowerCase().trim(),
+                name: regVm.user.name,
+                email: regVm.user.email.toLowerCase().trim(),
+                password: regVm.user.password,
+                image: {
+                    small: { url: "https://my.funifier.com/images/funny.png" },
+                    medium: { url: "https://my.funifier.com/images/funny.png" },
+                    original: { url: "https://my.funifier.com/images/funny.png" }
+                },
+                teams: [],
+                friends: [],
+                extra: {
+                    country: "Brasil",
+                    phone: regVm.user.phone,
+                    cpf: regVm.user.cpf,
+                    birthdate: regVm.user.birthdate,
+                    cep: "",
+                    referredBy: regVm.user.referralCode || null,
+                    mycode: mycode,
+                    termsAccepted: true,
+                    termsAcceptedDate: new Date().toISOString(),
+                    register: true
+                }
+            };
+            // Step 2: Register the player
+            $http({
+                method: 'POST',
+                url: FUNIFIER_API_CONFIG.baseUrl + '/player',
+                headers: {
+                    'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
+                    'Content-Type': 'application/json'
+                },
+                data: playerData
+            }).then(function(response) {
+                // Step 3: Assign the 'Player' role
+                $http({
+                    method: 'PUT',
+                    url: FUNIFIER_API_CONFIG.baseUrl + '/database/principal',
+                    headers: {
+                        'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
+                        'Content-Type': 'application/json'
+                    },
+                    data: {
+                        _id: playerData._id,
+                        valueId: playerData._id,
+                        roles: ['Player'],
+                        name: playerData.name,
+                        team: false,
+                        type: 0,
+                        userId: playerData._id,
+                        player: true
+                    }
+                }).then(function(response) {
+                    regVm.success = 'Jogador registrado com sucesso!';
+                    regVm.user = {
+                        name: '',
+                        email: '',
+                        phone: '',
+                        birthdate: '',
+                        cpf: '',
+                        password: '',
+                        confirmPassword: '',
+                        referralCode: ''
+                    };
+                    $scope.adminRegisterForm.$setPristine();
+                    $scope.adminRegisterForm.$setUntouched();
+                }).catch(function(error) {
+                    regVm.error = 'Erro ao atribuir papel ao jogador.';
+                });
+            }).catch(function(error) {
+                regVm.error = error.data && error.data.message ? error.data.message : 'Erro ao registrar jogador.';
+            }).finally(function() {
+                regVm.loading = false;
+            });
+        }).catch(function(error) {
+            regVm.error = 'Erro ao buscar jogadores para gerar código único.';
+            regVm.loading = false;
+        });
+    };
+}); 

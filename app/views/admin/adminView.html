@@ -479,6 +479,30 @@ body, html {
           </div>
         </div>
       </div>
+      <!-- Register Player Section (Admin) -->
+      <div class="admin-section" id="admin-register" ng-controller="AdminRegisterController as regVm">
+        <div class="admin-label">Registrar Novo Jogador</div>
+        <form name="adminRegisterForm" ng-submit="regVm.register()" class="register-form" style="margin-top:0;">
+          <input type="text" class="register-input" id="name" ng-model="regVm.user.name" placeholder="Nome" required>
+          <input type="tel" class="register-input" id="phone" ng-model="regVm.user.phone" placeholder="Telefone" required>
+          <input type="date" class="register-input" id="birthdate" ng-model="regVm.user.birthdate" placeholder="Aniversário" required>
+          <input type="email" class="register-input" id="email" ng-model="regVm.user.email" placeholder="Email" required>
+          <input type="text" class="register-input" id="cpf" ng-model="regVm.user.cpf" placeholder="CPF" required>
+          <input type="text" class="register-input" id="referralCode" ng-model="regVm.user.referralCode" placeholder="Código de indicação">
+          <input type="password" class="register-input" id="password" ng-model="regVm.user.password" placeholder="Senha" required>
+          <input type="password" class="register-input" id="confirmPassword" ng-model="regVm.user.confirmPassword" placeholder="Confirmar senha" required>
+          <button type="submit" class="register-btn" ng-disabled="regVm.loading">
+            <span ng-if="!regVm.loading">REGISTRAR</span>
+            <span ng-if="regVm.loading" class="loading-spinner-small"></span>
+          </button>
+          <div class="register-error" ng-if="regVm.error">
+            {{ regVm.error }}
+          </div>
+          <div class="register-error" ng-if="regVm.success" style="background:#e0ffe0;color:#0a0;">
+            {{ regVm.success }}
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div> 
