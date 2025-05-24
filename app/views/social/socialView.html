@@ -1,3 +1,23 @@
 <div style="background: #181828; min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #ff2e93; font-size: 2rem; font-weight: bold;">
   Rede Social - Em construção
+</div>
+
+<div class="social-container" ng-controller="SocialController as vm">
+  <div class="admin-section">
+    <div class="admin-label">Rede Social</div>
+    <p>Para participar, faça uma postagem em sua rede social com a hashtag <b>#MissLinguiça</b>, tire um print da postagem e envie aqui junto com seu @handle.</p>
+    <form name="socialForm" ng-submit="vm.submit()" novalidate>
+      <label class="admin-label">Seu @handle</label>
+      <input class="admin-input" type="text" ng-model="vm.handle" placeholder="@seuusuario" required>
+      <label class="admin-label">Print da postagem</label>
+      <input class="admin-input" type="file" accept="image/*" onchange="angular.element(this).scope().vm.onFileChange(this)" required>
+      <div ng-if="vm.printPreview" style="margin:12px 0;text-align:center;">
+        <img ng-src="{{vm.printPreview}}" alt="Print Preview" style="max-width:220px;max-height:180px;display:inline-block;border-radius:8px;background:#fff;padding:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+      </div>
+      <div class="admin-error" ng-if="vm.error">{{vm.error}}</div>
+      <div class="admin-success" ng-if="vm.success">{{vm.success}}</div>
+      <button class="admin-btn" type="submit" ng-disabled="vm.loading">Enviar</button>
+      <button class="admin-btn" type="button" ng-click="vm.goBack()" style="background:#888;margin-left:8px;">Voltar</button>
+    </form>
+  </div>
 </div> 
