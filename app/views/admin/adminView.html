@@ -338,23 +338,14 @@
     </div>
     <div class="admin-section">
       <div class="admin-label">Criar Log de Ação para Jogador</div>
-      <!-- Player Dropdown with Search (ui-select) -->
-      <ui-select ng-model="vm.selectedPlayerObj" theme="bootstrap" style="width:100%;" search-enabled="true">
-        <ui-select-match placeholder="Buscar jogador...">{{$select.selected.name}} <span style='color:#aaa'>({{$select.selected._id}})</span></ui-select-match>
-        <ui-select-choices repeat="player in vm.availablePlayers | filter: $select.search track by player._id">
-          <div ng-bind-html="player.name | highlight: $select.search"></div>
-          <small ng-bind-html="player._id | highlight: $select.search"></small>
-        </ui-select-choices>
-      </ui-select>
-      <!-- Action Dropdown with Search (ui-select) -->
-      <ui-select ng-model="vm.selectedActionObj" theme="bootstrap" style="width:100%;" search-enabled="true" on-select="vm.onActionSelected($item)">
-        <ui-select-match placeholder="Buscar ação...">
-          {{$select.selected.action}}
-        </ui-select-match>
-        <ui-select-choices repeat="action in vm.availableActions | filter: $select.search track by action._id">
-          <span ng-bind-html="action.action | highlight: $select.search"></span>
-        </ui-select-choices>
-      </ui-select>
+      <!-- Player Dropdown with Native Select -->
+      <select ng-model="vm.selectedPlayerObj" ng-options="player as player.name for player in vm.availablePlayers track by player._id" class="admin-input">
+        <option value="">Selecione um jogador</option>
+      </select>
+      <!-- Action Dropdown with Native Select -->
+      <select ng-model="vm.selectedActionObj" ng-options="action as action.action for action in vm.availableActions track by action._id" class="admin-input" ng-change="vm.onActionSelected(vm.selectedActionObj)">
+        <option value="">Selecione uma ação</option>
+      </select>
       <!-- Dynamic Attribute Fields -->
       <div ng-if="vm.actionAttributeDefs.length">
         <div ng-repeat="attr in vm.actionAttributeDefs">
