@@ -5,9 +5,9 @@
         .module('app')
         .controller('VirtualGoodsController', VirtualGoodsController);
 
-    VirtualGoodsController.$inject = ['$scope', '$http', 'PlayerService', 'FUNIFIER_API_CONFIG', '$timeout', 'SuccessMessageService'];
+    VirtualGoodsController.$inject = ['$scope', '$http', 'PlayerService', 'FUNIFIER_API_CONFIG', '$timeout', 'SuccessMessageService', 'ActivityService'];
 
-    function VirtualGoodsController($scope, $http, PlayerService, FUNIFIER_API_CONFIG, $timeout, SuccessMessageService) {
+    function VirtualGoodsController($scope, $http, PlayerService, FUNIFIER_API_CONFIG, $timeout, SuccessMessageService, ActivityService) {
         var vm = this;
 
         // Catalog and filters
@@ -206,6 +206,16 @@
             }).then(function(response) {
                 if (response.data.status === 'OK') {
                     showResultModal('Sucesso', SuccessMessageService.get('exchange_success'), true, $uibModal);
+                    // Send SMS notification after exchange
+                    var phone = vm.playerStatus.extra && vm.playerStatus.extra.phone;
+                    if (phone) {
+                        phone = phone.replace(/\D/g, '');
+                        if (!phone.startsWith('55')) phone = '55' + phone;
+                        phone = '+' + phone;
+                        if (window.ActivityService && ActivityService.sendSmsNotification) {
+                            ActivityService.sendSmsNotification(phone, 'Sua troca foi realizada com sucesso!');
+                        }
+                    }
                     loadPlayerStatusAndHistory();
                 } else if (response.data.status === 'UNAUTHORIZED') {
                     var reasons = (response.data.restrictions || []).map(translateRestriction).join('<br>');

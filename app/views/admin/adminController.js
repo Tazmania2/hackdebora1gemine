@@ -1031,6 +1031,43 @@
       vm.cashbackExpiryDays = 90;
       vm.saveCashbackExpiryDays();
     };
+    // Bulk Expiry for All Players
+    vm.bulkExpiryLoading = false;
+    vm.bulkExpireCashbackForAllPlayers = function() {
+      if (!confirm('Tem certeza que deseja rodar a expiração de cashback para TODOS os jogadores?')) return;
+      vm.bulkExpiryLoading = true;
+      $http.get('https://service2.funifier.com/v3/player/status', { headers: { Authorization: basicAuth } })
+        .then(function(resp) {
+          var players = resp.data || [];
+          var total = players.length;
+          var done = 0;
+          if (!total) {
+            vm.bulkExpiryLoading = false;
+            alert('Nenhum jogador encontrado.');
+            return;
+          }
+          var errors = [];
+          players.forEach(function(player) {
+            var playerId = player._id || player.playerId || player.name;
+            if (!playerId) return;
+            window.CashbackExpiryService.expireOldCashbackForPlayer(playerId)
+              .catch(function(e) { errors.push(playerId); })
+              .finally(function() {
+                done++;
+                if (done === total) {
+                  vm.bulkExpiryLoading = false;
+                  if (errors.length) {
+                    alert('Expiração concluída com erros para alguns jogadores. Veja o console.');
+                    console.error('Erros de expiração para jogadores:', errors);
+                  } else {
+                    alert('Expiração em massa concluída para todos os jogadores!');
+                  }
+                  $scope.$applyAsync && $scope.$applyAsync();
+                }
+              });
+          });
+        });
+    };
     // Google Calendar Config Admin Section (Funifier)
     var CALENDAR_CONFIG_API = 'https://service2.funifier.com/v3/database/calendar_config__c';
     var CALENDAR_CONFIG_ID = 'google_calendar_config';

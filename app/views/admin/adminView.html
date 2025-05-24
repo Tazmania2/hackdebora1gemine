@@ -329,6 +329,10 @@ body, html {
         <input class="admin-input" id="cashbackExpiryDays" type="number" min="1" max="365" ng-model="vm.cashbackExpiryDays" style="max-width:120px;display:inline-block;">
         <button class="admin-btn" ng-click="vm.saveCashbackExpiryDays()" style="margin-left:12px;">Salvar</button>
         <button class="admin-btn" ng-click="vm.restoreCashbackExpiryDefault()" style="background:#888;margin-left:8px;">Restaurar padrão</button>
+        <button class="admin-btn" ng-click="vm.bulkExpireCashbackForAllPlayers()" style="background:#ff2e93;margin-left:8px;" ng-disabled="vm.bulkExpiryLoading">
+          <span ng-if="!vm.bulkExpiryLoading">Executar expiração em massa</span>
+          <span ng-if="vm.bulkExpiryLoading">Executando expiração...</span>
+        </button>
       </div>
       <!-- End Cashback Expiry Section -->
       <div class="admin-section" id="challenges">

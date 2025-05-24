@@ -5,9 +5,9 @@
     .module('app')
     .controller('RegisterPurchaseController', RegisterPurchaseController);
 
-  RegisterPurchaseController.$inject = ['$scope', '$http', '$timeout', '$location', 'PlayerService', 'SuccessMessageService'];
+  RegisterPurchaseController.$inject = ['$scope', '$http', '$timeout', '$location', 'PlayerService', 'SuccessMessageService', 'ActivityService'];
 
-  function RegisterPurchaseController($scope, $http, $timeout, $location, PlayerService, SuccessMessageService) {
+  function RegisterPurchaseController($scope, $http, $timeout, $location, PlayerService, SuccessMessageService, ActivityService) {
     var vm = this;
     vm.purchaseValue = null;
     vm.purchaseProof = null;
@@ -101,6 +101,20 @@
         vm.updatedCashback = (data.point_categories && (data.point_categories.cashback || data.point_categories.misscoins)) || 0;
         vm.success = SuccessMessageService.get('purchase_success');
         vm.animating = true;
+        // Send SMS notification after purchase
+        PlayerService.getPlayerProfile().then(function(resp) {
+          var player = resp.data;
+          var phone = player.extra && player.extra.phone;
+          if (phone) {
+            // Ensure +55 prefix
+            phone = phone.replace(/\D/g, '');
+            if (!phone.startsWith('55')) phone = '55' + phone;
+            phone = '+' + phone;
+            if (window.ActivityService && ActivityService.sendSmsNotification) {
+              ActivityService.sendSmsNotification(phone, 'Sua compra foi registrada com sucesso!');
+            }
+          }
+        });
         // Animate for 2s, then redirect
         $timeout(function() {
           vm.animating = false;
