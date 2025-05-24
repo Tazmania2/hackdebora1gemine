@@ -175,14 +175,31 @@ angular.module('app').controller('RegisterController', function($scope, $http, $
                                     }
                                 }
                             }).then(function() {
-                                // Continue to login
-                                AuthService.login(playerData.email, playerData.password)
-                                    .then(function() {
-                                        $location.path('/dashboard');
-                                    })
-                                    .catch(function(error) {
-                                        vm.error = 'Erro ao fazer login automático. Por favor, faça login manualmente.';
-                                    });
+                                // Log the same action for the new player (referee)
+                                $http({
+                                    method: 'POST',
+                                    url: FUNIFIER_API_CONFIG.baseUrl + '/action/log',
+                                    headers: {
+                                        'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    data: {
+                                        actionId: 'convidar',
+                                        userId: playerData._id,
+                                        attributes: {
+                                            referredBy: referredPlayer._id
+                                        }
+                                    }
+                                }).finally(function() {
+                                    // Continue to login
+                                    AuthService.login(playerData.email, playerData.password)
+                                        .then(function() {
+                                            $location.path('/dashboard');
+                                        })
+                                        .catch(function(error) {
+                                            vm.error = 'Erro ao fazer login automático. Por favor, faça login manualmente.';
+                                        });
+                                });
                             }, function() {
                                 // Even if action log fails, continue
                                 AuthService.login(playerData.email, playerData.password)
