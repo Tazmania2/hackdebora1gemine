@@ -1013,5 +1013,18 @@
           alert('Dias de expiração do cashback salvos!');
         });
     };
+    vm.restoreCashbackExpiryDefault = function() {
+      vm.cashbackExpiryDays = 90;
+      vm.saveCashbackExpiryDays();
+    };
+    vm.restoreAllDefaults = function() {
+      if (!confirm('Tem certeza que deseja restaurar TODOS os valores para o padrão? Esta ação não pode ser desfeita.')) return;
+      vm.resetToDefault && vm.resetToDefault();
+      vm.resetDashboardButtonsToDefault && vm.resetDashboardButtonsToDefault();
+      vm.restoreSuccessMessagesToDefault && vm.restoreSuccessMessagesToDefault();
+      vm.restoreChallengesToDefault && vm.restoreChallengesToDefault();
+      vm.restoreCashbackExpiryDefault && vm.restoreCashbackExpiryDefault();
+      alert('Todos os valores foram restaurados para o padrão!');
+    };
   }
 })(); 

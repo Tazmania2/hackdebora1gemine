@@ -181,11 +181,13 @@ body, html {
       <a ng-click="vm.scrollToSection('dashboard')">Botões</a>
       <a ng-click="vm.scrollToSection('success')">Mensagens</a>
       <a ng-click="vm.scrollToSection('stats')">Estatísticas</a>
+      <a ng-click="vm.scrollToSection('cashback-expiry')">Expiração Cashback</a>
       <a ng-click="vm.scrollToSection('challenges')">Desafios</a>
       <a ng-click="vm.scrollToSection('log')">Criar Log</a>
       <a ng-click="vm.scrollToSection('actions')">Ações</a>
     </nav>
     <button class="admin-header-saveall" ng-if="vm.loggedIn" ng-click="vm.saveAllSections()">Salvar Tudo</button>
+    <button class="admin-header-saveall" ng-if="vm.loggedIn" style="background:#888;" ng-click="vm.restoreAllDefaults()">Restaurar Tudo</button>
   </div>
   <div class="admin-viewport">
     <div ng-if="!vm.loggedIn" class="admin-login-box">
@@ -315,6 +317,7 @@ body, html {
         <label class="admin-label" for="cashbackExpiryDays">Dias para expirar o cashback:</label>
         <input class="admin-input" id="cashbackExpiryDays" type="number" min="1" max="365" ng-model="vm.cashbackExpiryDays" style="max-width:120px;display:inline-block;">
         <button class="admin-btn" ng-click="vm.saveCashbackExpiryDays()" style="margin-left:12px;">Salvar</button>
+        <button class="admin-btn" ng-click="vm.restoreCashbackExpiryDefault()" style="background:#888;margin-left:8px;">Restaurar padrão</button>
       </div>
       <!-- End Cashback Expiry Section -->
       <div class="admin-section" id="challenges">
