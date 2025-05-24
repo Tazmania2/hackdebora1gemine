@@ -18,11 +18,15 @@
     function expireOldCashback(playerName) {
       var now = Date.now();
       var ninetyDays = 90 * 24 * 60 * 60 * 1000;
-      // 1. Fetch cashback achievements for the player (Basic Auth)
-      var query = encodeURIComponent(JSON.stringify({ player: playerName, item: 'cashback' }));
-      return $http.get(apiUrl + '?q=' + query, {
-        headers: { 'Authorization': basicAuth, 'Content-Type': 'application/json' }
-      }).then(function(response) {
+      // 1. Fetch cashback achievements for the player using aggregate (Basic Auth)
+      var aggregateBody = [
+        { "$match": { player: playerName, item: "cashback" } }
+      ];
+      return $http.post(
+        apiUrl + '/aggregate?strict=true',
+        aggregateBody,
+        { headers: { 'Authorization': basicAuth, 'Content-Type': 'application/json' } }
+      ).then(function(response) {
         var achievements = response.data || [];
         var expired = achievements.filter(function(a) {
           return now - a.time > ninetyDays;
