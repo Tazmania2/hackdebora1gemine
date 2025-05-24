@@ -26,10 +26,10 @@ body, html {
   justify-content: space-between;
   padding: 24px 18px 12px 18px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-  border-radius: 32px 32px 0 0;
-  width: 100%;
-  max-width: 430px;
-  margin: 0 auto;
+  border-radius: 0 0 32px 32px;
+  width: 100vw;
+  max-width: none;
+  margin: 0;
 }
 .admin-header-menu {
   display: flex;
@@ -173,9 +173,9 @@ body, html {
 }
 </style>
 <div class="admin-bg">
-  <div class="admin-header" ng-if="vm.loggedIn">
+  <div class="admin-header">
     <span>Painel Administrativo</span>
-    <nav class="admin-header-menu">
+    <nav class="admin-header-menu" ng-if="vm.loggedIn">
       <a ng-click="vm.scrollToSection('theme')">Cores do Tema</a>
       <a ng-click="vm.scrollToSection('logo')">Logo</a>
       <a ng-click="vm.scrollToSection('dashboard')">Botões</a>
@@ -185,7 +185,7 @@ body, html {
       <a ng-click="vm.scrollToSection('log')">Criar Log</a>
       <a ng-click="vm.scrollToSection('actions')">Ações</a>
     </nav>
-    <button class="admin-header-saveall" ng-click="vm.saveAllSections()">Salvar Tudo</button>
+    <button class="admin-header-saveall" ng-if="vm.loggedIn" ng-click="vm.saveAllSections()">Salvar Tudo</button>
   </div>
   <div class="admin-viewport" ng-controller="AdminController as vm">
     <div ng-if="!vm.loggedIn" class="admin-login-box">

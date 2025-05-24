@@ -976,5 +976,20 @@
         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     };
+    vm.saveAllSections = function() {
+      // Save theme/colors
+      vm.saveColors && vm.saveColors();
+      // Save logo (if needed)
+      vm.saveLogo && vm.saveLogo();
+      // Save dashboard buttons
+      vm.saveAllButtons && vm.saveAllButtons();
+      // Save success messages
+      vm.saveAllSuccessMessages && vm.saveAllSuccessMessages();
+      // Save challenge if modal is open (editing)
+      if (vm.challengeModalOpen && vm.challengeModalData) {
+        vm.saveChallenge && vm.saveChallenge();
+      }
+      alert('Todas as seções foram salvas!');
+    };
   }
 })(); 
