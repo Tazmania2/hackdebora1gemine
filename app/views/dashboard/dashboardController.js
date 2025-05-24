@@ -26,6 +26,7 @@
         vm.accordionOpen = 1;
         vm.successMessage = null;
         vm.dailyLoginMessage = '';
+        vm.daysToCashbackExpiry = null;
 
         // Methods
         vm.goToProfile = goToProfile;
@@ -87,6 +88,11 @@
                         console.error('Erro ao expirar cashback:', err);
                       });
                 }
+                // Fetch days to cashback expiry for dashboard message
+                CashbackExpiryService.getDaysToCashbackExpiry().then(function(days) {
+                    vm.daysToCashbackExpiry = days;
+                    $scope.$applyAsync && $scope.$applyAsync();
+                });
                 checkAndLogLoginAction();
             });
             loadActivities();

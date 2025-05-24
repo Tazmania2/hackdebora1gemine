@@ -301,8 +301,8 @@
       </div>
     </div>
   </div>
-  <div class="dashboard-cashback-msg">
-    Seu cashback expirará em <span>10 dias</span>
+  <div class="dashboard-cashback-msg" ng-if="vm.daysToCashbackExpiry > 0">
+    Seu cashback expirará em <span>{{vm.daysToCashbackExpiry}} dias</span>
   </div>
   <!-- Menu Buttons -->
   <div class="dashboard-menu">

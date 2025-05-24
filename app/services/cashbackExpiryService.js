@@ -7,7 +7,8 @@
     var apiUrl = 'https://service2.funifier.com/v3/database/achievement';
     var service = {
       expireOldCashback: expireOldCashback,
-      expireOldCashbackForPlayer: expireOldCashbackForPlayer
+      expireOldCashbackForPlayer: expireOldCashbackForPlayer,
+      getDaysToCashbackExpiry: getDaysToCashbackExpiry
     };
     return service;
 
@@ -106,6 +107,50 @@
 
     function expireOldCashbackForPlayer(playerId) {
       return expireOldCashback(playerId);
+    }
+
+    /**
+     * Returns the minimum number of days left to expiry for the current player's cashback achievements
+     * @returns {Promise<number|null>} Number of days left, or null if none found
+     */
+    function getDaysToCashbackExpiry() {
+      var expiryConfigUrl = 'https://service2.funifier.com/v3/database/cashback_expiry_config__c?q=_id:\'cashback_expiry_days\'';
+      return $http.get(expiryConfigUrl, { headers: { Authorization: basicAuth } }).then(function(cfgResp) {
+        var days = 90;
+        if (cfgResp.data && cfgResp.data[0] && cfgResp.data[0].days) {
+          days = cfgResp.data[0].days;
+        }
+        var expiryMs = days * 24 * 60 * 60 * 1000;
+        return PlayerService.getStatus().then(function(statusRes) {
+          var playerId = statusRes.data && (statusRes.data._id || statusRes.data.player || statusRes.data.id);
+          if (!playerId) return null;
+          var aggregateBody = [
+            { "$match": { player: playerId, item: "cashback" } }
+          ];
+          return $http({
+            method: 'POST',
+            url: apiUrl + '/aggregate?strict=true',
+            headers: { 'Authorization': basicAuth, 'Content-Type': 'application/json' },
+            data: aggregateBody
+          }).then(function(response) {
+            var achievements = response.data || [];
+            if (!achievements.length) return null;
+            var now = Date.now();
+            var minDays = null;
+            achievements.forEach(function(a) {
+              var timeMs = (typeof a.time === 'object' && a.time.$date)
+                ? new Date(a.time.$date).getTime()
+                : a.time;
+              var msLeft = expiryMs - (now - timeMs);
+              var daysLeft = Math.ceil(msLeft / (24 * 60 * 60 * 1000));
+              if (daysLeft > 0 && (minDays === null || daysLeft < minDays)) {
+                minDays = daysLeft;
+              }
+            });
+            return minDays;
+          });
+        });
+      });
     }
   }
 })(); 
