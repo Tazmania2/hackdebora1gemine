@@ -68,7 +68,7 @@
                 }
             })
             .when('/store', {
-                templateUrl: 'views/store/storeView.html',
+                templateUrl: 'app/views/store/storeView.html',
                 controller: 'StoreController',
                 controllerAs: 'vm',
                 resolve: {
@@ -78,7 +78,7 @@
                 }
             })
             .when('/social', {
-                templateUrl: 'views/social/socialView.html',
+                templateUrl: 'app/views/social/socialView.html',
                 controller: 'SocialController',
                 controllerAs: 'vm',
                 resolve: {
@@ -88,7 +88,7 @@
                 }
             })
             .when('/history', {
-                templateUrl: 'views/history/historyView.html',
+                templateUrl: 'app/views/history/historyView.html',
                 controller: 'HistoryController',
                 controllerAs: 'vm',
                 resolve: {
