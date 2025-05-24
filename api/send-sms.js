@@ -19,13 +19,14 @@ module.exports = async (req, res) => {
   }
 
   const from = 'Funifier'; // Or your Vonage virtual number
-  vonage.message.sendSms(from, to, message, (err, responseData) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else if (responseData.messages[0].status !== "0") {
-      res.status(500).json({ error: responseData.messages[0]['error-text'] });
+  try {
+    const response = await vonage.sms.send({to, from, text: message});
+    if (response.messages[0].status !== "0") {
+      res.status(500).json({ error: response.messages[0]['error-text'] });
     } else {
-      res.status(200).json({ success: true, messageId: responseData.messages[0]['message-id'] });
+      res.status(200).json({ success: true, messageId: response.messages[0]['message-id'] });
     }
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 }; 
