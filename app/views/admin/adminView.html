@@ -338,40 +338,34 @@
     </div>
     <div class="admin-section">
       <div class="admin-label">Criar Log de Ação para Jogador</div>
-      <!-- Player Dropdown with Search -->
-      <input class="admin-input" type="text" ng-model="vm.actionPlayerSearch" placeholder="Buscar jogador por nome ou email...">
-      <select class="admin-input" ng-model="vm.selectedPlayer" ng-options="p._id as (p.name + ' (' + p.email + ')') for p in (vm.availablePlayers | filter:vm.actionPlayerSearch) track by p._id">
-        <option value="">Selecione um jogador</option>
-      </select>
-      <!-- Action Dropdown with Search -->
-      <input class="admin-input" type="text" ng-model="vm.actionSearch" placeholder="Buscar ação...">
-      <select class="admin-input" ng-model="vm.selectedAction" ng-options="a._id as a.action for a in (vm.availableActions | filter:vm.actionSearch) track by a._id" ng-change="vm.onActionSelected()">
-        <option value="">Selecione uma ação</option>
-      </select>
+      <!-- Player Dropdown with Search (ui-select) -->
+      <ui-select ng-model="vm.selectedPlayerObj" theme="bootstrap" style="width:100%;" search-enabled="true">
+        <ui-select-match placeholder="Buscar jogador...">{{$select.selected.name}} <span style='color:#aaa'>({{$select.selected.email}})</span></ui-select-match>
+        <ui-select-choices repeat="player in vm.availablePlayers | filter: $select.search track by player._id">
+          <div ng-bind-html="player.name | highlight: $select.search"></div>
+          <small ng-bind-html="player.email | highlight: $select.search"></small>
+        </ui-select-choices>
+      </ui-select>
+      <!-- Action Dropdown with Search (ui-select) -->
+      <ui-select ng-model="vm.selectedActionObj" theme="bootstrap" style="width:100%;" search-enabled="true" on-select="vm.onActionSelected($item)">
+        <ui-select-match placeholder="Buscar ação...">
+          <span ng-if="$select.selected.image && $select.selected.image.small && $select.selected.image.small.url"><img ng-src="{{$select.selected.image.small.url}}" style="height:18px;width:18px;margin-right:6px;vertical-align:middle;border-radius:3px;" /></span>
+          {{$select.selected.action}}
+        </ui-select-match>
+        <ui-select-choices repeat="action in vm.availableActions | filter: $select.search track by action._id">
+          <span ng-if="action.image && action.image.small && action.image.small.url"><img ng-src="{{action.image.small.url}}" style="height:18px;width:18px;margin-right:6px;vertical-align:middle;border-radius:3px;" /></span>
+          <span ng-bind-html="action.action | highlight: $select.search"></span>
+        </ui-select-choices>
+      </ui-select>
       <!-- Dynamic Attribute Fields -->
       <div ng-if="vm.actionAttributeDefs.length">
         <div ng-repeat="attr in vm.actionAttributeDefs">
-          <label class="admin-label">{{attr}}</label>
-          <input class="admin-input" ng-model="vm.actionAttributes[attr]" placeholder="{{attr}}">
+          <label class="admin-label">{{attr.name}}</label>
+          <input class="admin-input" ng-model="vm.actionAttributes[attr.name]" placeholder="{{attr.name}}" type="{{attr.type === 'Number' ? 'number' : 'text'}}">
         </div>
       </div>
-      <button class="admin-btn" ng-click="vm.createActionLog()" ng-disabled="!vm.selectedPlayer || !vm.selectedAction || (vm.actionAttributeDefs.length && (vm.actionAttributeDefs | someEmpty:vm.actionAttributes))">Criar Log</button>
+      <button class="admin-btn" ng-click="vm.createActionLog()" ng-disabled="!vm.selectedPlayerObj || !vm.selectedActionObj || (vm.actionAttributeDefs.length && (vm.actionAttributeDefs | someEmpty:vm.actionAttributes))">Criar Log</button>
     </div>
   </div>
-</div>
-<script>
-angular.module('app').filter('sumPoints', function() {
-  return function(pointsArr) {
-    if (!Array.isArray(pointsArr)) return 0;
-    return pointsArr.reduce(function(sum, p) { return sum + (parseFloat(p.total) || 0); }, 0);
-  };
-});
-
-// Angular filter to check if any attribute is empty
-angular.module('app').filter('someEmpty', function() {
-  return function(attrs, values) {
-    if (!Array.isArray(attrs)) return false;
-    return attrs.some(function(attr) { return !values[attr]; });
-  };
-});
+</div> 
 </script> 
