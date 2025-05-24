@@ -187,6 +187,9 @@
                 });
                 modalInstance.result.then(function(selectedItem) {
                     confirmExchange(selectedItem, $uibModal);
+                }, function(reason) {
+                    // Modal dismissed (backdrop click, ESC, or cancel)
+                    // No action needed
                 });
             } else {
                 // Fallback: custom overlay or browser confirm
