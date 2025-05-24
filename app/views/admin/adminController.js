@@ -299,6 +299,13 @@
     vm.challengeModalIsNew = false;
     vm.loadingChallenges = false;
 
+    vm.loadChallenges = loadChallenges;
+    vm.openChallengeModal = openChallengeModal;
+    vm.closeChallengeModal = closeChallengeModal;
+    vm.saveChallenge = saveChallenge;
+    vm.toggleActive = toggleActive;
+    vm.restoreChallengesToDefault = restoreChallengesToDefault;
+
     function loadChallenges() {
       vm.loadingChallenges = true;
       $http.get(CHALLENGE_API, { headers: { Authorization: basicAuth } })
@@ -312,7 +319,7 @@
     }
     loadChallenges();
 
-    vm.openChallengeModal = function(challenge) {
+    function openChallengeModal(challenge) {
       vm.challengeModalIsNew = !challenge;
       vm.challengeModalData = challenge ? angular.copy(challenge) : {
         challenge: '',
@@ -324,27 +331,27 @@
         badge: null
       };
       vm.challengeModalOpen = true;
-    };
-    vm.closeChallengeModal = function() {
+    }
+    function closeChallengeModal() {
       vm.challengeModalOpen = false;
       vm.challengeModalData = null;
-    };
-    vm.saveChallenge = function() {
+    }
+    function saveChallenge() {
       var data = angular.copy(vm.challengeModalData);
       $http.post(CHALLENGE_API, data, { headers: { Authorization: basicAuth } })
         .then(function() {
           alert(SuccessMessageService.get('challenge_saved') || 'Desafio salvo!');
           vm.closeChallengeModal();
-          loadChallenges();
+          vm.loadChallenges();
         });
-    };
-    vm.toggleActive = function(challenge) {
+    }
+    function toggleActive(challenge) {
       var updated = angular.copy(challenge);
       updated.active = !updated.active;
       $http.post(CHALLENGE_API, updated, { headers: { Authorization: basicAuth } })
-        .then(function() { loadChallenges(); });
-    };
-    vm.restoreChallengesToDefault = function() {
+        .then(function() { vm.loadChallenges(); });
+    }
+    function restoreChallengesToDefault() {
       if (!confirm('Tem certeza que deseja restaurar os desafios para o padrão? Todos os desafios atuais serão desativados, exceto os padrões.')) return;
       var defaults = [
         {
@@ -358,12 +365,10 @@
         }
         // Adicione outros desafios padrão aqui
       ];
-      // Step 1: Fetch all current challenges
       $http.get(CHALLENGE_API, { headers: { Authorization: basicAuth } }).then(function(resp) {
         var current = resp.data || [];
         var defaultNames = defaults.map(function(d) { return d.challenge; });
         var reqs = [];
-        // Step 2: Deactivate all non-defaults
         current.forEach(function(ch) {
           if (!defaultNames.includes(ch.challenge) && ch.active) {
             var updated = angular.copy(ch);
@@ -371,7 +376,6 @@
             reqs.push($http.post(CHALLENGE_API, updated, { headers: { Authorization: basicAuth } }));
           }
         });
-        // Step 3: Upsert defaults (activate/update or create)
         defaults.forEach(function(def) {
           var found = current.find(function(ch) { return ch.challenge === def.challenge; });
           if (found) {
@@ -383,10 +387,10 @@
         });
         Promise.all(reqs).then(function() {
           alert('Desafios restaurados para o padrão!');
-          loadChallenges();
+          vm.loadChallenges();
         });
       });
-    };
+    }
     // --- Action Log ---
     function createActionLog() {
       var basicAuth = 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
