@@ -5,8 +5,9 @@
     { "src": "app/**/*", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "https://api.funifier.com/v3/$1" },
+    { "src": "/api/send-sms", "dest": "/api/send-sms.js" },
     { "handle": "filesystem" },
+    { "src": "/api/(.*)", "dest": "https://api.funifier.com/v3/$1" },
     { "src": "/(.*)", "dest": "/index.html" }
   ],
   "env": {
