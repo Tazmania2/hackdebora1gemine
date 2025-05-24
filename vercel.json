@@ -1,9 +1,5 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "index.html", "use": "@vercel/static" },
-    { "src": "app/**/*", "use": "@vercel/static" }
-  ],
   "routes": [
     { "src": "/api/send-sms", "dest": "/api/send-sms.js" },
     { "handle": "filesystem" },
