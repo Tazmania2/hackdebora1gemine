@@ -1,10 +1,5 @@
 // Unique change: This comment was added for deployment/versioning test purposes.
-const { Vonage } = require('@vonage/server-sdk');
-
-const vonage = new Vonage({
-  apiKey: process.env.VONAGE_API_KEY,
-  apiSecret: process.env.VONAGE_API_SECRET
-});
+const axios = require('axios');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -18,15 +13,38 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const from = 'Funifier'; // Or your Vonage virtual number
+  // Fetch Infobip credentials from your Funifier DB
+  const credsResp = await axios.get(
+    'https://service2.funifier.com/v3/database/integration_secrets__c?q=_id:\'infobip_sms\'',
+    { headers: { Authorization: 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==' } }
+  );
+  const creds = credsResp.data && credsResp.data[0];
+  if (!creds || !creds.apiKey || !creds.baseUrl || !creds.sender) {
+    res.status(500).json({ error: 'Infobip credentials not found' });
+    return;
+  }
+
   try {
-    const response = await vonage.sms.send({to, from, text: message});
-    if (response.messages[0].status !== "0") {
-      res.status(500).json({ error: response.messages[0]['error-text'] });
-    } else {
-      res.status(200).json({ success: true, messageId: response.messages[0]['message-id'] });
-    }
+    const smsResp = await axios.post(
+      `https://${creds.baseUrl}/sms/2/text/advanced`,
+      {
+        messages: [
+          {
+            from: creds.sender,
+            destinations: [{ to }],
+            text: message
+          }
+        ]
+      },
+      {
+        headers: {
+          'Authorization': `App ${creds.apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    res.status(200).json({ success: true, messageId: smsResp.data.messages[0].messageId });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.response?.data?.requestError?.serviceException?.text || err.message });
   }
 }; 
