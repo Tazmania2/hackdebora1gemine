@@ -1,22 +1,33 @@
 <!-- Admin Panel View -->
 <style>
-.admin-viewport {
+body, html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
   background: #181828;
+  scroll-behavior: smooth;
+}
+.admin-bg {
   min-height: 100vh;
+  min-width: 100vw;
+  background: #181828;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.admin-viewport {
+  background: #232323;
+  min-height: 90vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 0;
-  height: auto;
-  padding-bottom: 32px;
-  border-radius: 32px 32px 32px 32px;
+  padding: 0 0 32px 0;
+  border-radius: 32px;
   max-width: 430px;
-  margin: 0 auto;
   width: 100%;
-}
-html, body {
-  scroll-behavior: smooth;
+  margin: 40px auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
 }
 .admin-header {
   position: sticky;
@@ -28,6 +39,8 @@ html, body {
   justify-content: space-between;
   padding: 24px 18px 12px 18px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  border-radius: 32px 32px 0 0;
+  width: 100%;
 }
 .admin-header-menu {
   display: flex;
@@ -155,304 +168,306 @@ html, body {
   box-shadow: 0 1px 4px rgba(0,0,0,0.12);
 }
 </style>
-<div class="admin-viewport" ng-controller="AdminController as vm">
-  <div ng-if="!vm.loggedIn" class="admin-login-box">
-    <div class="admin-login-title">Acesso Restrito</div>
-    <form ng-submit="vm.login()" autocomplete="off" style="width:100%">
-      <label class="admin-label" for="adminUser">Usuário</label>
-      <input class="admin-input" id="adminUser" ng-model="vm.user" placeholder="Usuário" required autocomplete="off">
-      <label class="admin-label" for="adminPass">Senha</label>
-      <input class="admin-input" id="adminPass" type="password" ng-model="vm.pass" placeholder="Senha" required autocomplete="off">
-      <div class="admin-error" ng-if="vm.error">{{vm.error}}</div>
-      <button class="admin-btn" type="submit">Entrar</button>
-    </form>
-  </div>
-  <div ng-if="vm.loggedIn">
-    <div class="admin-header">
-      <span>Painel Administrativo</span>
-      <nav class="admin-header-menu">
-        <a ng-click="vm.scrollToSection('theme')">Cores do Tema</a>
-        <a ng-click="vm.scrollToSection('logo')">Logo</a>
-        <a ng-click="vm.scrollToSection('dashboard')">Botões</a>
-        <a ng-click="vm.scrollToSection('success')">Mensagens</a>
-        <a ng-click="vm.scrollToSection('stats')">Estatísticas</a>
-        <a ng-click="vm.scrollToSection('challenges')">Desafios</a>
-        <a ng-click="vm.scrollToSection('log')">Criar Log</a>
-        <a ng-click="vm.scrollToSection('actions')">Ações</a>
-        <button class="admin-header-saveall" ng-click="vm.saveAllSections()">Salvar Tudo</button>
-      </nav>
+<div class="admin-bg">
+  <div class="admin-viewport" ng-controller="AdminController as vm">
+    <div ng-if="!vm.loggedIn" class="admin-login-box">
+      <div class="admin-login-title">Acesso Restrito</div>
+      <form ng-submit="vm.login()" autocomplete="off" style="width:100%">
+        <label class="admin-label" for="adminUser">Usuário</label>
+        <input class="admin-input" id="adminUser" ng-model="vm.user" placeholder="Usuário" required autocomplete="off">
+        <label class="admin-label" for="adminPass">Senha</label>
+        <input class="admin-input" id="adminPass" type="password" ng-model="vm.pass" placeholder="Senha" required autocomplete="off">
+        <div class="admin-error" ng-if="vm.error">{{vm.error}}</div>
+        <button class="admin-btn" type="submit">Entrar</button>
+      </form>
     </div>
-    <div class="admin-section" id="theme">
-      <div class="admin-label">Cores do Tema</div>
-      <label>Cor de fundo do site (body): <input type="color" ng-model="vm.themeConfig.background_color"></label>
-      <span class="admin-label" style="font-size:0.95em;color:#aaa;">Fundo atrás do painel</span>
-      <label>Cor de fundo do painel (viewport): <input type="color" ng-model="vm.themeConfig.viewport_bg"></label>
-      <span class="admin-label" style="font-size:0.95em;color:#aaa;">Fundo do painel principal</span>
-      <label>Cor do cabeçalho (header): <input type="color" ng-model="vm.themeConfig.header_bg"></label>
-      <span class="admin-label" style="font-size:0.95em;color:#aaa;">Barra superior de cada tela</span>
-      <label>Cor principal (botões, destaques): <input type="color" ng-model="vm.themeConfig.primary_color"></label>
-      <span class="admin-label" style="font-size:0.95em;color:#aaa;">Botões, destaques, ícones</span>
-      <label>Cor secundária: <input type="color" ng-model="vm.themeConfig.secondary_color"></label>
-      <span class="admin-label" style="font-size:0.95em;color:#aaa;">Destaques secundários</span>
-      <label>Cor do texto principal: <input type="color" ng-model="vm.themeConfig.font_color"></label>
-      <span class="admin-label" style="font-size:0.95em;color:#aaa;">Cor do texto principal</span>
-      <label>Fonte: <input type="text" ng-model="vm.themeConfig.font" placeholder="Ex: 'Roboto', Arial, sans-serif"></label>
-      <span class="admin-label" style="font-size:0.95em;color:#aaa;">Fonte usada em todo o app</span>
-      <button class="admin-btn" ng-click="vm.saveColors()" ng-disabled="vm.loadingTheme">Salvar Cores</button>
-      <button class="admin-btn" ng-click="vm.resetToDefault()" ng-disabled="vm.loadingTheme" style="background:#888;margin-left:8px;">Restaurar padrão</button>
-    </div>
-    <div class="admin-section" id="logo">
-      <div class="admin-label">Logo</div>
-      <label>URL da logo:
-        <input class="admin-input" ng-model="vm.themeConfig.logo" placeholder="URL da logo">
-      </label>
-      <span class="admin-label" style="font-size:0.95em;color:#aaa;">Ou faça upload de uma imagem:</span>
-      <input class="admin-input" type="file" file-model="vm.logoFile" onchange="angular.element(this).scope().vm.onLogoFileChange(this)">
-      <div ng-if="vm.themeConfig.logo" style="margin:12px 0;text-align:center;">
-        <img ng-src="{{vm.themeConfig.logo}}" alt="Logo Preview" style="max-width:120px;max-height:80px;display:inline-block;border-radius:8px;background:#fff;padding:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+    <div ng-if="vm.loggedIn">
+      <div class="admin-header">
+        <span>Painel Administrativo</span>
+        <nav class="admin-header-menu">
+          <a ng-click="vm.scrollToSection('theme')">Cores do Tema</a>
+          <a ng-click="vm.scrollToSection('logo')">Logo</a>
+          <a ng-click="vm.scrollToSection('dashboard')">Botões</a>
+          <a ng-click="vm.scrollToSection('success')">Mensagens</a>
+          <a ng-click="vm.scrollToSection('stats')">Estatísticas</a>
+          <a ng-click="vm.scrollToSection('challenges')">Desafios</a>
+          <a ng-click="vm.scrollToSection('log')">Criar Log</a>
+          <a ng-click="vm.scrollToSection('actions')">Ações</a>
+          <button class="admin-header-saveall" ng-click="vm.saveAllSections()">Salvar Tudo</button>
+        </nav>
       </div>
-      <label style="display:block;margin-top:10px;">
-        <input type="checkbox" ng-model="vm.themeConfig.showStudioLogo"> Mostrar logo do Studio na tela de login
-      </label>
-      <span class="admin-label" style="font-size:0.95em;color:#aaa;">Se desmarcado, a logo do Studio não aparecerá na tela de login.</span>
-      <button class="admin-btn" ng-click="vm.saveColors()" ng-disabled="vm.loadingTheme">Salvar Logo</button>
-    </div>
-    <div class="admin-section" id="dashboard">
-      <div class="admin-label">Botões do Dashboard</div>
-      <div ng-repeat="btn in vm.dashboardButtons track by btn.id">
-        <div ng-if="btn.isDefault">
-          <input class="admin-input" ng-model="btn.label" placeholder="Nome do botão" readonly>
-          <input class="admin-input" ng-model="btn.icon" placeholder="Ícone (Bootstrap)" readonly>
-          <input class="admin-input" ng-model="btn.route" placeholder="Link" readonly>
-          <label><input type="checkbox" ng-model="btn.visible"> Visível</label>
-          <span style="color:#aaa;font-size:0.95em;margin-left:8px;">(Padrão, só pode ser desativado)</span>
+      <div class="admin-section" id="theme">
+        <div class="admin-label">Cores do Tema</div>
+        <label>Cor de fundo do site (body): <input type="color" ng-model="vm.themeConfig.background_color"></label>
+        <span class="admin-label" style="font-size:0.95em;color:#aaa;">Fundo atrás do painel</span>
+        <label>Cor de fundo do painel (viewport): <input type="color" ng-model="vm.themeConfig.viewport_bg"></label>
+        <span class="admin-label" style="font-size:0.95em;color:#aaa;">Fundo do painel principal</span>
+        <label>Cor do cabeçalho (header): <input type="color" ng-model="vm.themeConfig.header_bg"></label>
+        <span class="admin-label" style="font-size:0.95em;color:#aaa;">Barra superior de cada tela</span>
+        <label>Cor principal (botões, destaques): <input type="color" ng-model="vm.themeConfig.primary_color"></label>
+        <span class="admin-label" style="font-size:0.95em;color:#aaa;">Botões, destaques, ícones</span>
+        <label>Cor secundária: <input type="color" ng-model="vm.themeConfig.secondary_color"></label>
+        <span class="admin-label" style="font-size:0.95em;color:#aaa;">Destaques secundários</span>
+        <label>Cor do texto principal: <input type="color" ng-model="vm.themeConfig.font_color"></label>
+        <span class="admin-label" style="font-size:0.95em;color:#aaa;">Cor do texto principal</span>
+        <label>Fonte: <input type="text" ng-model="vm.themeConfig.font" placeholder="Ex: 'Roboto', Arial, sans-serif"></label>
+        <span class="admin-label" style="font-size:0.95em;color:#aaa;">Fonte usada em todo o app</span>
+        <button class="admin-btn" ng-click="vm.saveColors()" ng-disabled="vm.loadingTheme">Salvar Cores</button>
+        <button class="admin-btn" ng-click="vm.resetToDefault()" ng-disabled="vm.loadingTheme" style="background:#888;margin-left:8px;">Restaurar padrão</button>
+      </div>
+      <div class="admin-section" id="logo">
+        <div class="admin-label">Logo</div>
+        <label>URL da logo:
+          <input class="admin-input" ng-model="vm.themeConfig.logo" placeholder="URL da logo">
+        </label>
+        <span class="admin-label" style="font-size:0.95em;color:#aaa;">Ou faça upload de uma imagem:</span>
+        <input class="admin-input" type="file" file-model="vm.logoFile" onchange="angular.element(this).scope().vm.onLogoFileChange(this)">
+        <div ng-if="vm.themeConfig.logo" style="margin:12px 0;text-align:center;">
+          <img ng-src="{{vm.themeConfig.logo}}" alt="Logo Preview" style="max-width:120px;max-height:80px;display:inline-block;border-radius:8px;background:#fff;padding:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
         </div>
-        <div ng-if="!btn.isDefault">
-          <input class="admin-input" ng-model="btn.label" placeholder="Nome do botão">
+        <label style="display:block;margin-top:10px;">
+          <input type="checkbox" ng-model="vm.themeConfig.showStudioLogo"> Mostrar logo do Studio na tela de login
+        </label>
+        <span class="admin-label" style="font-size:0.95em;color:#aaa;">Se desmarcado, a logo do Studio não aparecerá na tela de login.</span>
+        <button class="admin-btn" ng-click="vm.saveColors()" ng-disabled="vm.loadingTheme">Salvar Logo</button>
+      </div>
+      <div class="admin-section" id="dashboard">
+        <div class="admin-label">Botões do Dashboard</div>
+        <div ng-repeat="btn in vm.dashboardButtons track by btn.id">
+          <div ng-if="btn.isDefault">
+            <input class="admin-input" ng-model="btn.label" placeholder="Nome do botão" readonly>
+            <input class="admin-input" ng-model="btn.icon" placeholder="Ícone (Bootstrap)" readonly>
+            <input class="admin-input" ng-model="btn.route" placeholder="Link" readonly>
+            <label><input type="checkbox" ng-model="btn.visible"> Visível</label>
+            <span style="color:#aaa;font-size:0.95em;margin-left:8px;">(Padrão, só pode ser desativado)</span>
+          </div>
+          <div ng-if="!btn.isDefault">
+            <input class="admin-input" ng-model="btn.label" placeholder="Nome do botão">
+            <div style="margin-bottom:8px;">
+              <span style="color:#aaa;font-size:0.95em;">Ícone:</span>
+              <button type="button" class="admin-input" style="display:flex;align-items:center;gap:8px;cursor:pointer;" ng-click="vm.openIconModal(btn)">
+                <i class="bi {{btn.icon}}" style="font-size:1.3em;"></i>
+                <span>{{btn.icon || 'Escolher ícone'}}</span>
+              </button>
+            </div>
+            <input class="admin-input" ng-model="btn.route" placeholder="Link (ex: https://meusite.com)">
+            <span style="color:#aaa;font-size:0.95em;">Links externos são esperados para este campo.</span>
+            <label><input type="checkbox" ng-model="btn.visible"> Visível</label>
+            <button class="admin-btn" ng-click="vm.deleteButton(btn)" style="background:#888;">Excluir</button>
+          </div>
+        </div>
+        <div style="margin-top:18px;padding:12px 0;border-top:1px solid #333;">
+          <div class="admin-label" style="margin-bottom:8px;">Adicionar novo botão personalizado</div>
+          <input class="admin-input" ng-model="vm.newButtonLabel" placeholder="Nome do botão" required>
           <div style="margin-bottom:8px;">
             <span style="color:#aaa;font-size:0.95em;">Ícone:</span>
-            <button type="button" class="admin-input" style="display:flex;align-items:center;gap:8px;cursor:pointer;" ng-click="vm.openIconModal(btn)">
-              <i class="bi {{btn.icon}}" style="font-size:1.3em;"></i>
-              <span>{{btn.icon || 'Escolher ícone'}}</span>
+            <button type="button" class="admin-input" style="display:flex;align-items:center;gap:8px;cursor:pointer;" ng-click="vm.openIconModal('new')">
+              <i class="bi {{vm.newButtonIcon}}" style="font-size:1.3em;"></i>
+              <span>{{vm.newButtonIcon || 'Escolher ícone'}}</span>
             </button>
           </div>
-          <input class="admin-input" ng-model="btn.route" placeholder="Link (ex: https://meusite.com)">
+          <input class="admin-input" ng-model="vm.newButtonRoute" placeholder="Link (ex: https://meusite.com)" required>
           <span style="color:#aaa;font-size:0.95em;">Links externos são esperados para este campo.</span>
-          <label><input type="checkbox" ng-model="btn.visible"> Visível</label>
-          <button class="admin-btn" ng-click="vm.deleteButton(btn)" style="background:#888;">Excluir</button>
+          <button class="admin-btn" ng-click="vm.addButtonFromFields()" ng-disabled="!vm.newButtonLabel || !vm.newButtonIcon || !vm.newButtonRoute">Adicionar Botão</button>
         </div>
-      </div>
-      <div style="margin-top:18px;padding:12px 0;border-top:1px solid #333;">
-        <div class="admin-label" style="margin-bottom:8px;">Adicionar novo botão personalizado</div>
-        <input class="admin-input" ng-model="vm.newButtonLabel" placeholder="Nome do botão" required>
-        <div style="margin-bottom:8px;">
-          <span style="color:#aaa;font-size:0.95em;">Ícone:</span>
-          <button type="button" class="admin-input" style="display:flex;align-items:center;gap:8px;cursor:pointer;" ng-click="vm.openIconModal('new')">
-            <i class="bi {{vm.newButtonIcon}}" style="font-size:1.3em;"></i>
-            <span>{{vm.newButtonIcon || 'Escolher ícone'}}</span>
-          </button>
-        </div>
-        <input class="admin-input" ng-model="vm.newButtonRoute" placeholder="Link (ex: https://meusite.com)" required>
-        <span style="color:#aaa;font-size:0.95em;">Links externos são esperados para este campo.</span>
-        <button class="admin-btn" ng-click="vm.addButtonFromFields()" ng-disabled="!vm.newButtonLabel || !vm.newButtonIcon || !vm.newButtonRoute">Adicionar Botão</button>
-      </div>
-      <button class="admin-btn" ng-click="vm.saveAllButtons()" style="margin-top:18px;">Salvar Botões</button>
-      <button class="admin-btn" ng-click="vm.resetDashboardButtonsToDefault()" style="margin-top:18px;background:#888;margin-left:8px;">Reverter para padrão</button>
-      <!-- Icon Modal -->
-      <div ng-if="vm.iconModalOpen" class="modal-backdrop" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
-        <div class="modal-content" style="background:#232323;padding:32px 24px;border-radius:16px;max-width:400px;max-height:80vh;overflow:auto;">
-          <div style="font-weight:bold;font-size:1.2em;margin-bottom:18px;color:#fff;">Escolha um ícone</div>
-          <div style="display:flex;flex-wrap:wrap;gap:14px;">
-            <span ng-repeat="icon in vm.iconOptions" ng-click="vm.selectIcon(icon)" style="cursor:pointer;padding:10px 12px;border-radius:8px;background:#181818;display:inline-flex;align-items:center;gap:6px;border:2px solid #333;" ng-style="{'border-color': (vm.iconModalTarget==='new'?vm.newButtonIcon:vm.iconModalTarget.icon)===icon ? '#ff2e93' : '#333'}">
-              <i class="bi {{icon}}" style="font-size:1.5em;"></i> <span style="font-size:1em;">{{icon}}</span>
-            </span>
-          </div>
-          <button class="admin-btn" style="margin-top:24px;" ng-click="vm.closeIconModal()">Fechar</button>
-        </div>
-      </div>
-    </div>
-    <div class="admin-section" id="success">
-      <div class="admin-label">Mensagens de Sucesso</div>
-      <div ng-repeat="(key, msg) in vm.successMessages" style="margin-bottom:18px;">
-        <div style="font-size:0.98em;color:#aaa;margin-bottom:4px;">{{key}}</div>
-        <textarea class="admin-textarea" ng-model="vm.editingSuccessMessages[key]" style="margin-bottom:4px;"></textarea>
-      </div>
-      <button class="admin-btn" ng-click="vm.saveAllSuccessMessages()">Salvar Todas</button>
-      <button class="admin-btn" ng-click="vm.restoreSuccessMessagesToDefault()" style="background:#888;margin-left:8px;">Restaurar padrão</button>
-    </div>
-    <div class="admin-section" id="stats">
-      <div class="admin-label">Estatísticas</div>
-      <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('purchases')">Compras registradas: <b>{{vm.stats.purchases}}</b></a></div>
-      <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('activePlayers')">Jogadores ativos: <b>{{vm.stats.activePlayers}}</b></a></div>
-      <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('cashbackDistributed')">Cashback distribuído: <b>{{vm.stats.cashbackDistributed}}</b></a></div>
-      <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('cashbackUsed')">Cashback usado: <b>{{vm.stats.cashbackUsed}}</b></a></div>
-      <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('pointsGained')">Pontos ganhos: <b>{{vm.stats.pointsGained}}</b></a></div>
-      <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('pointsUsed')">Pontos usados: <b>{{vm.stats.pointsUsed}}</b></a></div>
-      <button class="admin-btn" ng-click="vm.refreshStats()">Atualizar Estatísticas</button>
-    </div>
-    <!-- Statistics Modal -->
-    <div ng-if="vm.statModalOpen" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
-      <div style="background:#232323;padding:32px 24px;border-radius:16px;max-width:600px;max-height:80vh;overflow:auto;box-shadow:0 4px 24px rgba(0,0,0,0.18);color:#fff;">
-        <div style="font-weight:bold;font-size:1.2em;margin-bottom:18px;">{{vm.statModalTitle}}</div>
-        <div ng-if="vm.statModalLoading" style="margin:24px 0;text-align:center;">Carregando...</div>
-        <div ng-if="!vm.statModalLoading">
-          <div ng-if="vm.statModalData.length === 0" style="color:#aaa;">Nenhum dado encontrado.</div>
-          <table ng-if="vm.statModalData.length > 0" style="width:100%;margin-bottom:18px;">
-            <thead>
-              <tr>
-                <th ng-repeat="attr in vm.statModalAttrKeys">{{attr}}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr ng-repeat="row in vm.statModalData">
-                <td ng-repeat="attr in vm.statModalAttrKeys">{{row[attr]}}</td>
-              </tr>
-            </tbody>
-          </table>
-          <button class="admin-btn" ng-click="vm.exportStatCsv()">Exportar CSV</button>
-          <button class="admin-btn" ng-click="vm.closeStatModal()" style="background:#888;margin-left:8px;">Fechar</button>
-        </div>
-      </div>
-    </div>
-    <div class="admin-section" id="challenges">
-      <div class="admin-label">Desafios</div>
-      <div ng-if="vm.loadingChallenges" style="color:#aaa;">Carregando desafios...</div>
-      <div ng-if="!vm.loadingChallenges && vm.challenges.length > 0" style="display:flex;flex-direction:column;gap:14px;margin-bottom:12px;">
-        <div ng-repeat="challenge in vm.challenges" ng-click="vm.openChallengeModal(challenge)" style="background:#23232e;border-radius:18px;padding:18px 22px;box-shadow:0 2px 10px rgba(0,0,0,0.10);display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:box-shadow 0.18s,background 0.18s;position:relative;gap:18px;min-height:54px; border:1.5px solid #29293a;">
-          <div style="display:flex;flex-direction:column;gap:2px;">
-            <span style="font-weight:600;font-size:1.13em;color:#fff;">{{challenge.challenge}}</span>
-            <span style="font-size:0.98em;color:#aaa;">Pontos: <b style="color:#ff2e93;">{{challenge.points && challenge.points.length ? (challenge.points | sumPoints) : 0}}</b></span>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <span ng-if="challenge.active" style="color:#0f0;font-weight:600;font-size:1.08em;">Ativo</span>
-            <span ng-if="!challenge.active" style="color:#f44;font-weight:600;font-size:1.08em;">Inativo</span>
-            <i class="bi bi-chevron-right" style="color:#ff2e93;font-size:1.3em;"></i>
-          </div>
-          <div style="position:absolute;left:0;right:0;bottom:-7px;height:7px;background:linear-gradient(90deg,rgba(255,46,147,0.08),rgba(255,46,147,0.18),rgba(255,46,147,0.08));border-radius:0 0 18px 18px;"></div>
-        </div>
-      </div>
-      <div ng-if="!vm.loadingChallenges && vm.challenges.length === 0" style="color:#aaa;">Nenhum desafio encontrado.</div>
-      <button class="admin-btn" ng-click="vm.openChallengeModal()">Adicionar Desafio</button>
-      <button class="admin-btn" ng-click="vm.restoreChallengesToDefault()" style="background:#888;margin-left:8px;">Restaurar padrão</button>
-      <!-- Challenge Modal -->
-      <div ng-if="vm.challengeModalOpen" class="modal-backdrop" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
-        <div class="modal-content" style="background:#232323;padding:32px 24px;border-radius:16px;max-width:500px;max-height:80vh;overflow:auto;">
-          <div style="font-weight:bold;font-size:1.2em;margin-bottom:18px;">{{vm.challengeModalIsNew ? 'Adicionar Desafio' : 'Editar Desafio'}}</div>
-          <label class="admin-label">Nome</label>
-          <input class="admin-input" ng-model="vm.challengeModalData.challenge" placeholder="Nome do desafio">
-          <label class="admin-label">Descrição</label>
-          <textarea class="admin-textarea" ng-model="vm.challengeModalData.description" placeholder="Descrição" style="min-height:6em;"></textarea>
-          <label class="admin-label">Ativo</label>
-          <label style="display:inline-flex;align-items:center;gap:10px;cursor:pointer;user-select:none;">
-            <span style="font-size:1.08em;font-weight:600;color:{{vm.challengeModalData.active ? '#0f0' : '#f44'}};min-width:60px;display:inline-block;">{{vm.challengeModalData.active ? 'Ativo' : 'Inativo'}}</span>
-            <span class="toggle-switch">
-              <input type="checkbox" ng-model="vm.challengeModalData.active">
-              <span class="toggle-slider" ng-style="{'background': vm.challengeModalData.active ? '#ff2e93' : '#888'}">
-                <span class="toggle-knob" ng-style="{'transform': vm.challengeModalData.active ? 'translateX(20px)' : 'none'}"></span>
+        <button class="admin-btn" ng-click="vm.saveAllButtons()" style="margin-top:18px;">Salvar Botões</button>
+        <button class="admin-btn" ng-click="vm.resetDashboardButtonsToDefault()" style="margin-top:18px;background:#888;margin-left:8px;">Reverter para padrão</button>
+        <!-- Icon Modal -->
+        <div ng-if="vm.iconModalOpen" class="modal-backdrop" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
+          <div class="modal-content" style="background:#232323;padding:32px 24px;border-radius:16px;max-width:400px;max-height:80vh;overflow:auto;">
+            <div style="font-weight:bold;font-size:1.2em;margin-bottom:18px;color:#fff;">Escolha um ícone</div>
+            <div style="display:flex;flex-wrap:wrap;gap:14px;">
+              <span ng-repeat="icon in vm.iconOptions" ng-click="vm.selectIcon(icon)" style="cursor:pointer;padding:10px 12px;border-radius:8px;background:#181818;display:inline-flex;align-items:center;gap:6px;border:2px solid #333;" ng-style="{'border-color': (vm.iconModalTarget==='new'?vm.newButtonIcon:vm.iconModalTarget.icon)===icon ? '#ff2e93' : '#333'}">
+                <i class="bi {{icon}}" style="font-size:1.5em;"></i> <span style="font-size:1em;">{{icon}}</span>
               </span>
-            </span>
-          </label>
-          <div style="margin-top:12px;">
-            <label class="admin-label">Regras</label>
-            <div ng-repeat="rule in vm.challengeModalData.rules track by $index" style="margin-bottom:8px;">
-              <select class="admin-input" ng-model="rule.actionId" ng-options="a._id as a.action for a in vm.availableActions" ng-if="vm.availableActions.length"></select>
-              <input class="admin-input" ng-model="rule.actionId" placeholder="Ação (actionId)" ng-if="!vm.availableActions.length">
-              <input class="admin-input" ng-model="rule.total" type="number" placeholder="Total">
-              <button class="admin-btn" ng-click="vm.challengeModalData.rules.splice($index,1)" style="background:#888;" ng-if="vm.challengeModalData.rules.length > 1">Remover</button>
             </div>
-            <button class="admin-btn" ng-click="vm.challengeModalData.rules.push({actionId:'',operator:1,total:1})" style="margin-top:4px;">Adicionar Regra</button>
-          </div>
-          <div style="margin-top:12px;">
-            <label class="admin-label">Pontos</label>
-            <div ng-repeat="point in vm.challengeModalData.points track by $index" style="margin-bottom:8px;">
-              <input class="admin-input" ng-model="point.total" type="number" placeholder="Total de pontos">
-              <select class="admin-input" ng-model="point.category" ng-options="c._id as c.category for c in vm.availablePointCategories" ng-if="vm.availablePointCategories.length"></select>
-              <input class="admin-input" ng-model="point.category" placeholder="Categoria (ex: misscoins, xp)" ng-if="!vm.availablePointCategories.length">
-              <button class="admin-btn" ng-click="vm.challengeModalData.points.splice($index,1)" style="background:#888;" ng-if="vm.challengeModalData.points.length > 1">Remover</button>
-            </div>
-            <button class="admin-btn" ng-click="vm.challengeModalData.points.push({total:0,category:'',operation:0})" style="margin-top:4px;">Adicionar Pontuação</button>
-          </div>
-          <div style="margin-top:18px;display:flex;gap:12px;">
-            <button class="admin-btn" ng-click="vm.saveChallenge()">Salvar</button>
-            <button class="admin-btn" ng-click="vm.closeChallengeModal()" style="background:#888;">Cancelar</button>
+            <button class="admin-btn" style="margin-top:24px;" ng-click="vm.closeIconModal()">Fechar</button>
           </div>
         </div>
       </div>
-    </div>
-    <div class="admin-section" id="log">
-      <div class="admin-label">Criar Log de Ação para Jogador</div>
-      <!-- Player Dropdown with Native Select -->
-      <select ng-model="vm.selectedPlayerObj" ng-options="player as player.name for player in vm.availablePlayers track by player._id" class="admin-input">
-        <option value="">Selecione um jogador</option>
-      </select>
-      <!-- Action Dropdown with Native Select -->
-      <select ng-model="vm.selectedActionObj" ng-options="action as action.action for action in vm.availableActions track by action._id" class="admin-input" ng-change="vm.onActionSelected(vm.selectedActionObj)">
-        <option value="">Selecione uma ação</option>
-      </select>
-      <!-- Dynamic Attribute Fields -->
-      <div ng-if="vm.actionAttributeDefs.length">
-        <div ng-repeat="attr in vm.actionAttributeDefs">
-          <label class="admin-label">{{attr.name}}</label>
-          <input class="admin-input" ng-model="vm.actionAttributes[attr.name]" placeholder="{{attr.name}}" type="{{attr.type === 'Number' ? 'number' : 'text'}}">
+      <div class="admin-section" id="success">
+        <div class="admin-label">Mensagens de Sucesso</div>
+        <div ng-repeat="(key, msg) in vm.successMessages" style="margin-bottom:18px;">
+          <div style="font-size:0.98em;color:#aaa;margin-bottom:4px;">{{key}}</div>
+          <textarea class="admin-textarea" ng-model="vm.editingSuccessMessages[key]" style="margin-bottom:4px;"></textarea>
+        </div>
+        <button class="admin-btn" ng-click="vm.saveAllSuccessMessages()">Salvar Todas</button>
+        <button class="admin-btn" ng-click="vm.restoreSuccessMessagesToDefault()" style="background:#888;margin-left:8px;">Restaurar padrão</button>
+      </div>
+      <div class="admin-section" id="stats">
+        <div class="admin-label">Estatísticas</div>
+        <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('purchases')">Compras registradas: <b>{{vm.stats.purchases}}</b></a></div>
+        <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('activePlayers')">Jogadores ativos: <b>{{vm.stats.activePlayers}}</b></a></div>
+        <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('cashbackDistributed')">Cashback distribuído: <b>{{vm.stats.cashbackDistributed}}</b></a></div>
+        <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('cashbackUsed')">Cashback usado: <b>{{vm.stats.cashbackUsed}}</b></a></div>
+        <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('pointsGained')">Pontos ganhos: <b>{{vm.stats.pointsGained}}</b></a></div>
+        <div><a href="#" style="color:#ff2e93;text-decoration:underline;cursor:pointer;" ng-click="vm.openStatModal('pointsUsed')">Pontos usados: <b>{{vm.stats.pointsUsed}}</b></a></div>
+        <button class="admin-btn" ng-click="vm.refreshStats()">Atualizar Estatísticas</button>
+      </div>
+      <!-- Statistics Modal -->
+      <div ng-if="vm.statModalOpen" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
+        <div style="background:#232323;padding:32px 24px;border-radius:16px;max-width:600px;max-height:80vh;overflow:auto;box-shadow:0 4px 24px rgba(0,0,0,0.18);color:#fff;">
+          <div style="font-weight:bold;font-size:1.2em;margin-bottom:18px;">{{vm.statModalTitle}}</div>
+          <div ng-if="vm.statModalLoading" style="margin:24px 0;text-align:center;">Carregando...</div>
+          <div ng-if="!vm.statModalLoading">
+            <div ng-if="vm.statModalData.length === 0" style="color:#aaa;">Nenhum dado encontrado.</div>
+            <table ng-if="vm.statModalData.length > 0" style="width:100%;margin-bottom:18px;">
+              <thead>
+                <tr>
+                  <th ng-repeat="attr in vm.statModalAttrKeys">{{attr}}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="row in vm.statModalData">
+                  <td ng-repeat="attr in vm.statModalAttrKeys">{{row[attr]}}</td>
+                </tr>
+              </tbody>
+            </table>
+            <button class="admin-btn" ng-click="vm.exportStatCsv()">Exportar CSV</button>
+            <button class="admin-btn" ng-click="vm.closeStatModal()" style="background:#888;margin-left:8px;">Fechar</button>
+          </div>
         </div>
       </div>
-      <button class="admin-btn" ng-click="vm.createActionLog()" ng-disabled="!vm.selectedPlayerObj || !vm.selectedActionObj || (vm.actionAttributeDefs.length && (vm.actionAttributeDefs | someEmpty:vm.actionAttributes))">Criar Log</button>
-    </div>
-    <div class="admin-section" id="actions">
-      <div class="admin-label">Ações</div>
-      <div ng-if="vm.loadingActions" style="color:#aaa;">Carregando ações...</div>
-      <div ng-if="!vm.loadingActions">
-        <!-- Actions List (clickable) -->
-        <div ng-if="vm.actions.length === 0 && !vm.editingAction" style="color:#aaa;">Nenhuma ação cadastrada.</div>
-        <div ng-if="vm.actions.length > 0 && !vm.editingAction" style="display:flex;flex-direction:column;gap:14px;">
-          <div ng-repeat="action in vm.actions" ng-click="vm.startEditAction(action)" style="background:#23232e;border-radius:18px;padding:18px 22px;box-shadow:0 2px 10px rgba(0,0,0,0.10);display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:box-shadow 0.18s,background 0.18s;gap:18px;min-height:54px; border:1.5px solid #29293a;">
+      <div class="admin-section" id="challenges">
+        <div class="admin-label">Desafios</div>
+        <div ng-if="vm.loadingChallenges" style="color:#aaa;">Carregando desafios...</div>
+        <div ng-if="!vm.loadingChallenges && vm.challenges.length > 0" style="display:flex;flex-direction:column;gap:14px;margin-bottom:12px;">
+          <div ng-repeat="challenge in vm.challenges" ng-click="vm.openChallengeModal(challenge)" style="background:#23232e;border-radius:18px;padding:18px 22px;box-shadow:0 2px 10px rgba(0,0,0,0.10);display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:box-shadow 0.18s,background 0.18s;position:relative;gap:18px;min-height:54px; border:1.5px solid #29293a;">
             <div style="display:flex;flex-direction:column;gap:2px;">
-              <span style="font-weight:600;font-size:1.13em;color:#fff;">{{action.action}}</span>
+              <span style="font-weight:600;font-size:1.13em;color:#fff;">{{challenge.challenge}}</span>
+              <span style="font-size:0.98em;color:#aaa;">Pontos: <b style="color:#ff2e93;">{{challenge.points && challenge.points.length ? (challenge.points | sumPoints) : 0}}</b></span>
             </div>
             <div style="display:flex;align-items:center;gap:10px;">
-              <span ng-if="action.active" style="color:#0f0;font-weight:600;font-size:1.08em;">Ativa</span>
-              <span ng-if="!action.active" style="color:#f44;font-weight:600;font-size:1.08em;">Inativa</span>
+              <span ng-if="challenge.active" style="color:#0f0;font-weight:600;font-size:1.08em;">Ativo</span>
+              <span ng-if="!challenge.active" style="color:#f44;font-weight:600;font-size:1.08em;">Inativo</span>
               <i class="bi bi-chevron-right" style="color:#ff2e93;font-size:1.3em;"></i>
             </div>
+            <div style="position:absolute;left:0;right:0;bottom:-7px;height:7px;background:linear-gradient(90deg,rgba(255,46,147,0.08),rgba(255,46,147,0.18),rgba(255,46,147,0.08));border-radius:0 0 18px 18px;"></div>
           </div>
         </div>
-        <button class="admin-btn" ng-click="vm.startAddAction()" ng-if="!vm.editingAction" style="margin-top:14px;">Adicionar Nova Ação</button>
-        <button class="admin-btn" ng-click="vm.restoreActionsToDefault()" ng-if="!vm.editingAction" style="background:#888;margin-left:8px;margin-top:8px;">Restaurar padrão</button>
-        <!-- Action Edit/Add Modal -->
-        <div ng-if="vm.editingAction" class="modal-backdrop" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
+        <div ng-if="!vm.loadingChallenges && vm.challenges.length === 0" style="color:#aaa;">Nenhum desafio encontrado.</div>
+        <button class="admin-btn" ng-click="vm.openChallengeModal()">Adicionar Desafio</button>
+        <button class="admin-btn" ng-click="vm.restoreChallengesToDefault()" style="background:#888;margin-left:8px;">Restaurar padrão</button>
+        <!-- Challenge Modal -->
+        <div ng-if="vm.challengeModalOpen" class="modal-backdrop" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
           <div class="modal-content" style="background:#232323;padding:32px 24px;border-radius:16px;max-width:500px;max-height:80vh;overflow:auto;">
-            <div style="font-weight:bold;font-size:1.2em;margin-bottom:18px;">{{vm.isEditingExistingAction ? 'Editar Ação' : 'Adicionar Ação'}}</div>
-            <label class="admin-label">Nome da Ação</label>
-            <input class="admin-input" ng-model="vm.editingAction.action" placeholder="Nome da ação (ex: Comprar)">
-            <label class="admin-label">ID da Ação (único, ex: comprar)</label>
-            <input class="admin-input" ng-model="vm.editingAction._id" placeholder="ID único (ex: comprar)">
-            <label class="admin-label">Ativa</label>
+            <div style="font-weight:bold;font-size:1.2em;margin-bottom:18px;">{{vm.challengeModalIsNew ? 'Adicionar Desafio' : 'Editar Desafio'}}</div>
+            <label class="admin-label">Nome</label>
+            <input class="admin-input" ng-model="vm.challengeModalData.challenge" placeholder="Nome do desafio">
+            <label class="admin-label">Descrição</label>
+            <textarea class="admin-textarea" ng-model="vm.challengeModalData.description" placeholder="Descrição" style="min-height:6em;"></textarea>
+            <label class="admin-label">Ativo</label>
             <label style="display:inline-flex;align-items:center;gap:10px;cursor:pointer;user-select:none;">
-              <span style="font-size:1.08em;font-weight:600;color:{{vm.editingAction.active ? '#0f0' : '#f44'}};min-width:60px;display:inline-block;">{{vm.editingAction.active ? 'Ativa' : 'Inativa'}}</span>
+              <span style="font-size:1.08em;font-weight:600;color:{{vm.challengeModalData.active ? '#0f0' : '#f44'}};min-width:60px;display:inline-block;">{{vm.challengeModalData.active ? 'Ativo' : 'Inativo'}}</span>
               <span class="toggle-switch">
-                <input type="checkbox" ng-model="vm.editingAction.active">
-                <span class="toggle-slider" ng-style="{'background': vm.editingAction.active ? '#ff2e93' : '#888'}">
-                  <span class="toggle-knob" ng-style="{'transform': vm.editingAction.active ? 'translateX(20px)' : 'none'}"></span>
+                <input type="checkbox" ng-model="vm.challengeModalData.active">
+                <span class="toggle-slider" ng-style="{'background': vm.challengeModalData.active ? '#ff2e93' : '#888'}">
+                  <span class="toggle-knob" ng-style="{'transform': vm.challengeModalData.active ? 'translateX(20px)' : 'none'}"></span>
                 </span>
               </span>
             </label>
             <div style="margin-top:12px;">
-              <label class="admin-label">Atributos</label>
-              <div ng-repeat="attr in vm.editingAction.attributes track by $index" style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
-                <input class="admin-input" ng-model="attr.name" placeholder="Nome do atributo">
-                <select class="admin-input" ng-model="attr.type" ng-options="t for t in vm.actionTypes"></select>
-                <button class="admin-btn" style="background:#888;padding:4px 10px;" ng-click="vm.removeAttributeFromAction($index)">Remover</button>
+              <label class="admin-label">Regras</label>
+              <div ng-repeat="rule in vm.challengeModalData.rules track by $index" style="margin-bottom:8px;">
+                <select class="admin-input" ng-model="rule.actionId" ng-options="a._id as a.action for a in vm.availableActions" ng-if="vm.availableActions.length"></select>
+                <input class="admin-input" ng-model="rule.actionId" placeholder="Ação (actionId)" ng-if="!vm.availableActions.length">
+                <input class="admin-input" ng-model="rule.total" type="number" placeholder="Total">
+                <button class="admin-btn" ng-click="vm.challengeModalData.rules.splice($index,1)" style="background:#888;" ng-if="vm.challengeModalData.rules.length > 1">Remover</button>
               </div>
-              <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
-                <input class="admin-input" ng-model="vm.newAttribute.name" placeholder="Novo atributo">
-                <select class="admin-input" ng-model="vm.newAttribute.type" ng-options="t for t in vm.actionTypes"></select>
-                <button class="admin-btn" style="padding:4px 10px;" ng-click="vm.addAttributeToAction()">Adicionar</button>
+              <button class="admin-btn" ng-click="vm.challengeModalData.rules.push({actionId:'',operator:1,total:1})" style="margin-top:4px;">Adicionar Regra</button>
+            </div>
+            <div style="margin-top:12px;">
+              <label class="admin-label">Pontos</label>
+              <div ng-repeat="point in vm.challengeModalData.points track by $index" style="margin-bottom:8px;">
+                <input class="admin-input" ng-model="point.total" type="number" placeholder="Total de pontos">
+                <select class="admin-input" ng-model="point.category" ng-options="c._id as c.category for c in vm.availablePointCategories" ng-if="vm.availablePointCategories.length"></select>
+                <input class="admin-input" ng-model="point.category" placeholder="Categoria (ex: misscoins, xp)" ng-if="!vm.availablePointCategories.length">
+                <button class="admin-btn" ng-click="vm.challengeModalData.points.splice($index,1)" style="background:#888;" ng-if="vm.challengeModalData.points.length > 1">Remover</button>
               </div>
+              <button class="admin-btn" ng-click="vm.challengeModalData.points.push({total:0,category:'',operation:0})" style="margin-top:4px;">Adicionar Pontuação</button>
             </div>
             <div style="margin-top:18px;display:flex;gap:12px;">
-              <button class="admin-btn" ng-click="vm.saveAction()">Salvar</button>
-              <button class="admin-btn" ng-click="vm.cancelEditAction()" style="background:#888;">Cancelar</button>
-              <button class="admin-btn" ng-if="vm.isEditingExistingAction" style="background:#888;" ng-click="vm.deleteAction(vm.editingAction)">Excluir</button>
+              <button class="admin-btn" ng-click="vm.saveChallenge()">Salvar</button>
+              <button class="admin-btn" ng-click="vm.closeChallengeModal()" style="background:#888;">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="admin-section" id="log">
+        <div class="admin-label">Criar Log de Ação para Jogador</div>
+        <!-- Player Dropdown with Native Select -->
+        <select ng-model="vm.selectedPlayerObj" ng-options="player as player.name for player in vm.availablePlayers track by player._id" class="admin-input">
+          <option value="">Selecione um jogador</option>
+        </select>
+        <!-- Action Dropdown with Native Select -->
+        <select ng-model="vm.selectedActionObj" ng-options="action as action.action for action in vm.availableActions track by action._id" class="admin-input" ng-change="vm.onActionSelected(vm.selectedActionObj)">
+          <option value="">Selecione uma ação</option>
+        </select>
+        <!-- Dynamic Attribute Fields -->
+        <div ng-if="vm.actionAttributeDefs.length">
+          <div ng-repeat="attr in vm.actionAttributeDefs">
+            <label class="admin-label">{{attr.name}}</label>
+            <input class="admin-input" ng-model="vm.actionAttributes[attr.name]" placeholder="{{attr.name}}" type="{{attr.type === 'Number' ? 'number' : 'text'}}">
+          </div>
+        </div>
+        <button class="admin-btn" ng-click="vm.createActionLog()" ng-disabled="!vm.selectedPlayerObj || !vm.selectedActionObj || (vm.actionAttributeDefs.length && (vm.actionAttributeDefs | someEmpty:vm.actionAttributes))">Criar Log</button>
+      </div>
+      <div class="admin-section" id="actions">
+        <div class="admin-label">Ações</div>
+        <div ng-if="vm.loadingActions" style="color:#aaa;">Carregando ações...</div>
+        <div ng-if="!vm.loadingActions">
+          <!-- Actions List (clickable) -->
+          <div ng-if="vm.actions.length === 0 && !vm.editingAction" style="color:#aaa;">Nenhuma ação cadastrada.</div>
+          <div ng-if="vm.actions.length > 0 && !vm.editingAction" style="display:flex;flex-direction:column;gap:14px;">
+            <div ng-repeat="action in vm.actions" ng-click="vm.startEditAction(action)" style="background:#23232e;border-radius:18px;padding:18px 22px;box-shadow:0 2px 10px rgba(0,0,0,0.10);display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:box-shadow 0.18s,background 0.18s;gap:18px;min-height:54px; border:1.5px solid #29293a;">
+              <div style="display:flex;flex-direction:column;gap:2px;">
+                <span style="font-weight:600;font-size:1.13em;color:#fff;">{{action.action}}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span ng-if="action.active" style="color:#0f0;font-weight:600;font-size:1.08em;">Ativa</span>
+                <span ng-if="!action.active" style="color:#f44;font-weight:600;font-size:1.08em;">Inativa</span>
+                <i class="bi bi-chevron-right" style="color:#ff2e93;font-size:1.3em;"></i>
+              </div>
+            </div>
+          </div>
+          <button class="admin-btn" ng-click="vm.startAddAction()" ng-if="!vm.editingAction" style="margin-top:14px;">Adicionar Nova Ação</button>
+          <button class="admin-btn" ng-click="vm.restoreActionsToDefault()" ng-if="!vm.editingAction" style="background:#888;margin-left:8px;margin-top:8px;">Restaurar padrão</button>
+          <!-- Action Edit/Add Modal -->
+          <div ng-if="vm.editingAction" class="modal-backdrop" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
+            <div class="modal-content" style="background:#232323;padding:32px 24px;border-radius:16px;max-width:500px;max-height:80vh;overflow:auto;">
+              <div style="font-weight:bold;font-size:1.2em;margin-bottom:18px;">{{vm.isEditingExistingAction ? 'Editar Ação' : 'Adicionar Ação'}}</div>
+              <label class="admin-label">Nome da Ação</label>
+              <input class="admin-input" ng-model="vm.editingAction.action" placeholder="Nome da ação (ex: Comprar)">
+              <label class="admin-label">ID da Ação (único, ex: comprar)</label>
+              <input class="admin-input" ng-model="vm.editingAction._id" placeholder="ID único (ex: comprar)">
+              <label class="admin-label">Ativa</label>
+              <label style="display:inline-flex;align-items:center;gap:10px;cursor:pointer;user-select:none;">
+                <span style="font-size:1.08em;font-weight:600;color:{{vm.editingAction.active ? '#0f0' : '#f44'}};min-width:60px;display:inline-block;">{{vm.editingAction.active ? 'Ativa' : 'Inativa'}}</span>
+                <span class="toggle-switch">
+                  <input type="checkbox" ng-model="vm.editingAction.active">
+                  <span class="toggle-slider" ng-style="{'background': vm.editingAction.active ? '#ff2e93' : '#888'}">
+                    <span class="toggle-knob" ng-style="{'transform': vm.editingAction.active ? 'translateX(20px)' : 'none'}"></span>
+                  </span>
+                </span>
+              </label>
+              <div style="margin-top:12px;">
+                <label class="admin-label">Atributos</label>
+                <div ng-repeat="attr in vm.editingAction.attributes track by $index" style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+                  <input class="admin-input" ng-model="attr.name" placeholder="Nome do atributo">
+                  <select class="admin-input" ng-model="attr.type" ng-options="t for t in vm.actionTypes"></select>
+                  <button class="admin-btn" style="background:#888;padding:4px 10px;" ng-click="vm.removeAttributeFromAction($index)">Remover</button>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+                  <input class="admin-input" ng-model="vm.newAttribute.name" placeholder="Novo atributo">
+                  <select class="admin-input" ng-model="vm.newAttribute.type" ng-options="t for t in vm.actionTypes"></select>
+                  <button class="admin-btn" style="padding:4px 10px;" ng-click="vm.addAttributeToAction()">Adicionar</button>
+                </div>
+              </div>
+              <div style="margin-top:18px;display:flex;gap:12px;">
+                <button class="admin-btn" ng-click="vm.saveAction()">Salvar</button>
+                <button class="admin-btn" ng-click="vm.cancelEditAction()" style="background:#888;">Cancelar</button>
+                <button class="admin-btn" ng-if="vm.isEditingExistingAction" style="background:#888;" ng-click="vm.deleteAction(vm.editingAction)">Excluir</button>
+              </div>
             </div>
           </div>
         </div>
