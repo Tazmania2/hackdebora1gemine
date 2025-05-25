@@ -30,6 +30,9 @@
         vm.referralCode = '';
         vm.cashbackPoints = 0;
         vm.cashbackReais = 0;
+        vm.historyModalOpen = false;
+        vm.historyModalData = null;
+        vm.historyModalLoading = false;
 
         // Methods
         vm.goToProfile = goToProfile;
@@ -69,6 +72,36 @@
         };
         vm.goToCashbackCoupon = function() {
             $location.path('/cashback-coupon');
+        };
+        vm.openHistoryModal = function(item, type) {
+            vm.historyModalOpen = true;
+            vm.historyModalLoading = true;
+            vm.historyModalData = null;
+            var playerId = vm.playerStatus._id || (vm.playerStatus.extra && vm.playerStatus.extra._id);
+            var aggregate = [];
+            if (type === 'challenge') {
+                // Find achievement for this challenge
+                aggregate = [
+                    { "$match": { "player": playerId, "item": item.name, "type": 1 } }
+                ];
+            } else if (type === 'purchase') {
+                // Find achievement for this purchase (virtual good)
+                aggregate = [
+                    { "$match": { "player": playerId, "item": item.name, "type": 2 } }
+                ];
+            }
+            $http.post(FUNIFIER_API_CONFIG.baseUrl + '/database/achievement/aggregate', aggregate, {
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' }
+            }).then(function(resp) {
+                vm.historyModalData = (resp.data && resp.data[0]) || null;
+            }).finally(function() {
+                vm.historyModalLoading = false;
+                $scope.$applyAsync && $scope.$applyAsync();
+            });
+        };
+        vm.closeHistoryModal = function() {
+            vm.historyModalOpen = false;
+            vm.historyModalData = null;
         };
 
         // Initialize

@@ -329,7 +329,7 @@
     <div class="saldo-card" style="margin-bottom: 12px;">
       <div class="dashboard-card-title">Desafios Concluídos</div>
       <ul style="list-style: none; padding: 0; margin: 0; color: #fff;">
-        <li class="dashboard-card" ng-repeat="challenge in vm.completedChallengesDisplay | limitTo:5" ng-click="vm.goToChallenge(challenge)">
+        <li class="dashboard-card" ng-repeat="challenge in vm.completedChallengesDisplay | limitTo:5" ng-click="vm.openHistoryModal(challenge, 'challenge')">
           <div class="dashboard-card-title">{{challenge.name}}</div>
           <div class="dashboard-card-content">
             <div></div>
@@ -348,7 +348,7 @@
       <div class="dashboard-card-title">Histórico de Compras</div>
       <div ng-if="vm.purchaseHistoryDisplay.length">
         <ul style="list-style: none; padding: 0; margin: 0; color: #fff;">
-          <li class="dashboard-card" ng-repeat="item in vm.purchaseHistoryDisplay | limitTo:5" ng-click="vm.goToPurchase(item)">
+          <li class="dashboard-card" ng-repeat="item in vm.purchaseHistoryDisplay | limitTo:5" ng-click="vm.openHistoryModal(item, 'purchase')">
             <div class="dashboard-card-title">{{item.name}}</div>
             <div class="dashboard-card-content">
               <div></div>
@@ -367,5 +367,21 @@
   <div ng-if="dailyLoginPopup" style="position:fixed;bottom:32px;right:32px;z-index:9999;background:#232323;color:#fff;padding:18px 32px;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.18);font-size:1.25rem;font-weight:bold;display:flex;align-items:center;gap:12px;animation:pop-in 0.4s cubic-bezier(.4,2,.6,1);">
     <i class="bi bi-check-circle-fill" style="color:#ff2e93;font-size:1.7rem;"></i>
     {{vm.dailyLoginMessage}}
+  </div>
+  <!-- History Modal -->
+  <div ng-if="vm.historyModalOpen" class="modal-backdrop" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
+    <div class="modal-content" style="background:#232323;padding:32px 24px;border-radius:16px;max-width:400px;max-height:80vh;overflow:auto;min-width:280px;">
+      <div style="font-weight:bold;font-size:1.2em;margin-bottom:18px;">Detalhes do Histórico</div>
+      <div ng-if="vm.historyModalLoading" style="color:#ff2e93;text-align:center;font-size:1.1em;">Carregando...</div>
+      <div ng-if="!vm.historyModalLoading && vm.historyModalData">
+        <div style="margin-bottom:10px;"><b>Nome:</b> {{vm.historyModalData.item || vm.historyModalData.name}}</div>
+        <div ng-if="vm.historyModalData.total"><b>Valor:</b> {{vm.historyModalData.total}}</div>
+        <div ng-if="vm.historyModalData.time"><b>Data:</b> {{vm.historyModalData.time | date:'dd/MM/yyyy HH:mm'}}</div>
+        <div ng-if="vm.historyModalData.description"><b>Descrição:</b> {{vm.historyModalData.description}}</div>
+        <div ng-if="!vm.historyModalData.total && !vm.historyModalData.time && !vm.historyModalData.description" style="color:#aaa;">Sem informações adicionais.</div>
+      </div>
+      <div ng-if="!vm.historyModalLoading && !vm.historyModalData" style="color:#aaa;">Nenhum detalhe encontrado.</div>
+      <button class="admin-btn" style="margin-top:18px;" ng-click="vm.closeHistoryModal()">Fechar</button>
+    </div>
   </div>
 </div> 
