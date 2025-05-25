@@ -78,22 +78,22 @@
             vm.historyModalLoading = true;
             vm.historyModalData = null;
             var playerId = vm.playerStatus._id || (vm.playerStatus.extra && vm.playerStatus.extra._id);
-            var aggregate = [];
-            if (type === 'challenge') {
-                // Find achievement for this challenge
-                aggregate = [
-                    { "$match": { "player": playerId, "item": item.name, "type": 1 } }
-                ];
-            } else if (type === 'purchase') {
-                // Find achievement for this purchase (virtual good)
-                aggregate = [
-                    { "$match": { "player": playerId, "item": item.name, "type": 2 } }
-                ];
-            }
-            $http.post(FUNIFIER_API_CONFIG.baseUrl + '/database/achievement/aggregate', aggregate, {
+            var url = FUNIFIER_API_CONFIG.baseUrl + '/achievement';
+            $http.get(url, {
                 headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' }
             }).then(function(resp) {
-                vm.historyModalData = (resp.data && resp.data[0]) || null;
+                var achievements = resp.data || [];
+                var match = null;
+                if (type === 'challenge') {
+                    match = achievements.find(function(a) {
+                        return a.player === playerId && a.item === item.name && a.type === 1;
+                    });
+                } else if (type === 'purchase') {
+                    match = achievements.find(function(a) {
+                        return a.player === playerId && a.item === item.name && a.type === 2;
+                    });
+                }
+                vm.historyModalData = match || null;
             }).finally(function() {
                 vm.historyModalLoading = false;
                 $scope.$applyAsync && $scope.$applyAsync();
