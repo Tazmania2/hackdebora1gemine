@@ -134,8 +134,9 @@
                 buildPurchaseHistoryDisplay();
                 // Run cashback expiry routine after player status is loaded
                 var player = PlayerService.getCurrentPlayer();
-                if (player && player.name) {
-                    CashbackExpiryService.expireOldCashback(player.name)
+                var playerId = player && (player._id || player.name || player.email);
+                if (playerId) {
+                    CashbackExpiryService.expireOldCashback(playerId)
                       .then(function() {
                         // Reload player status after expiry routine
                         return loadPlayerStatus();
@@ -143,6 +144,8 @@
                       .catch(function(err) {
                         console.error('Erro ao expirar cashback:', err);
                       });
+                } else {
+                    console.warn('Cashback expiry skipped: Player ID not found in status');
                 }
                 // Fetch days to cashback expiry for dashboard message
                 CashbackExpiryService.getDaysToCashbackExpiry().then(function(days) {
