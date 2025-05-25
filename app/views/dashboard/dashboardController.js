@@ -91,26 +91,45 @@
                 var achievements = responses[0].data || [];
                 var actionLogs = responses[1].data || [];
                 var match = null;
+                var date = null;
+                var value = null;
                 if (type === 'challenge') {
-                    // Match by challenge ID in achievements
                     match = achievements.find(function(a) {
                         return a.player === playerId && a.type === 1 && (a.item === challengeId || a.item === item.name);
                     });
+                    if (match) {
+                        date = match.time;
+                        value = match.total;
+                    }
                 } else if (type === 'purchase') {
-                    // Match by virtual good ID in achievements
                     match = achievements.find(function(a) {
                         return a.player === playerId && a.type === 2 && (a.item === vgId || a.item === item.name);
                     });
                     if (!match) {
-                        // Fallback: match in action log
                         match = actionLogs.find(function(log) {
                             return log.userId === playerId && log.actionId === 'comprar' &&
                                 ((log.attributes && (log.attributes.produto === item.name || log.attributes.produto === vgId)) ||
                                  log.attributes && log.attributes.product === item.name);
                         });
+                        if (match) {
+                            date = match.time;
+                            value = match.attributes && (match.attributes.valor || match.attributes.price);
+                        }
+                    } else {
+                        date = match.time;
+                        value = match.total;
                     }
                 }
-                vm.historyModalData = match || null;
+                // Always show at least the item info
+                vm.historyModalData = {
+                    name: item.name,
+                    image: item.image,
+                    badge: item.badge,
+                    description: item.description,
+                    date: date,
+                    value: value,
+                    extra: match || null
+                };
             }).finally(function() {
                 vm.historyModalLoading = false;
                 $scope.$applyAsync && $scope.$applyAsync();
