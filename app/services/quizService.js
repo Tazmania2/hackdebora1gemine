@@ -7,7 +7,7 @@ angular.module('app').factory('QuizService', function($http, FUNIFIER_API_CONFIG
             method: 'GET',
             url: FUNIFIER_API_CONFIG.baseUrl + '/database/quiz',
             headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
                 'Content-Type': 'application/json'
             }
         });
