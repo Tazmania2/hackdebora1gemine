@@ -335,7 +335,7 @@
             <div></div>
             <img ng-if="challenge.badge" ng-src="{{challenge.badge}}" alt="Badge" class="dashboard-card-img">
             <div class="points-pill">
-              <i class="bi bi-coin"></i> {{challenge.misscoins}}
+              <i class="bi bi-coin"></i> {{challenge.misscoins | number:0}}
             </div>
           </div>
         </li>
@@ -354,7 +354,7 @@
               <div></div>
               <img ng-if="item.image" ng-src="{{item.image}}" alt="Item" class="dashboard-card-img">
               <div class="points-pill">
-                <i class="bi bi-coin"></i> {{item.misscoins}}
+                <i class="bi bi-coin"></i> {{item.misscoins | number:0}}
               </div>
             </div>
           </li>

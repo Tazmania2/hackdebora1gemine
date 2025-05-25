@@ -128,7 +128,7 @@
                     // Cashback points logic
                     var points = (data.point_categories.cashback || data.pointCategories.cashback || 0);
                     vm.cashbackPoints = points;
-                    vm.cashbackReais = points * 0.05;
+                    vm.cashbackReais = (points * 0.05).toFixed(2);
                     setReferralQrUrl();
                     // Merge image from /player/me and assign a new object
                     return PlayerService.getPlayerProfile().then(function(resp) {
