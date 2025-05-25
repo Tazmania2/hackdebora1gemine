@@ -78,20 +78,37 @@
             vm.historyModalLoading = true;
             vm.historyModalData = null;
             var playerId = vm.playerStatus._id || (vm.playerStatus.extra && vm.playerStatus.extra._id);
-            var url = FUNIFIER_API_CONFIG.baseUrl + '/achievement';
-            $http.get(url, {
+            var challengeId = item.id || item._id;
+            var vgId = item.id || item._id;
+            // Fetch both achievements and action log
+            var achievementsReq = $http.get(FUNIFIER_API_CONFIG.baseUrl + '/achievement', {
                 headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' }
-            }).then(function(resp) {
-                var achievements = resp.data || [];
+            });
+            var actionLogReq = $http.get(FUNIFIER_API_CONFIG.baseUrl + '/action/log', {
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' }
+            });
+            Promise.all([achievementsReq, actionLogReq]).then(function(responses) {
+                var achievements = responses[0].data || [];
+                var actionLogs = responses[1].data || [];
                 var match = null;
                 if (type === 'challenge') {
+                    // Match by challenge ID in achievements
                     match = achievements.find(function(a) {
-                        return a.player === playerId && a.item === item.name && a.type === 1;
+                        return a.player === playerId && a.type === 1 && (a.item === challengeId || a.item === item.name);
                     });
                 } else if (type === 'purchase') {
+                    // Match by virtual good ID in achievements
                     match = achievements.find(function(a) {
-                        return a.player === playerId && a.item === item.name && a.type === 2;
+                        return a.player === playerId && a.type === 2 && (a.item === vgId || a.item === item.name);
                     });
+                    if (!match) {
+                        // Fallback: match in action log
+                        match = actionLogs.find(function(log) {
+                            return log.userId === playerId && log.actionId === 'comprar' &&
+                                ((log.attributes && (log.attributes.produto === item.name || log.attributes.produto === vgId)) ||
+                                 log.attributes && log.attributes.product === item.name);
+                        });
+                    }
                 }
                 vm.historyModalData = match || null;
             }).finally(function() {
@@ -232,6 +249,7 @@
                 });
                 if (challenge) {
                     vm.completedChallengesDisplay.push({
+                        id: challenge._id,
                         name: challenge.challenge,
                         badge: challenge.badge && challenge.badge.small && challenge.badge.small.url,
                         misscoins: (challenge.points && Array.isArray(challenge.points) && challenge.points.find(function(p) { return p.category === 'misscoins'; })) ? challenge.points.find(function(p) { return p.category === 'misscoins'; }).total : 0,
@@ -257,6 +275,7 @@
                 });
                 if (item) {
                     vm.purchaseHistoryDisplay.push({
+                        id: item._id,
                         name: item.name,
                         image: item.image && item.image.small && item.image.small.url,
                         misscoins: (item.requires && Array.isArray(item.requires) && item.requires.find(function(r) { return r.item === 'misscoins'; })) ? item.requires.find(function(r) { return r.item === 'misscoins'; }).total : 0,
