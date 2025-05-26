@@ -143,15 +143,6 @@
             vm.historyModalOpen = false;
             vm.historyModalData = null;
         };
-        vm.nextTutorialStep = function() {
-            if (vm.tutorialStep < 3) {
-                vm.tutorialStep++;
-                vm.tutorialButtonLabel = (vm.tutorialStep === 3) ? 'Fechar' : 'Próximo';
-            } else {
-                vm.showTutorialModal = false;
-                localStorage.setItem('tutorialSeen', 'true');
-            }
-        };
 
         // Initialize
         activate();
