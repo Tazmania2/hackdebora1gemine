@@ -1,0 +1,43 @@
+<div class="modal-overlay" *ngIf="visible">
+  <div class="modal-content">
+
+    <div class="speech-bubble">
+      <ng-container [ngSwitch]="step">
+        <div *ngSwitchCase="1">
+          <h2>👋 Bem-vindo à Experiência Miss Linguiça!</h2>
+          <p>
+            Você acaba de dar o primeiro passo na sua jornada de sabor, tradição e recompensas! 🎉<br>
+            Seu nível inicial é: Degustador – aquele que começa a explorar os segredos da nossa charcutaria artesanal.
+          </p>
+        </div>
+
+        <div *ngSwitchCase="2">
+          <h2>🔥Quebra Cabeça</h2>
+          <p>
+            A cada compra, ação e desafio completado você avança no jogo, acumula Miss Coins, conquista peças do quebra-cabeça e se aproxima de se tornar um verdadeiro mestre do sabor!
+          </p>
+        </div>
+
+        <div *ngSwitchCase="3">
+          <h2>🍴 Vamos nessa?</h2>
+          <p>
+            Comece agora registrando sua primeira compra ou explorando os desafios disponíveis.
+
+👉 Acesse o menu para saber como ganhar e trocar MissCoins.
+          </p>
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="modal-images" 
+         [ngClass]="{'row-layout': step === 2, 'column-layout': step !== 2}">
+      <img *ngIf="step === 2" src="/imagens/quebra-cabeca.png" alt="Quebra Cabeça" class="modal-puzzle">
+      <img [src]="personagemSrc" alt="Personagem" class="modal-personagem">
+    </div>
+
+    <button class="modal-button" (click)="nextStep()">{{ buttonLabel }}</button>
+
+    <p style="color: white; font-size: 12px; margin-top: 10px;">Step atual: {{ step }}</p>
+
+  </div>
+</div>

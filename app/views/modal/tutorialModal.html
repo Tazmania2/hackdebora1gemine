@@ -1,0 +1,34 @@
+<div class="modal-overlay" ng-if="vm.showTutorialModal">
+  <div class="modal-content">
+    <div class="speech-bubble">
+      <div ng-switch="vm.tutorialStep">
+        <div ng-switch-when="1">
+          <h2>👋 Bem-vindo à Experiência Miss Linguiça!</h2>
+          <p>
+            Você acaba de dar o primeiro passo na sua jornada de sabor, tradição e recompensas! 🎉<br>
+            Seu nível inicial é: Degustador – aquele que começa a explorar os segredos da nossa charcutaria artesanal.
+          </p>
+        </div>
+        <div ng-switch-when="2">
+          <h2>🔥Quebra Cabeça</h2>
+          <p>
+            A cada compra, ação e desafio completado você avança no jogo, acumula Miss Coins, conquista peças do quebra-cabeça e se aproxima de se tornar um verdadeiro mestre do sabor!
+          </p>
+        </div>
+        <div ng-switch-when="3">
+          <h2>🍴 Vamos nessa?</h2>
+          <p>
+            Comece agora registrando sua primeira compra ou explorando os desafios disponíveis.<br>
+            👉 Acesse o menu para saber como ganhar e trocar MissCoins.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-images" ng-class="{'row-layout': vm.tutorialStep === 2, 'column-layout': vm.tutorialStep !== 2}">
+      <img ng-if="vm.tutorialStep === 2" src="/imagens/quebra-cabeca.png" alt="Quebra Cabeça" class="modal-puzzle">
+      <img ng-src="{{vm.tutorialPersonagemSrc}}" alt="Personagem" class="modal-personagem">
+    </div>
+    <button class="modal-button" ng-click="vm.nextTutorialStep()">{{ vm.tutorialButtonLabel }}</button>
+    <p style="color: white; font-size: 12px; margin-top: 10px;">Step atual: {{ vm.tutorialStep }}</p>
+  </div>
+</div> 

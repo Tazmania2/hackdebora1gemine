@@ -15,6 +15,10 @@ angular.module('app').controller('FidelidadeController', function($scope, $timeo
     vm.piecesMissing = 5;
     vm.goBack = function() { $location.path('/dashboard'); };
     vm.prize = null;
+    vm.showPuzzleModal = !localStorage.getItem('puzzleTutorialSeen');
+    vm.puzzleStep = 1;
+    vm.puzzlePersonagemSrc = '/imagens/personagem1.png'; // Change if you want different images
+    vm.puzzleButtonLabel = 'Próximo';
 
     PlayerService.getStatus().then(function(response) {
         var status = response.data;
@@ -56,4 +60,14 @@ angular.module('app').controller('FidelidadeController', function($scope, $timeo
         vm.prize = res.data;
         $scope.$applyAsync && $scope.$applyAsync();
     });
+
+    vm.nextPuzzleStep = function() {
+        if (vm.puzzleStep < 3) {
+            vm.puzzleStep++;
+            vm.puzzleButtonLabel = (vm.puzzleStep === 3) ? 'Fechar' : 'Próximo';
+        } else {
+            vm.showPuzzleModal = false;
+            localStorage.setItem('puzzleTutorialSeen', 'true');
+        }
+    };
 }); 

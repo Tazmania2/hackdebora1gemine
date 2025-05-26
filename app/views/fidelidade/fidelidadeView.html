@@ -125,6 +125,7 @@
   100% { transform: scale(1) rotate(0deg); }
 }
 </style>
+<div ng-include="'views/modalpuzzle/puzzleModal.html'" ng-if="vm.showPuzzleModal"></div>
 <div class="dashboard-viewport">
   <div class="fidelidade-header">
     <button class="rp-header-back" ng-click="vm.goBack()" aria-label="Voltar">

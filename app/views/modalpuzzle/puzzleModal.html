@@ -1,0 +1,33 @@
+<div class="modal-overlay" ng-if="vm.showPuzzleModal">
+  <div class="modal-content">
+    <div class="speech-bubble">
+      <div ng-switch="vm.puzzleStep">
+        <div ng-switch-when="1">
+          <h2>Você acaba de ganhar uma peça do quebra-cabeça!</h2>
+          <p>
+            A cada R$200,00 em compras registradas no app, você desbloqueia uma peça aleatória do nosso exclusivo quebra-cabeça do sabor.<br>
+            🔓 Complete as 5 peças únicas para encerrar um ciclo e conquistar um brinde especial:
+          </p>
+        </div>
+        <div ng-switch-when="2">
+          <h2>🎁  Brinde Especial 🎁 </h2>
+          <p>
+            Bolsa térmica + 4 pacotes de linguiça artesanal (500g cada)
+          </p>
+        </div>
+        <div ng-switch-when="3">
+          <h2>E não para por aí!</h2>
+          <p>
+            Após completar o ciclo, você pode iniciar um novo quebra-cabeça, continuar ganhando recompensas e reforçar seu status como Mestre do Sabor!<br>
+            ➡️ Dica: <br> Acesse seu painel para acompanhar as peças conquistadas e sua jornada rumo ao sabor completo!
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-images" ng-class="{'row-layout': vm.puzzleStep === 1, 'column-layout': vm.puzzleStep !== 1}">
+      <img ng-if="vm.puzzleStep === 1" src="/imagens/peça_obtd.png" alt="Quebra Cabeça" class="modal-puzzle">
+      <img ng-src="{{vm.puzzlePersonagemSrc}}" alt="Personagem" class="modal-personagem">
+    </div>
+    <button class="modal-button" ng-click="vm.nextPuzzleStep()">{{ vm.puzzleButtonLabel }}</button>
+  </div>
+</div> 
