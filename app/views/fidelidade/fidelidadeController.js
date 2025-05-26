@@ -44,7 +44,6 @@ angular.module('app').controller('FidelidadeController', function($scope, $timeo
             }
         }
         animateNext();
-        $scope.$applyAsync();
     }).catch(function() {
         vm.error = 'Erro ao carregar status do jogador.';
     }).finally(function() {
@@ -58,7 +57,6 @@ angular.module('app').controller('FidelidadeController', function($scope, $timeo
         headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' }
     }).then(function(res) {
         vm.prize = res.data;
-        $scope.$applyAsync && $scope.$applyAsync();
     });
 
     vm.nextPuzzleStep = function() {

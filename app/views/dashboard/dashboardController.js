@@ -33,6 +33,10 @@
         vm.historyModalOpen = false;
         vm.historyModalData = null;
         vm.historyModalLoading = false;
+        vm.showTutorialModal = !localStorage.getItem('tutorialSeen');
+        vm.tutorialStep = 1;
+        vm.tutorialPersonagemSrc = '/imagens/personagem1.png';
+        vm.tutorialButtonLabel = 'Próximo';
 
         // Methods
         vm.goToProfile = goToProfile;
@@ -138,6 +142,15 @@
         vm.closeHistoryModal = function() {
             vm.historyModalOpen = false;
             vm.historyModalData = null;
+        };
+        vm.nextTutorialStep = function() {
+            if (vm.tutorialStep < 3) {
+                vm.tutorialStep++;
+                vm.tutorialButtonLabel = (vm.tutorialStep === 3) ? 'Fechar' : 'Próximo';
+            } else {
+                vm.showTutorialModal = false;
+                localStorage.setItem('tutorialSeen', 'true');
+            }
         };
 
         // Initialize
