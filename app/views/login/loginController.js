@@ -29,61 +29,51 @@ angular.module('app').controller('LoginController', function($scope, $location, 
     vm.resetSuccess = false;
 
     vm.login = function() {
-        console.log('login called');
         if (!vm.user.email || !vm.user.password) {
-            vm.error = 'Por favor, preencha todos os campos.';
+            vm.error = 'Por favor, preencha email e senha.';
             return;
         }
 
         vm.loading = true;
-        vm.error = null;
+        vm.error = '';
 
         AuthService.login(vm.user.email, vm.user.password)
-            .then(function() {
+            .then(function(response) {
+                vm.loading = false;
                 $location.path('/dashboard');
             })
             .catch(function(error) {
-                console.error('Login error:', error);
-                vm.error = error.data && error.data.message ? error.data.message : 'Erro ao fazer login.';
-            })
-            .finally(function() {
                 vm.loading = false;
+                vm.error = typeof error === 'string' ? error : 'Erro ao fazer login. Tente novamente.';
             });
     };
 
     vm.requestPasswordReset = function() {
-        vm.resetMessage = '';
-        vm.isRequestingReset = true;
-        vm.resetSuccess = false;
+        if (!vm.resetEmail) {
+            vm.resetMessage = 'Por favor, informe seu email.';
+            return;
+        }
 
         AuthService.requestPasswordResetCode(vm.resetEmail)
-            .then(function(response) {
-                if (response.status >= 200 && response.status < 300) {
-                    vm.resetMessage = "Se o email estiver cadastrado, um código de reset foi enviado.";
-                    vm.resetSuccess = true;
-                } else {
-                    vm.resetMessage = "Resposta inesperada do servidor: Status " + response.status;
-                    vm.resetSuccess = false;
-                }
+            .then(function() {
+                vm.resetMessage = 'Código de recuperação enviado para seu email.';
             })
             .catch(function(error) {
-                vm.resetSuccess = false;
-                if (error.data && (error.data.message || error.data.error)) {
-                    vm.resetMessage = "Erro: " + (error.data.message || error.data.error);
-                } else if (error.status === 404) {
-                    vm.resetMessage = "Usuário não encontrado com este email.";
-                } else if (error.statusText) {
-                    vm.resetMessage = "Erro: " + error.statusText;
-                } else {
-                    vm.resetMessage = "Erro ao solicitar o código de reset. Tente novamente.";
-                }
-            })
-            .finally(function() {
-                vm.isRequestingReset = false;
+                vm.resetMessage = 'Erro ao enviar código de recuperação.';
             });
     };
 
     vm.goToRegister = function() {
         $location.path('/register');
     };
+
+    // Initialize controller
+    function init() {
+        // Check if user is already logged in
+        if (AuthService.getCurrentPlayer()) {
+            $location.path('/dashboard');
+        }
+    }
+
+    init();
 });

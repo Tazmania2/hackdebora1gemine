@@ -1,4 +1,4 @@
-angular.module('app').controller('QuizController', function($scope, $location, $routeParams, QuizService, PlayerService, $rootScope, SuccessMessageService) {
+angular.module('app').controller('QuizController', function($scope, $location, $routeParams, QuizService, PlayerService, $rootScope, SuccessMessageService, AuthService, $timeout) {
     var vm = this;
     vm.loading = true;
     vm.error = null;
@@ -12,6 +12,9 @@ angular.module('app').controller('QuizController', function($scope, $location, $
     vm.selectAnswer = selectAnswer;
     vm.isSelected = isSelected;
     vm.mode = 'list'; // 'list' or 'questions'
+    vm.currentQuestionIndex = 0;
+    vm.isSubmitting = false;
+    vm.quizCompleted = false;
 
     activate();
 
@@ -22,14 +25,21 @@ angular.module('app').controller('QuizController', function($scope, $location, $
             loadQuizQuestions(quizId);
         } else {
             vm.mode = 'list';
-            QuizService.listQuizzes().then(function(response) {
-                vm.quizzes = response.data;
-            }).catch(function(err) {
-                vm.error = 'Erro ao carregar quizzes.';
-            }).finally(function() {
+            loadAvailableQuizzes();
+        }
+    }
+
+    function loadAvailableQuizzes() {
+        vm.loading = true;
+        QuizService.getAllQuizzes()
+            .then(function(response) {
+                vm.quizzes = response.data || [];
+                vm.loading = false;
+            })
+            .catch(function(error) {
+                vm.error = 'Erro ao carregar quizzes disponíveis';
                 vm.loading = false;
             });
-        }
     }
 
     function selectQuiz(quiz) {
@@ -38,41 +48,57 @@ angular.module('app').controller('QuizController', function($scope, $location, $
 
     function loadQuizQuestions(quizId) {
         vm.loading = true;
-        QuizService.getQuizQuestions(quizId).then(function(response) {
-            vm.questions = response.data;
-            // Get quiz info for header
-            QuizService.listQuizzes().then(function(resp) {
-                vm.quiz = (resp.data || []).find(function(q) { return q._id === quizId; });
-            });
-            // Get player id for startQuiz
-            var player = PlayerService.getCurrentPlayer();
-            var playerId = player && player._id ? player._id : player && player.name ? player.name : null;
-            if (!playerId) {
-                vm.error = 'Jogador não encontrado.';
-                vm.loading = false;
-                return;
-            }
-            // Start the quiz and only finish loading when quizLogId is set
-            return QuizService.startQuiz(quizId, playerId).then(function(resp) {
-                vm.quizLogId = (resp.data.log && resp.data.log._id) || resp.data._id || resp.data.quiz_log || resp.data.quizLogId;
-                console.log('Quiz started, quizLogId:', vm.quizLogId, resp.data);
-                if (!vm.quizLogId) {
-                    vm.error = 'Quiz não pôde ser iniciado (quizLogId ausente).';
+        loadQuiz(quizId);
+    }
+
+    function loadQuiz(quizId) {
+        vm.loading = true;
+        
+        // Get quiz info for header
+        QuizService.getQuiz(quizId)
+            .then(function(resp) {
+                vm.quiz = resp.data;
+                // Get player id for startQuiz
+                var currentPlayer = AuthService.getCurrentPlayer();
+                var playerId = currentPlayer ? currentPlayer._id : null;
+                
+                if (!playerId) {
+                    vm.error = 'Usuário não autenticado';
+                    vm.loading = false;
+                    return;
                 }
-            }).catch(function(err) {
-                vm.error = 'Erro ao iniciar quiz.';
-                console.error('Erro ao iniciar quiz:', err);
+
+                // Start the quiz and only finish loading when quizLogId is set
+                return QuizService.startQuiz(quizId, playerId);
+            })
+            .then(function(resp) {
+                vm.quizLogId = resp.data.quizLogId;
+                return loadQuestions(vm.quiz._id);
+            })
+            .then(function() {
+                vm.loading = false;
+            })
+            .catch(function(error) {
+                vm.error = 'Erro ao carregar quiz';
+                vm.loading = false;
             });
-        }).catch(function(err) {
-            vm.error = 'Erro ao carregar perguntas do quiz.';
-            console.error('Erro ao carregar perguntas:', err);
-        }).finally(function() {
-            vm.loading = false;
-        });
+    }
+
+    function loadQuestions(quizId) {
+        return QuizService.getQuestions(quizId)
+            .then(function(response) {
+                vm.questions = response.data || [];
+                if (vm.questions.length === 0) {
+                    vm.error = 'Nenhuma pergunta encontrada para este quiz';
+                }
+            })
+            .catch(function(error) {
+                vm.error = 'Erro ao carregar perguntas';
+            });
     }
 
     function selectAnswer(questionId, answer) {
-        vm.answers[questionId] = [answer];
+        vm.answers[questionId] = answer;
     }
 
     function isSelected(questionId, answer) {
@@ -81,34 +107,41 @@ angular.module('app').controller('QuizController', function($scope, $location, $
 
     function submitQuiz() {
         if (!vm.quizLogId) {
-            vm.error = 'Quiz não iniciado corretamente.';
-            console.error('submitQuiz called but quizLogId is missing');
+            vm.error = 'Erro: Quiz não foi iniciado corretamente';
             return;
         }
-        var player = PlayerService.getCurrentPlayer();
-        var playerId = player && player._id ? player._id : player && player.name ? player.name : null;
+
+        vm.isSubmitting = true;
+        
+        // Convert answers to the required format
         var bulkAnswers = vm.questions.map(function(q) {
+            var selectedAnswer = vm.answers[q._id];
             return {
-                quiz: q.quiz,
-                quiz_log: vm.quizLogId,
-                question: q._id,
-                answer: vm.answers[q._id] || [],
-                player: playerId
+                questionLogId: q._id,
+                answer: selectedAnswer || '',
+                quizLogId: vm.quizLogId
             };
         });
-        vm.loading = true;
-        console.log('Submitting answers for quizLogId:', vm.quizLogId, bulkAnswers);
-        QuizService.submitAnswers(bulkAnswers).then(function() {
-            return QuizService.finishQuiz(vm.quizLogId);
-        }).then(function(resp) {
-            $rootScope.successMessage = SuccessMessageService.get('quiz_success');
-            $location.path('/dashboard');
-        }).catch(function(err) {
-            vm.error = 'Erro ao enviar respostas.';
-            console.error('Erro ao enviar respostas:', err);
-        }).finally(function() {
-            vm.loading = false;
-        });
+
+        QuizService.submitAnswers(bulkAnswers)
+            .then(function() {
+                return QuizService.finishQuiz(vm.quizLogId);
+            })
+            .then(function() {
+                vm.quizCompleted = true;
+                vm.isSubmitting = false;
+                $timeout(function() {
+                    vm.goToDashboard();
+                }, 2000);
+            })
+            .catch(function(error) {
+                vm.error = 'Erro ao enviar respostas';
+                vm.isSubmitting = false;
+            });
+    }
+
+    function goToDashboard() {
+        $location.path('/dashboard');
     }
 
     vm.goBack = function() {

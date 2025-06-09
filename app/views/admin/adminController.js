@@ -1,8 +1,8 @@
 (function() {
   'use strict';
   angular.module('app').controller('AdminController', AdminController);
-  AdminController.$inject = ['$scope', '$http', '$window', 'ThemeConfigService', 'SuccessMessageService', 'AuthService', 'CashbackExpiryService', 'ActivityService'];
-  function AdminController($scope, $http, $window, ThemeConfigService, SuccessMessageService, AuthService, CashbackExpiryService, ActivityService) {
+  AdminController.$inject = ['$scope', '$http', '$window', 'ThemeConfigService', 'SuccessMessageService', 'AuthService', 'CashbackExpiryService', 'ActivityService', '$location', 'FUNIFIER_API_CONFIG'];
+  function AdminController($scope, $http, $window, ThemeConfigService, SuccessMessageService, AuthService, CashbackExpiryService, ActivityService, $location, FUNIFIER_API_CONFIG) {
     var vm = this;
     vm.loggedIn = false;
     vm.user = '';
@@ -1200,6 +1200,8 @@
         $scope.$applyAsync && $scope.$applyAsync();
       });
     };
+    // Initialize
+    activate();
   }
 })();
 

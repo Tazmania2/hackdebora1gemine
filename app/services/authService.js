@@ -2,15 +2,19 @@
 angular.module('app')
 .service('AuthService', function($http, $q, FUNIFIER_API_CONFIG) {
     var currentPlayer = null;
+    var basicAuth = window.FUNIFIER_BASIC_AUTH || 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==';
 
     // Login with password authentication
     this.login = function(email, password) {
-        console.log('Attempting login for:', email);
+        if (!email || !password) {
+            return $q.reject('Email and password are required');
+        }
+
         var req = {
             method: 'POST',
             url: FUNIFIER_API_CONFIG.baseUrl + '/auth/token',
             headers: {
-                'Authorization': 'Basic NjgyNTJhMjEyMzI3Zjc0ZjNhM2QxMDBkOjY4MjYwNWY2MjMyN2Y3NGYzYTNkMjQ4ZQ==',
+                'Authorization': basicAuth,
                 'Content-Type': 'application/json'
             },
             data: {
@@ -22,7 +26,6 @@ angular.module('app')
         };
 
         return $http(req).then((response) => {
-            console.log('Login response:', response.data);
             if (response.data && response.data.access_token) {
                 // Store the token with 'Bearer ' prefix
                 localStorage.setItem('token', 'Bearer ' + response.data.access_token);
@@ -30,14 +33,20 @@ angular.module('app')
             }
             return $q.reject('Token não encontrado na resposta');
         }).catch(function(error) {
-            console.error('Login error:', error);
-            return $q.reject(error);
+            var errorMessage = 'Erro ao fazer login';
+            if (error.data && error.data.error_description) {
+                errorMessage = error.data.error_description;
+            } else if (error.status === 401) {
+                errorMessage = 'Email ou senha incorretos';
+            } else if (error.status === 0) {
+                errorMessage = 'Erro de conexão. Verifique sua internet.';
+            }
+            return $q.reject(errorMessage);
         });
     };
 
     // Get player information
     this.getPlayerInfo = function() {
-        console.log('Getting player info...');
         return $http({
             method: 'GET',
             url: FUNIFIER_API_CONFIG.baseUrl + '/player/me',
@@ -45,12 +54,14 @@ angular.module('app')
                 'Authorization': localStorage.getItem('token')
             }
         }).then((response) => {
-            console.log('Player info received:', response.data);
             this.storePlayerData(response.data);
             return response.data;
         }).catch(function(error) {
-            console.error('Error getting player info:', error);
-            return $q.reject(error);
+            var errorMessage = 'Erro ao carregar informações do usuário';
+            if (error.status === 401) {
+                errorMessage = 'Sessão expirada. Faça login novamente.';
+            }
+            return $q.reject(errorMessage);
         });
     };
 
@@ -65,7 +76,12 @@ angular.module('app')
         if (!currentPlayer) {
             var stored = localStorage.getItem('currentPlayer');
             if (stored) {
-                currentPlayer = JSON.parse(stored);
+                try {
+                    currentPlayer = JSON.parse(stored);
+                } catch (e) {
+                    localStorage.removeItem('currentPlayer');
+                    currentPlayer = null;
+                }
             }
         }
         return currentPlayer;
@@ -74,11 +90,9 @@ angular.module('app')
     // Check if user is authenticated
     this.isAuthenticated = function() {
         var token = localStorage.getItem('token');
-        console.log('[AuthService.isAuthenticated] token:', token);
         if (token) {
             return Promise.resolve(true);
         } else {
-            console.error('[AuthService.isAuthenticated] User not authenticated');
             return Promise.reject('not_authenticated');
         }
     };
@@ -99,8 +113,7 @@ angular.module('app')
   return {
     request: function (config) {
       config.headers = config.headers || {};
-      // Debug log for Authorization header
-      console.log('[AuthInterceptor] Before:', config.url, 'Authorization:', config.headers.Authorization);
+      
       // Only set Authorization if it is not already set
       if (config.url.indexOf(FUNIFIER_API_CONFIG.baseUrl) === 0 && 
           !config.url.includes('/auth/token')) {
@@ -111,8 +124,6 @@ angular.module('app')
           }
         }
       }
-      // Debug log after possible modification
-      console.log('[AuthInterceptor] After:', config.url, 'Authorization:', config.headers.Authorization);
       return config;
     },
     responseError: function (response) {

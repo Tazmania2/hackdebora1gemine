@@ -6,8 +6,34 @@
     { "src": "/api/(.*)", "dest": "https://api.funifier.com/v3/$1" },
     { "src": "/(.*)", "dest": "/index.html" }
   ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    }
+  ],
   "env": {
-    "FUNIFIER_API_KEY": "68252a212327f74f3a3d100d",
-    "FUNIFIER_API_SECRET": "682605f62327f74f3a3d248e"
+    "NODE_ENV": "@node_env"
   }
 }

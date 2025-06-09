@@ -5,9 +5,9 @@
         .module('app')
         .controller('DashboardController', DashboardController);
 
-    DashboardController.$inject = ['$scope', '$location', 'AuthService', 'PlayerService', 'EventService', 'ActivityService', '$http', 'FUNIFIER_API_CONFIG', '$timeout', '$rootScope', 'SuccessMessageService', 'CashbackExpiryService'];
+    DashboardController.$inject = ['$scope', '$location', 'AuthService', 'PlayerService', 'EventService', 'ActivityService', '$http', 'FUNIFIER_API_CONFIG', '$timeout', '$rootScope', 'SuccessMessageService', 'CashbackExpiryService', 'ThemeConfigService'];
 
-    function DashboardController($scope, $location, AuthService, PlayerService, EventService, ActivityService, $http, FUNIFIER_API_CONFIG, $timeout, $rootScope, SuccessMessageService, CashbackExpiryService) {
+    function DashboardController($scope, $location, AuthService, PlayerService, EventService, ActivityService, $http, FUNIFIER_API_CONFIG, $timeout, $rootScope, SuccessMessageService, CashbackExpiryService, ThemeConfigService) {
         var vm = this;
 
         // Properties
@@ -37,6 +37,10 @@
         vm.tutorialStep = 1;
         vm.tutorialPersonagemSrc = '/imagens/personagem1.png';
         vm.tutorialButtonLabel = 'Próximo';
+        vm.currentPlayer = null;
+        vm.challenges = [];
+        vm.virtualGoods = [];
+        vm.isLoading = true;
 
         // Methods
         vm.goToProfile = goToProfile;
@@ -143,200 +147,110 @@
             vm.historyModalOpen = false;
             vm.historyModalData = null;
         };
+        vm.goToSocial = goToSocial;
+        vm.goToHistory = goToHistory;
+        vm.loadData = loadData;
 
         // Initialize
         activate();
 
         function activate() {
-            Promise.all([
-                loadPlayerStatus(),
-                loadChallenges(),
-                loadVirtualGoods()
-            ]).then(function() {
-                buildCompletedChallengesDisplay();
-                buildPurchaseHistoryDisplay();
-                // Run cashback expiry routine after player status is loaded
-                var player = PlayerService.getCurrentPlayer();
-                var playerId = player && (player._id || player.name || player.email);
-                if (playerId) {
-                    CashbackExpiryService.expireOldCashback(playerId)
-                      .then(function() {
-                        // Reload player status after expiry routine
-                        return loadPlayerStatus();
-                      })
-                      .catch(function(err) {
-                        console.error('Erro ao expirar cashback:', err);
-                      });
-                } else {
-                    console.warn('Cashback expiry skipped: Player ID not found in status');
-                }
-                // Fetch days to cashback expiry for dashboard message
-                CashbackExpiryService.getDaysToCashbackExpiry().then(function(days) {
-                    vm.daysToCashbackExpiry = days;
-                    $scope.$applyAsync && $scope.$applyAsync();
-                });
-                checkAndLogLoginAction();
-            });
-            loadActivities();
-            loadEvents();
-
-            // Show global success message if present
-            if ($rootScope.successMessage) {
-                vm.successMessage = $rootScope.successMessage;
-                $rootScope.successMessage = null;
-                $timeout(function() { vm.successMessage = null; $scope.$applyAsync && $scope.$applyAsync(); }, 3500);
+            vm.currentPlayer = AuthService.getCurrentPlayer();
+            if (!vm.currentPlayer) {
+                $location.path('/login');
+                return;
             }
+            loadData();
         }
 
-        // --- Data holders for mapping ---
-        var allChallenges = [];
-        var allVirtualGoods = [];
-        var playerStatus = {};
+        function loadData() {
+            vm.isLoading = true;
+            vm.error = null;
 
-        function loadPlayerStatus() {
-            vm.loading = true;
-            return PlayerService.getStatus()
-                .then(function(response) {
-                    var data = response.data;
-                    data.point_categories = data.point_categories || data.pointCategories || {};
-                    vm.playerStatus = data;
-                    playerStatus = data;
-                    // Cashback points logic
-                    var points = (data.point_categories.cashback || data.pointCategories.cashback || 0);
-                    vm.cashbackPoints = points;
-                    vm.cashbackReais = (points * 0.05).toFixed(2);
-                    setReferralQrUrl();
-                    // Merge image from /player/me and assign a new object
-                    return PlayerService.getPlayerProfile().then(function(resp) {
-                        if (resp.data && resp.data.image) {
-                            vm.playerStatus = Object.assign({}, vm.playerStatus, { image: resp.data.image });
-                        }
-                        vm.loading = false;
-                        $scope.$applyAsync();
-                    });
+            // Load player status and other data
+            PlayerService.getPlayerStatus()
+                .then(function(playerStatus) {
+                    vm.playerStatus = playerStatus;
+                    return loadChallenges();
+                })
+                .then(function() {
+                    return loadVirtualGoods();
+                })
+                .then(function() {
+                    vm.isLoading = false;
                 })
                 .catch(function(error) {
-                    vm.error = 'Erro ao carregar status do jogador';
-                    vm.loading = false;
-                    $scope.$applyAsync();
-                    console.error('Error loading player status:', error);
+                    vm.isLoading = false;
+                    vm.error = 'Erro ao carregar dados do dashboard';
                 });
-        }
-
-        function setReferralQrUrl() {
-            var code = (playerStatus.extra && playerStatus.extra.mycode) ? playerStatus.extra.mycode : 'N0c()63';
-            vm.referralCode = code;
-            // Always use the production domain for the QR code
-            var url = 'https://hackdebora1gemine.vercel.app/register?referral=' + encodeURIComponent(code);
-            vm.qrUrl = url;
-            // Generate QR code as data URL
-            var qr = window.qrcode(4, 'L');
-            qr.addData(url);
-            qr.make();
-            // Get the data URL from the generated QR code
-            var qrImg = qr.createImgTag(8); // 8 = pixel size
-            // Extract src from <img src=...>
-            var match = qrImg.match(/src=['\"]([^'\"]+)['\"]/);
-            vm.qrImgUrl = match ? match[1] : '';
-            vm.qrReady = true;
         }
 
         function loadChallenges() {
-            var req = {
-                method: 'GET',
-                url: FUNIFIER_API_CONFIG.baseUrl + '/challenge',
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' }
-            };
-            return $http(req).then(function(response) {
-                allChallenges = response.data;
-            });
-        }
-
-        function loadVirtualGoods() {
-            var req = {
-                method: 'GET',
-                url: FUNIFIER_API_CONFIG.baseUrl + '/virtualgoods/item',
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' }
-            };
-            return $http(req).then(function(response) {
-                allVirtualGoods = response.data;
-            });
-        }
-
-        function buildCompletedChallengesDisplay() {
-            vm.completedChallengesDisplay = [];
-            if (!playerStatus.challenges) return;
-            console.log('playerStatus.challenges:', playerStatus.challenges);
-            console.log('allChallenges:', allChallenges);
-            Object.keys(playerStatus.challenges).forEach(function(challengeId) {
-                var challenge = allChallenges.find(function(c) {
-                    console.log('Comparing challenge catalog _id', c._id, 'with player challengeId', challengeId);
-                    return c._id === challengeId;
-                });
-                if (challenge) {
-                    vm.completedChallengesDisplay.push({
-                        id: challenge._id,
-                        name: challenge.challenge,
-                        badge: challenge.badge && challenge.badge.small && challenge.badge.small.url,
-                        misscoins: (challenge.points && Array.isArray(challenge.points) && challenge.points.find(function(p) { return p.category === 'misscoins'; })) ? challenge.points.find(function(p) { return p.category === 'misscoins'; }).total : 0,
-                        description: challenge.description
-                    });
-                } else {
-                    console.warn('Challenge not found for ID:', challengeId);
-                }
-            });
-            console.log('vm.completedChallengesDisplay:', vm.completedChallengesDisplay);
-            $timeout(function() { $scope.$applyAsync(); });
-        }
-
-        function buildPurchaseHistoryDisplay() {
-            vm.purchaseHistoryDisplay = [];
-            var catalogItems = playerStatus.catalog_items || {};
-            console.log('playerStatus.catalog_items:', catalogItems);
-            console.log('allVirtualGoods:', allVirtualGoods);
-            Object.keys(catalogItems).forEach(function(itemId) {
-                var item = allVirtualGoods.find(function(i) {
-                    console.log('Comparing virtual good catalog _id', i._id, 'with player itemId', itemId);
-                    return i._id === itemId;
-                });
-                if (item) {
-                    vm.purchaseHistoryDisplay.push({
-                        id: item._id,
-                        name: item.name,
-                        image: item.image && item.image.small && item.image.small.url,
-                        misscoins: (item.requires && Array.isArray(item.requires) && item.requires.find(function(r) { return r.item === 'misscoins'; })) ? item.requires.find(function(r) { return r.item === 'misscoins'; }).total : 0,
-                        description: item.description
-                    });
-                } else {
-                    console.warn('Virtual good not found for ID:', itemId);
-                }
-            });
-            $timeout(function() { $scope.$applyAsync(); });
-        }
-
-        function loadActivities() {
-            ActivityService.getRecent()
+            return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/challenges')
                 .then(function(response) {
-                    vm.activities = response.data;
-                    // Fallback: If completed challenges are not in playerStatus, try to extract from activities
-                    if (!vm.completedChallenges.length && Array.isArray(vm.activities)) {
-                        vm.completedChallenges = vm.activities.filter(function(act) {
-                            return act.type === 'challenge' && act.status === 'completed';
-                        });
+                    var allChallenges = response.data || [];
+                    vm.challenges = allChallenges;
+                    
+                    // Process completed challenges
+                    if (vm.playerStatus && vm.playerStatus.challenges) {
+                        vm.completedChallengesDisplay = vm.playerStatus.challenges
+                            .map(function(playerChallenge) {
+                                var challengeId = playerChallenge.challengeId || playerChallenge._id;
+                                var matchingChallenge = allChallenges.find(function(c) {
+                                    return c._id === challengeId;
+                                });
+                                
+                                if (matchingChallenge) {
+                                    return {
+                                        name: matchingChallenge.name,
+                                        image: matchingChallenge.image,
+                                        completedCount: playerChallenge.completedCount || 1,
+                                        completedAt: playerChallenge.completedAt
+                                    };
+                                }
+                                return null;
+                            })
+                            .filter(function(item) {
+                                return item !== null;
+                            });
                     }
                 })
                 .catch(function(error) {
-                    console.error('Error loading activities:', error);
+                    vm.error = 'Erro ao carregar desafios';
                 });
         }
 
-        function loadEvents() {
-            EventService.getUpcoming()
+        function loadVirtualGoods() {
+            return $http.get(FUNIFIER_API_CONFIG.baseUrl + '/virtual-goods')
                 .then(function(response) {
-                    vm.events = response.data;
+                    var allVirtualGoods = response.data || [];
+                    
+                    // Process virtual goods from player status
+                    if (vm.playerStatus && vm.playerStatus.catalog_items) {
+                        vm.virtualGoods = vm.playerStatus.catalog_items
+                            .map(function(catalogItem) {
+                                var itemId = catalogItem.itemId || catalogItem._id;
+                                var matchingGood = allVirtualGoods.find(function(i) {
+                                    return i._id === itemId;
+                                });
+                                
+                                if (matchingGood) {
+                                    return {
+                                        name: matchingGood.name,
+                                        image: matchingGood.image,
+                                        quantity: catalogItem.quantity || 1,
+                                        obtainedAt: catalogItem.obtainedAt
+                                    };
+                                }
+                                return null;
+                            })
+                            .filter(function(item) {
+                                return item !== null;
+                            });
+                    }
                 })
                 .catch(function(error) {
-                    console.error('Error loading events:', error);
+                    vm.error = 'Erro ao carregar itens virtuais';
                 });
         }
 
@@ -482,5 +396,13 @@
                 }
             }
         };
+
+        function goToSocial() {
+            $location.path('/social');
+        }
+
+        function goToHistory() {
+            $location.path('/history');
+        }
     }
 })(); 

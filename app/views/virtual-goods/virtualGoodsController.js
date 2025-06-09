@@ -5,17 +5,16 @@
         .module('app')
         .controller('VirtualGoodsController', VirtualGoodsController);
 
-    VirtualGoodsController.$inject = ['$scope', '$http', 'PlayerService', 'FUNIFIER_API_CONFIG', '$timeout', 'SuccessMessageService', 'ActivityService'];
+    VirtualGoodsController.$inject = ['$scope', '$http', '$location', '$uibModal', 'PlayerService', 'FUNIFIER_API_CONFIG', 'ActivityService', '$timeout', 'SuccessMessageService'];
 
-    function VirtualGoodsController($scope, $http, PlayerService, FUNIFIER_API_CONFIG, $timeout, SuccessMessageService, ActivityService) {
+    function VirtualGoodsController($scope, $http, $location, $uibModal, PlayerService, FUNIFIER_API_CONFIG, ActivityService, $timeout, SuccessMessageService) {
         var vm = this;
 
         // Catalog and filters
         vm.catalogItems = [];
         vm.filteredItems = [];
-        vm.sortType = 'value'; // 'value' or 'alpha'
-        vm.sortOrder = 'asc'; // 'asc' or 'desc'
-        vm.setSort = setSort;
+        vm.selectedCategory = 'Todos';
+        vm.categories = ['Todos'];
 
         // Purchase history
         vm.purchaseHistory = [];
@@ -24,229 +23,199 @@
         vm.playerMisscoins = 0;
 
         // Methods
+        vm.filterByCategory = filterByCategory;
         vm.exchangeItem = exchangeItem;
-        vm.goBack = function() {
-            if (window.angular && angular.element(document.body).injector()) {
-                var $location = angular.element(document.body).injector().get('$location');
-                $location.path('/dashboard');
-                if (!angular.element(document.body).scope().$$phase) {
-                    angular.element(document.body).scope().$apply();
-                }
-            } else {
-                window.location.hash = '#!/dashboard';
-            }
-        };
+        vm.goToDashboard = goToDashboard;
+        vm.loadCatalogItems = loadCatalogItems;
 
-        SuccessMessageService.fetchAll();
+        // Properties
+        vm.loading = true;
+        vm.error = null;
 
+        // Initialize
         activate();
 
         function activate() {
-            loadPlayerStatusAndHistory();
+            loadPlayerMisscoins().then(function() {
+                loadCatalogItems();
+                loadPurchaseHistory();
+            });
         }
 
-        function loadCatalog() {
-            $http({
+        function loadPlayerMisscoins() {
+            return PlayerService.getPlayerStatus()
+                .then(function(response) {
+                    var pointCategories = response.pointCategories || response.point_categories || {};
+                    vm.playerMisscoins = pointCategories.misscoins || 0;
+                })
+                .catch(function(error) {
+                    vm.error = 'Erro ao carregar moedas do jogador';
+                });
+        }
+
+        function loadCatalogItems() {
+            vm.loading = true;
+            
+            // All items from 'recompensas' catalog, but mark canExchange and canAfford
+            var req = {
                 method: 'GET',
-                url: FUNIFIER_API_CONFIG.baseUrl + '/virtualgoods/item',
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' }
-            }).then(function(response) {
-                // All items from 'recompensas' catalog, but mark canExchange and canAfford
-                vm.catalogItems = response.data.filter(function(item) {
-                    return item.catalogId === 'recompensas';
-                }).map(function(item) {
+                url: FUNIFIER_API_CONFIG.baseUrl + '/virtualgoods/item?catalog=recompensas',
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            $http(req).then(function(response) {
+                vm.catalogItems = (response.data || []).map(function(item) {
                     // Use 'misscoins' for backend logic
-                    item.canExchange = Array.isArray(item.requires) && item.requires.length > 0 && item.requires[0].item === 'misscoins';
-                    item.missingReason = !item.canExchange ? 'Este item não está disponível para troca no momento.' : '';
+                    var misscoinsCost = (item.requires && Array.isArray(item.requires) && item.requires.find(function(r) { return r.item === 'misscoins'; })) 
+                        ? item.requires.find(function(r) { return r.item === 'misscoins'; }).total 
+                        : 0;
+                    
                     // Add canAfford flag for UI
-                    var misscoins = item.requires && item.requires[0] && item.requires[0].total ? item.requires[0].total : 0;
-                    item.canAfford = (typeof vm.playerMisscoins === 'number') ? (vm.playerMisscoins >= misscoins) : true;
+                    item.canAfford = vm.playerMisscoins >= misscoinsCost;
+                    item.misscoinsCost = misscoinsCost;
+                    
                     return item;
                 });
-                if (vm.catalogItems.length) {
-                    console.log('First catalog item:', vm.catalogItems[0]);
-                }
-                applyFilters();
+
+                // Extract unique categories
+                var categorySet = new Set(['Todos']);
+                vm.catalogItems.forEach(function(item) {
+                    if (item.category) {
+                        categorySet.add(item.category);
+                    }
+                });
+                vm.categories = Array.from(categorySet);
+
+                // Apply initial filter
+                filterByCategory(vm.selectedCategory);
+                vm.loading = false;
+            }).catch(function(error) {
+                vm.error = 'Erro ao carregar catálogo';
+                vm.loading = false;
             });
         }
 
-        function setSort(type) {
-            if (vm.sortType === type) {
-                vm.sortOrder = (vm.sortOrder === 'asc') ? 'desc' : 'asc';
-            } else {
-                vm.sortType = type;
-                vm.sortOrder = 'asc';
-            }
-            applyFilters();
-        }
+        function loadPurchaseHistory() {
+            // Set playerMisscoins for UI reference (fixed to use pointCategories)
+            PlayerService.getPlayerStatus().then(function(response) {
+                var pointCategories = response.pointCategories || response.point_categories || {};
+                vm.playerMisscoins = pointCategories.misscoins || 0;
+            });
 
-        function applyFilters() {
-            var items = vm.catalogItems.slice();
-            if (vm.sortType === 'value') {
-                items.sort(function(a, b) {
-                    var va = getMisscoins(a), vb = getMisscoins(b);
-                    return vm.sortOrder === 'asc' ? va - vb : vb - va;
-                });
-            } else if (vm.sortType === 'alpha') {
-                items.sort(function(a, b) {
-                    var na = a.name.toLowerCase(), nb = b.name.toLowerCase();
-                    if (na < nb) return vm.sortOrder === 'asc' ? -1 : 1;
-                    if (na > nb) return vm.sortOrder === 'asc' ? 1 : -1;
-                    return 0;
-                });
-            }
-            vm.filteredItems = items;
-            $timeout(function() { $scope.$applyAsync(); });
-        }
+            // Fetch all catalog items for joining
+            var allCatalogItemsPromise = $http.get(FUNIFIER_API_CONFIG.baseUrl + '/virtualgoods/item', {
+                headers: { 'Authorization': localStorage.getItem('token') }
+            });
 
-        function getMisscoins(item) {
-            if (item.requires && Array.isArray(item.requires)) {
-                var req = item.requires.find(function(r) { return r.item === 'misscoins'; });
-                return req ? req.total : 0;
-            }
-            return 0;
-        }
+            // Fetch all achievements
+            var allAchievementsPromise = $http.get(FUNIFIER_API_CONFIG.baseUrl + '/achievement', {
+                headers: { 'Authorization': localStorage.getItem('token') }
+            });
 
-        function loadPlayerStatusAndHistory() {
-            PlayerService.getStatus().then(function(response) {
-                var player = response.data;
-                vm.playerStatus = player;
-                // Set playerMisscoins for UI reference (fixed to use pointCategories)
-                vm.playerMisscoins =
-                    (player.pointCategories && player.pointCategories.misscoins) ||
-                    (player.point_categories && player.point_categories.misscoins) ||
-                    0;
-                var playerId = player._id || player.name;
-                // Fetch all catalog items for joining
-                var reqCatalog = {
-                    method: 'GET',
-                    url: FUNIFIER_API_CONFIG.baseUrl + '/virtualgoods/item',
-                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' }
-                };
-                // Fetch all achievements
-                var reqAchievements = {
-                    method: 'GET',
-                    url: FUNIFIER_API_CONFIG.baseUrl + '/achievement',
-                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' }
-                };
-                $http(reqCatalog).then(function(res) {
-                    var allGoods = res.data;
-                    $http(reqAchievements).then(function(achRes) {
-                        var achievements = achRes.data;
-                        // Filter for current player and type 2 (item exchanges)
-                        var playerAchievements = achievements.filter(function(a) {
-                            return (a.player === playerId) && a.type === 2;
+            Promise.all([allCatalogItemsPromise, allAchievementsPromise]).then(function(responses) {
+                var allCatalogItems = responses[0].data || [];
+                var allAchievements = responses[1].data || [];
+
+                // Filter for current player and type 2 (item exchanges)
+                var currentPlayer = PlayerService.getCurrentPlayer();
+                var playerId = currentPlayer ? currentPlayer._id : null;
+
+                // Map to history entries
+                var historyEntries = allAchievements
+                    .filter(function(ach) {
+                        return ach.player === playerId && ach.type === 2;
+                    })
+                    .map(function(ach) {
+                        var catalogItem = allCatalogItems.find(function(item) {
+                            return item._id === ach.target;
                         });
-                        // Map to history entries
-                        var purchaseList = playerAchievements.map(function(a) {
-                            var item = allGoods.find(function(i) { return i._id === a.item; });
-                            return item ? {
-                                name: item.name,
-                                image: item.image && item.image.small && item.image.small.url,
-                                misscoins: getMisscoins(item),
-                                description: item.description,
-                                date: new Date(a.time),
-                                quantity: 1
-                            } : null;
-                        }).filter(Boolean);
-                        // Sort by date desc
-                        purchaseList.sort(function(a, b) {
-                            if (!a.date || !b.date) return 0;
-                            return b.date - a.date;
-                        });
-                        vm.purchaseHistory = purchaseList;
-                        $timeout(function() { $scope.$applyAsync(); });
+                        
+                        return {
+                            id: ach._id,
+                            itemName: catalogItem ? catalogItem.name : 'Item não encontrado',
+                            itemImage: catalogItem && catalogItem.image ? catalogItem.image.small.url : null,
+                            date: new Date(ach.date),
+                            points: ach.points || 0
+                        };
                     });
+
+                // Sort by date desc
+                vm.purchaseHistory = historyEntries.sort(function(a, b) {
+                    return b.date - a.date;
                 });
-                // Now that playerMisscoins is set, load the catalog
-                loadCatalog();
+            }).catch(function(error) {
+                vm.error = 'Erro ao carregar histórico de compras';
             });
+        }
+
+        function filterByCategory(category) {
+            vm.selectedCategory = category;
+            if (category === 'Todos') {
+                vm.filteredItems = vm.catalogItems;
+            } else {
+                vm.filteredItems = vm.catalogItems.filter(function(item) {
+                    return item.category === category;
+                });
+            }
         }
 
         function exchangeItem(item) {
-            if (!item.canExchange) {
-                showResultModal('Indisponível', item.missingReason || 'Este item não está disponível para troca no momento.', false);
-                return;
-            }
             if (!item.canAfford) {
-                showResultModal('Misscoins insuficientes', 'Você não possui misscoins suficientes para trocar por este item.', false);
+                vm.error = 'Misscoins insuficientes para esta troca';
                 return;
             }
+
             // TEMP: Always use fallback confirm dialog for now
-            if (window.confirm('Tem certeza que deseja trocar ' + (item.requires[0] && item.requires[0].total) + ' misscoins por ' + item.name + '?')) {
-                confirmExchange(item);
+            var confirmed = confirm('Deseja trocar ' + item.misscoinsCost + ' misscoins por ' + item.name + '?');
+            
+            if (confirmed) {
+                performExchange(item);
             }
-            // --- Modal code below is disabled for now ---
-            /*
-            if (window.angular && angular.element(document.body).injector().has('$uibModal')) {
-                var $uibModal = angular.element(document.body).injector().get('$uibModal');
-                var modalInstance = $uibModal.open({
-                    template: '<div style="padding:24px;text-align:center"><img ng-if="modal.item.image && modal.item.image.small && modal.item.image.small.url" ng-src="{{modal.item.image.small.url}}" style="width:80px;height:80px;border-radius:16px;background:#fff;margin-bottom:12px;"><div style="font-weight:bold;font-size:1.2em;margin-bottom:8px;">{{modal.item.name}}</div><div style="color:#aaa;margin-bottom:12px;">{{modal.item.description}}</div><div class="points-pill" style="margin-bottom:18px;"><i class="bi bi-coin"></i> {{modal.item.requires[0].total}}</div><div>Tem certeza que deseja trocar <b>{{modal.item.requires[0].total}}</b> misscoins por este item?</div><div style="margin-top:18px;"><button class="btn btn-primary" ng-click="ok()">Trocar</button> <button class="btn btn-default" ng-click="cancel()">Cancelar</button></div></div>',
-                    controller: ['$scope', '$uibModalInstance', 'item', function($scope, $uibModalInstance, item) {
-                        $scope.modal = { item: item };
-                        $scope.ok = function() { $uibModalInstance.close(item); };
-                        $scope.cancel = function() { $uibModalInstance.dismiss('cancel'); };
-                    }],
-                    resolve: { item: function() { return item; } },
-                    size: 'sm'
-                });
-                modalInstance.result.then(function(selectedItem) {
-                    confirmExchange(selectedItem, $uibModal);
-                }, function(reason) {
-                    // Modal dismissed (backdrop click, ESC, or cancel)
-                    // No action needed
-                });
-            } else {
-                // fallback
-            }
-            */
         }
 
-        function confirmExchange(item) {
-            var playerId = vm.playerStatus._id || (vm.playerStatus && vm.playerStatus.name);
-            var payload = { player: playerId, item: item._id, total: 1 };
-            $http({
+        function performExchange(item) {
+            vm.loading = true;
+            
+            var req = {
                 method: 'POST',
                 url: FUNIFIER_API_CONFIG.baseUrl + '/virtualgoods/purchase',
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json' },
-                data: payload
-            }).then(function(response) {
-                if (response.data.status === 'OK') {
-                    showResultModal('Sucesso', SuccessMessageService.get('exchange_success'), true);
-                    // Send SMS notification after exchange
-                    var phone = vm.playerStatus.extra && vm.playerStatus.extra.phone;
-                    if (phone) {
-                        phone = phone.replace(/\D/g, '');
-                        if (!phone.startsWith('55')) phone = '55' + phone;
-                        phone = '+' + phone;
-                        if (window.ActivityService && ActivityService.sendSmsNotification) {
-                            ActivityService.sendSmsNotification(phone, 'Sua troca foi realizada com sucesso!');
-                        }
-                    }
-                    loadPlayerStatusAndHistory();
-                } else if (response.data.status === 'UNAUTHORIZED') {
-                    var reasons = (response.data.restrictions || []).map(translateRestriction).join('<br>');
-                    showResultModal('Não autorizado', 'Não foi possível realizar a troca:<br>' + reasons, false);
-                } else {
-                    showResultModal('Erro', 'Erro desconhecido ao realizar a troca.', false);
+                headers: {
+                    'Authorization': localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                },
+                data: {
+                    item: item._id
                 }
-            }, function(err) {
-                showResultModal('Erro', 'Erro ao realizar a troca.', false);
+            };
+
+            $http(req).then(function(response) {
+                // Reload player misscoins and purchase history
+                return loadPlayerMisscoins();
+            }).then(function() {
+                loadPurchaseHistory();
+                loadCatalogItems(); // Refresh to update canAfford flags
+                
+                // Send SMS notification after exchange
+                var currentPlayer = PlayerService.getCurrentPlayer();
+                if (currentPlayer && currentPlayer.phone) {
+                    var message = 'Parabéns! Você trocou ' + item.misscoinsCost + ' misscoins por ' + item.name + ' na Débora Charcuteria!';
+                    ActivityService.sendSMS(currentPlayer.phone, message);
+                }
+                
+                vm.loading = false;
+                vm.error = null;
+                SuccessMessageService.show('Troca realizada com sucesso!');
+            }).catch(function(error) {
+                vm.loading = false;
+                vm.error = 'Erro ao realizar troca';
             });
         }
 
-        function showResultModal(title, message, success) {
-            alert(title + '\n' + message.replace(/<br>/g, '\n'));
-        }
-
-        function translateRestriction(code) {
-            var map = {
-                'insufficient_requirements': 'Requisitos insuficientes',
-                'item_out_of_time': 'Item fora do período de troca',
-                'limit_exceeded': 'Limite excedido',
-                'principal_not_allowed': 'Usuário não autorizado'
-            };
-            return map[code] || code;
+        function goToDashboard() {
+            $location.path('/dashboard');
         }
     }
 })(); 

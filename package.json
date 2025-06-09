@@ -1,6 +1,37 @@
 {
+  "name": "debora-charcuteria-app",
+  "version": "1.0.0",
+  "description": "Aplicativo de fidelidade da Débora Charcuteria",
+  "main": "index.html",
+  "scripts": {
+    "start": "http-server -p 8080",
+    "build": "echo 'No build process required for this static app'",
+    "test": "echo 'No tests specified'",
+    "dev": "http-server -p 8080 -o",
+    "lint": "echo 'Linting not configured'"
+  },
   "dependencies": {
     "@vonage/server-sdk": "^3.0.0",
     "axios": "^1.6.7"
-  }
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/debora-charcuteria-app.git"
+  },
+  "keywords": [
+    "loyalty",
+    "app",
+    "charcuteria",
+    "angularjs",
+    "gamification"
+  ],
+  "author": "Débora Charcuteria",
+  "license": "MIT",
+  "private": true
 } 

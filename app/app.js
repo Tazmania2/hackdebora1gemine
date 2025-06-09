@@ -18,7 +18,6 @@
     config.$inject = ['$routeProvider', '$locationProvider', '$httpProvider', 'cfpLoadingBarProvider'];
 
     function config($routeProvider, $locationProvider, $httpProvider, cfpLoadingBarProvider) {
-        console.log('[app.js] config block executed');
         $routeProvider
             // Redirect root URL to /login
             .when('/', {
@@ -163,18 +162,23 @@
 
     function run($rootScope, $location, AuthService, $log, ThemeConfigService) {
         $log = $log || console;
-        $log.debug && $log.debug('[app.js] run block executed');
+        if ($log.debug) $log.debug('[app.js] run block executed');
+        
         // Apply theme config from Funifier
         ThemeConfigService.getConfig().then(function(cfg) {
             ThemeConfigService.applyConfig(cfg);
+        }).catch(function(error) {
+            if ($log.warn) $log.warn('Failed to load theme config:', error);
         });
+        
         // Handle route change errors
         $rootScope.$on('$routeChangeError', function(event, current, previous, rejection) {
-            console.error('[RouteChangeError]', { event, current, previous, rejection });
+            if ($log.error) $log.error('[RouteChangeError]', { event, current, previous, rejection });
             if (rejection === 'not_authenticated') {
                 $location.path('/login');
             }
         });
+        
         // Handle 401 responses
         $rootScope.$on('unauthorized', function() {
             AuthService.logout();
